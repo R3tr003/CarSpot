@@ -12,8 +12,8 @@ struct RemoteRecognitionService: RecognitionService {
         var request = URLRequest(url: AppConfig.recognitionEndpoint)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(AppConfig.supabaseAnonKey)", forHTTPHeaderField: "Authorization")
-        request.setValue(AppConfig.supabaseAnonKey, forHTTPHeaderField: "apikey")
+        request.setValue("Bearer \(AppConfig.supabaseKey)", forHTTPHeaderField: "Authorization")
+        request.setValue(AppConfig.supabaseKey, forHTTPHeaderField: "apikey")
         request.httpBody = try JSONEncoder().encode(Request(imageBase64: imageData.base64EncodedString()))
 
         do {

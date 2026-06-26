@@ -11,8 +11,8 @@ enum AppConfig {
     /// True once `Secrets.swift` contains real Supabase values (not the template
     /// placeholders). When true the app uses the live backend.
     static var isSupabaseConfigured: Bool {
-        !Secrets.supabaseAnonKey.isEmpty
-            && Secrets.supabaseAnonKey != "YOUR-ANON-KEY"
+        !Secrets.supabaseKey.isEmpty
+            && !Secrets.supabaseKey.hasPrefix("YOUR-")
             && !Secrets.supabaseURL.contains("YOUR-PROJECT")
     }
 
@@ -24,8 +24,8 @@ enum AppConfig {
     /// Supabase project URL — letto da `Secrets.swift` (gitignored).
     static let supabaseURL = URL(string: Secrets.supabaseURL)!
 
-    /// Public anon key — letto da `Secrets.swift` (gitignored).
-    static let supabaseAnonKey = Secrets.supabaseAnonKey
+    /// Publishable key (`sb_publishable_…`) — letto da `Secrets.swift` (gitignored).
+    static let supabaseKey = Secrets.supabaseKey
 
     /// Edge Function that anonymizes-checks and calls the recognition provider.
     static var recognitionEndpoint: URL {

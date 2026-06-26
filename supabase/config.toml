@@ -27,6 +27,8 @@ site_url = "carspot://"
 enabled = true
 
 # Edge Function di riconoscimento (proxy verso il provider, tiene la chiave server-side).
+# verify_jwt = false perché l'app chiama con la publishable key (sb_publishable_...),
+# che non è un JWT. La function è comunque gated dalla apikey.
 [functions.recognize]
 enabled = true
-verify_jwt = true
+verify_jwt = false
