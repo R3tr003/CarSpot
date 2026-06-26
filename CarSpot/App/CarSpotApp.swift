@@ -7,7 +7,7 @@ struct CarSpotApp: App {
 
     init() {
         do {
-            container = try ModelContainer(for: StoredCard.self)
+            container = try ModelContainer(for: StoredCard.self, PlayerProfile.self)
         } catch {
             fatalError("Impossibile creare il ModelContainer: \(error)")
         }
@@ -18,7 +18,10 @@ struct CarSpotApp: App {
             RootShellView()
                 .preferredColorScheme(.dark)
                 .tint(CSColor.accent)
-                .task { CardSeeder.seedIfNeeded(container.mainContext) }
+                .task {
+                    CardSeeder.seedIfNeeded(container.mainContext)
+                    _ = PlayerStore.profile(container.mainContext)
+                }
         }
         .modelContainer(container)
     }

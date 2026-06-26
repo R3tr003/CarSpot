@@ -1,13 +1,19 @@
 import SwiftUI
+import SwiftData
 
 struct ProfileView: View {
     @Environment(\.dismiss) private var dismiss
+    @Query private var profiles: [PlayerProfile]
+    @Query private var cards: [StoredCard]
+
+    private var profile: PlayerProfile? { profiles.first }
 
     var body: some View {
         ScrollView {
             VStack(spacing: CSSpace.lg) {
                 header
                 profileHeader
+                statsRow
                 myCarCard
                 sightingsCard
             }
@@ -15,6 +21,24 @@ struct ProfileView: View {
             .padding(.bottom, 40)
         }
         .scrollIndicators(.hidden)
+    }
+
+    private var statsRow: some View {
+        HStack(spacing: CSSpace.md) {
+            statTile("\(cards.count)", "Carte", CSColor.accent)
+            statTile("\(profile?.xp ?? 0)", "PE", CSColor.accentWarm)
+            statTile("\(profile?.currency ?? 0)", "Valuta", Rarity.epica.primary)
+        }
+    }
+
+    private func statTile(_ value: String, _ label: String, _ tint: Color) -> some View {
+        VStack(spacing: 4) {
+            Text(value).font(CSFont.numeric(24)).foregroundStyle(CSColor.ink)
+            Text(label).eyebrow(tint)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, CSSpace.md)
+        .glassEffect(.regular, in: .rect(cornerRadius: CSRadius.md))
     }
 
     private var header: some View {
@@ -38,7 +62,7 @@ struct ProfileView: View {
         VStack(spacing: CSSpace.sm) {
             UserAvatar(size: 88)
             Text("Andrea").font(CSFont.display(26)).foregroundStyle(CSColor.ink)
-            Text("Cacciatore Livello 12").eyebrow(CSColor.accent)
+            Text("Cacciatore Livello \(LevelSystem.level(forXP: profile?.xp ?? 0))").eyebrow(CSColor.accent)
         }
         .frame(maxWidth: .infinity)
         .padding(.top, CSSpace.xs)
@@ -97,5 +121,7 @@ struct ProfileView: View {
 }
 
 #Preview {
-    ZStack { AsphaltBackground(); ProfileView() }.preferredColorScheme(.dark)
+    ZStack { AsphaltBackground(); ProfileView() }
+        .preferredColorScheme(.dark)
+        .modelContainer(for: [StoredCard.self, PlayerProfile.self], inMemory: true)
 }

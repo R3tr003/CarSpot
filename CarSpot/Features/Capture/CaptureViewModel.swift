@@ -14,6 +14,7 @@ final class CaptureViewModel {
     var candidates: [VehicleCandidate] = []
     var selected: VehicleCandidate?
     var errorMessage: String?
+    var lastReward = 0
 
     private let recognizer: any RecognitionService = AppConfig.makeRecognitionService()
     private let areas = ["Centro Storico", "Lungomare", "Quartiere Nord", "Collina", "Stazione"]
@@ -58,6 +59,9 @@ final class CaptureViewModel {
         )
         context.insert(card)
         try? context.save()
+        // Award XP/currency for the catch.
+        PlayerStore.award(xp: a.rarity.xpReward, currency: a.rarity.currencyReward, in: context)
+        lastReward = a.rarity.xpReward
         UINotificationFeedbackGenerator().notificationOccurred(.success)
         phase = .saved
     }

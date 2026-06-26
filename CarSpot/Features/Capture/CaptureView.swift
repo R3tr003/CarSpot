@@ -250,6 +250,11 @@ struct CaptureView: View {
                 if let c = vm.selected {
                     Text(c.title).font(CSFont.caption()).foregroundStyle(CSColor.inkSecondary)
                 }
+                HStack(spacing: 5) {
+                    Image(systemName: "bolt.fill")
+                    Text("+\(vm.lastReward) PE").font(CSFont.numeric(15))
+                }
+                .foregroundStyle(CSColor.accentWarm)
                 PrimaryButton(title: "Cattura un'altra", icon: "camera.fill") { vm.reset() }
             }
             .frame(maxWidth: .infinity)
