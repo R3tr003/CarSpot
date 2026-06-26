@@ -56,14 +56,16 @@ L'automazione UI a tap di XcodeBuildMCP **non è abilitata** in questa configura
 - **Stile codice:** commenti in italiano brevi e mirati come nel codice esistente.
 
 ### Shell (stile Flighty)
-`RootShellView` = mappa MapKit a tutto schermo (`MapBackground`) come sfondo
-persistente + `BottomSheet` trascinabile (2 detent) che ospita la tab attiva +
-`FloatingTabBar` (pillola glass con 4 tab: Oggi/Collezione/Mappa/Profilo) e un
-bottone camera accent che presenta `CaptureView` come `fullScreenCover` (come
-"Add Flight"). Le schermate sono **contenuto incorporabile**: niente sfondo o
-NavigationStack proprio (tranne Collection, che spinge al dettaglio), header via
-`SheetHeader` (titolo + share + `UserAvatar` a destra), padding bottom ~130 per la
-tab bar flottante.
+`RootShellView` = **`TabView` nativa di iOS 26** (la barra è Liquid Glass autentico —
+NON sostituirla con una barra custom, l'utente la vuole nativa) con 5 tab
+(Oggi/Collezione/Cattura[.search]/Mappa/Profilo). Ogni tab di contenuto è avvolta da
+`mapped { }`: `ZStack { MapBackground ; SheetCard { schermata } }`, così la mappa
+MapKit fa da sfondo e la `SheetCard` (card scura ancorata in basso) ospita il
+contenuto. `MapBackground` riceve una `@Binding position` condivisa per non
+resettare la camera al cambio tab; nessuna polilinea, solo i marker delle posizioni.
+La tab Cattura è full-bleed (camera). Le schermate sono **contenuto incorporabile**:
+niente sfondo/NavigationStack proprio (tranne Collection, che spinge al dettaglio),
+header via `SheetHeader` (titolo + share + `UserAvatar` a destra), padding bottom ~130.
 
 ### Design system — usalo, non reinventare
 Tutto in `CarSpot/DesignSystem/`. Mai colori/spaziature hardcoded nelle feature:
