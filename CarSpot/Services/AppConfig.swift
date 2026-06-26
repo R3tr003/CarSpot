@@ -1,15 +1,25 @@
 import Foundation
 
-/// Central switchboard for swappable backends. Defaults keep the app fully
-/// functional offline (mock recognition, local persistence) so it runs on the
-/// simulator without any keys. Flip to `.remote` once the Supabase project and
-/// recognition Edge Function are deployed.
+/// Central switchboard for swappable backends. The app stays fully functional
+/// offline (mock recognition, local persistence). It switches to Supabase
+/// **automatically** as soon as real keys are present in `Secrets.swift` — no
+/// code change needed: just paste your Project URL and anon key there.
 enum AppConfig {
 
     enum RecognitionMode { case mock, remote }
 
-    /// Recognition source. `.mock` returns plausible local candidates.
-    static let recognitionMode: RecognitionMode = .mock
+    /// True once `Secrets.swift` contains real Supabase values (not the template
+    /// placeholders). When true the app uses the live backend.
+    static var isSupabaseConfigured: Bool {
+        !Secrets.supabaseAnonKey.isEmpty
+            && Secrets.supabaseAnonKey != "YOUR-ANON-KEY"
+            && !Secrets.supabaseURL.contains("YOUR-PROJECT")
+    }
+
+    /// Recognition source — auto: remote when Supabase is configured, else mock.
+    static var recognitionMode: RecognitionMode {
+        isSupabaseConfigured ? .remote : .mock
+    }
 
     /// Supabase project URL — letto da `Secrets.swift` (gitignored).
     static let supabaseURL = URL(string: Secrets.supabaseURL)!
