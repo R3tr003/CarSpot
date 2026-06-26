@@ -1,0 +1,43 @@
+# ─────────────────────────────────────────────────────────────
+# SEGRETI — non pushare mai chiavi/API
+# ─────────────────────────────────────────────────────────────
+CarSpot/Services/Secrets.swift
+**/Secrets.swift
+*.local.xcconfig
+.env
+.env.*
+supabase/.env
+supabase/.env.*
+supabase/.temp/
+
+# ─────────────────────────────────────────────────────────────
+# Xcode / build
+# ─────────────────────────────────────────────────────────────
+build/
+DerivedData/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+xcuserdata/
+*.xcuserstate
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.swiftpm/
+.build/
+Package.resolved
+
+# ─────────────────────────────────────────────────────────────
+# macOS / editor
+# ─────────────────────────────────────────────────────────────
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Node (eventuali tool della Edge Function)
+node_modules/
