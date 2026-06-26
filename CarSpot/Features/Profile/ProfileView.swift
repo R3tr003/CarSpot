@@ -1,18 +1,37 @@
 import SwiftUI
 
 struct ProfileView: View {
+    @Environment(\.dismiss) private var dismiss
+
     var body: some View {
         ScrollView {
             VStack(spacing: CSSpace.lg) {
-                SheetHeader(title: "Profilo")
+                header
                 profileHeader
                 myCarCard
                 sightingsCard
             }
             .padding(CSSpace.lg)
-            .padding(.bottom, 130)
+            .padding(.bottom, 40)
         }
         .scrollIndicators(.hidden)
+    }
+
+    private var header: some View {
+        HStack(alignment: .center) {
+            Text("Profilo")
+                .font(CSFont.display(34))
+                .foregroundStyle(CSColor.ink)
+            Spacer()
+            Button { dismiss() } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(CSColor.ink)
+                    .frame(width: 44, height: 44)
+                    .glassEffect(.regular, in: .circle)
+            }
+            .buttonStyle(.plain)
+        }
     }
 
     private var profileHeader: some View {

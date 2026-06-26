@@ -6,8 +6,9 @@ import SwiftUI
 struct RootShellView: View {
     @State private var selection: Screen = Self.initialScreen
     @State private var mapPosition = MapBackground.defaultPosition
+    @State private var showProfile = false
 
-    enum Screen: Hashable { case today, collection, capture, territory, profile }
+    enum Screen: Hashable { case today, collection, capture, territory }
 
     var body: some View {
         TabView(selection: $selection) {
@@ -17,18 +18,24 @@ struct RootShellView: View {
             Tab("Collezione", systemImage: "square.grid.2x2.fill", value: .collection) {
                 mapped { CollectionView() }
             }
-            Tab("Cattura", systemImage: "camera.viewfinder", value: .capture, role: .search) {
-                CaptureView()
-            }
             Tab("Mappa", systemImage: "map.fill", value: .territory) {
                 mapped { TerritoryView() }
             }
-            Tab("Profilo", systemImage: "person.fill", value: .profile) {
-                mapped { ProfileView() }
+            Tab("Cattura", systemImage: "camera.viewfinder", value: .capture, role: .search) {
+                CaptureView()
             }
         }
         .tabBarMinimizeBehavior(.onScrollDown)
         .tint(CSColor.accent)
+        .environment(\.openProfile) { showProfile = true }
+        .sheet(isPresented: $showProfile) {
+            ZStack {
+                AsphaltBackground(tint: Rarity.leggendaria.primary)
+                ProfileView()
+            }
+            .presentationDragIndicator(.visible)
+            .preferredColorScheme(.dark)
+        }
     }
 
     /// Wraps a screen above the shared map background, inside a bottom card.
@@ -45,7 +52,6 @@ struct RootShellView: View {
         case "collection": return .collection
         case "capture": return .capture
         case "map", "territory": return .territory
-        case "profile": return .profile
         default: return .today
         }
     }

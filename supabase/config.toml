@@ -1,0 +1,32 @@
+# Config del progetto Supabase (usata da Supabase CLI e dalla GitHub integration).
+# project_id è l'identificatore locale; collegando il repo, Supabase lo associa al
+# tuo progetto remoto.
+project_id = "carspot"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+
+[auth]
+enabled = true
+# Sign in with Apple lato app; aggiungi qui i redirect/allow-list quando servono.
+site_url = "carspot://"
+
+[storage]
+enabled = true
+
+# Edge Function di riconoscimento (proxy verso il provider, tiene la chiave server-side).
+[functions.recognize]
+enabled = true
+verify_jwt = true

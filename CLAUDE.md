@@ -57,8 +57,11 @@ L'automazione UI a tap di XcodeBuildMCP **non è abilitata** in questa configura
 
 ### Shell (stile Flighty)
 `RootShellView` = **`TabView` nativa di iOS 26** (la barra è Liquid Glass autentico —
-NON sostituirla con una barra custom, l'utente la vuole nativa) con 5 tab
-(Oggi/Collezione/Cattura[.search]/Mappa/Profilo). Ogni tab di contenuto è avvolta da
+NON sostituirla con una barra custom, l'utente la vuole nativa). **3 tab + camera**
+come Flighty: Oggi/Collezione/Mappa + Cattura come `role: .search` (cerchio camera a
+destra). Niente tab Profilo: il **profilo si apre toccando l'avatar** nello
+`SheetHeader` (env `\.openProfile`), presentato come `.sheet`. Ogni tab di contenuto
+è avvolta da
 `mapped { }`: `ZStack { MapBackground ; SheetCard { schermata } }`, così la mappa
 MapKit fa da sfondo e la `SheetCard` (card scura ancorata in basso) ospita il
 contenuto. `MapBackground` riceve una `@Binding position` condivisa per non

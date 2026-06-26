@@ -1,10 +1,13 @@
 import SwiftUI
 
 /// Header used at the top of each sheet screen: big title on the left, a share
-/// button and the user avatar on the right (Flighty-style banner).
+/// button and the tappable user avatar on the right (Flighty-style banner).
+/// Tapping the avatar opens the profile via the `openProfile` environment action.
 struct SheetHeader: View {
     let title: String
     var onShare: () -> Void = {}
+
+    @Environment(\.openProfile) private var openProfile
 
     var body: some View {
         HStack(alignment: .center) {
@@ -22,9 +25,15 @@ struct SheetHeader: View {
                     .glassEffect(.regular, in: .circle)
             }
             .buttonStyle(.plain)
-            UserAvatar(size: 50)
+            Button(action: openProfile) { UserAvatar(size: 50) }
+                .buttonStyle(.plain)
         }
     }
+}
+
+/// Environment action to present the profile (triggered by the header avatar).
+extension EnvironmentValues {
+    @Entry var openProfile: () -> Void = {}
 }
 
 /// Circular user avatar. Placeholder gradient with an initial until a real
