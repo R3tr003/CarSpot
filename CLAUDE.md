@@ -17,7 +17,7 @@ xcodebuild -project CarSpot.xcodeproj -scheme CarSpot -configuration Debug \
 
 # Install + launch
 APP=$(find build/Build/Products -name CarSpot.app -maxdepth 3 | head -1)
-xcrun simctl install booted "$APP" && xcrun simctl launch booted com.carspot.app
+xcrun simctl install booted "$APP" && xcrun simctl launch booted com.carspot.andrea.app
 
 # Screenshot
 xcrun simctl io booted screenshot shot.png
@@ -27,8 +27,16 @@ Preferire i tool **XcodeBuildMCP** quando disponibili (`build_run_sim`, `snapsho
 L'automazione UI a tap di XcodeBuildMCP **non è abilitata** in questa configurazione.
 
 ### Gotcha verificati (non ripeterli)
+- **Bundle id = `com.carspot.andrea.app`** (NON `com.carspot.app`). Usare l'id sbagliato
+  con `simctl launch` dà `FBSOpenApplicationServiceErrorDomain code=4` e con `uninstall`
+  rimuove l'app vera: non fare `uninstall`/`erase` per "riparare" — ricontrolla l'id.
 - **Rilancio:** `simctl launch` su app già in foreground NON rilancia. `simctl terminate`
   PRIMA di `launch` quando serve rivedere lo stato iniziale.
+- **Dopo `simctl erase`:** la cache tile di MapKit è azzerata e GeoServices può non avere
+  rete per un po' (`geod: TMGetReferenceTime reliable -1`): lo sfondo mappa resta NERO
+  finché i tile non si scaricano. Non è un bug del codice — evitare `erase`.
+- **Debug auth:** `-skipAuth YES` salta onboarding+login → app; `-showLogin YES` va al
+  login; `-resetAuth YES` riazzera i flag (`hasOnboarded`/`isSignedIn` in `RootGate`).
 - **Schermo nero al launch:** se lanci con `--console-pty` e poi uccidi il processo, chiudi
   l'app. Per screenshot lancia senza console e attendi ~3s.
 - **Simulatore = niente camera né giroscopio:** il foil olografico appare statico e la camera
@@ -55,20 +63,26 @@ L'automazione UI a tap di XcodeBuildMCP **non è abilitata** in questa configura
 - **Persistenza:** SwiftData (`@Model`). Le view leggono via `@Query`.
 - **Stile codice:** commenti in italiano brevi e mirati come nel codice esistente.
 
+### Gate iniziale (auth)
+`RootGate` decide cosa mostrare: **onboarding → login → app**. Stato in `@AppStorage`
+(`hasOnboarded`, `isSignedIn`). `OnboardingFlow` = carosello Flighty (pag.0 statica con
+la macchina, le altre animate: stats/collezione/territorio). `LoginView` = sfondo
+animato `DottedBackdrop` + `SignInWithAppleButton` + bottone Google (auth reale Supabase
+da collegare; per ora segna loggato). NON aggiungere chiavi/endpoint nelle view.
+
 ### Shell (stile Flighty)
 `RootShellView` = **`TabView` nativa di iOS 26** (la barra è Liquid Glass autentico —
 NON sostituirla con una barra custom, l'utente la vuole nativa). **3 tab + camera**
 come Flighty: Oggi/Collezione/Mappa + Cattura come `role: .search` (cerchio camera a
 destra). Niente tab Profilo: il **profilo si apre toccando l'avatar** nello
-`SheetHeader` (env `\.openProfile`), presentato come `.sheet`. Ogni tab di contenuto
-è avvolta da
-`mapped { }`: `ZStack { MapBackground ; SheetCard { schermata } }`, così la mappa
-MapKit fa da sfondo e la `SheetCard` (card scura ancorata in basso) ospita il
-contenuto. `MapBackground` riceve una `@Binding position` condivisa per non
-resettare la camera al cambio tab; nessuna polilinea, solo i marker delle posizioni.
-La tab Cattura è full-bleed (camera). Le schermate sono **contenuto incorporabile**:
-niente sfondo/NavigationStack proprio (tranne Collection, che spinge al dettaglio),
-header via `SheetHeader` (titolo + share + `UserAvatar` a destra), padding bottom ~130.
+`SheetHeader` (env `\.openProfile`), presentato come `.sheet`. La mappa è UNA sola
+`MKMapView` (`MapHost` in `MapBackground.swift`) montata come `.background` del `TabView`
+via `PersistentMapView`: configurata una volta sola, **non si ricarica né resetta la
+camera** al cambio tab. Niente polilinee, solo i marker delle posizioni. Ogni tab di
+contenuto è una `SheetCard` (card scura ancorata in basso, top trasparente per far
+vedere la mappa). La tab Cattura è full-bleed (camera). Le schermate sono **contenuto
+incorporabile**: niente sfondo/NavigationStack proprio (tranne Collection, che spinge al
+dettaglio), header via `SheetHeader` (titolo + share + avatar a destra), padding ~130.
 
 ### Design system — usalo, non reinventare
 Tutto in `CarSpot/DesignSystem/`. Mai colori/spaziature hardcoded nelle feature:
@@ -89,5 +103,8 @@ Tutto in `CarSpot/DesignSystem/`. Mai colori/spaziature hardcoded nelle feature:
 - ✅ Fase 1: cattura MVP — camera AVFoundation (+ fallback PHPicker), anonimizzazione
   Vision on-device, RecognitionService (mock/remoto Supabase), RarityEngine,
   persistenza SwiftData, flusso conferma→salvataggio. Backend in `supabase/`.
-- ⏭️ Prossima — Fase 2/3: rarità da specs reali, obiettivi del giorno funzionanti,
-  XP/valuta/livelli, Live Activity. Vedi PROGETTO.md.
+- ✅ Fase 2/3: profilo giocatore (XP/livelli/valuta), obiettivi del giorno.
+- ✅ Auth: onboarding animato + login (Apple/Google) con `RootGate` + permesso posizione
+  (`LocationManager`); mappa di sfondo persistente che non si ricarica al cambio tab.
+- ⏭️ Prossima: auth reale Supabase (token Apple/Google), sync cloud carte/profilo,
+  rarità da specs reali, Live Activity. Vedi PROGETTO.md.

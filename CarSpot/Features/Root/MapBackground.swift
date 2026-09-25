@@ -1,46 +1,73 @@
 import SwiftUI
 import MapKit
 
-/// Full-screen map that lives behind every screen (Flighty-style). Shows the
-/// neighbourhoods where cars have been spotted and the routes between them.
-struct MapBackground: View {
-    /// Shared so the camera stays put while switching tabs.
-    @Binding var position: MapCameraPosition
+/// Holds the ONE shared `MKMapView` for the whole app. Because the same map
+/// instance is reused everywhere, switching tabs never reloads tiles nor resets
+/// the camera — it's configured once at startup.
+@MainActor
+final class MapHost {
+    let mapView = MKMapView()
+    private var configured = false
 
-    static let defaultPosition: MapCameraPosition = .region(
-        MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 44.5, longitude: 8.5),
-            span: MKCoordinateSpan(latitudeDelta: 24, longitudeDelta: 24)
+    func configure() {
+        guard !configured else { return }
+        configured = true
+
+        mapView.preferredConfiguration = MKHybridMapConfiguration(elevationStyle: .realistic)
+        mapView.pointOfInterestFilter = .excludingAll
+        mapView.showsUserLocation = true
+        mapView.isRotateEnabled = true
+        mapView.isPitchEnabled = true
+
+        mapView.setRegion(
+            MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: 44.5, longitude: 8.5),
+                span: MKCoordinateSpan(latitudeDelta: 22, longitudeDelta: 22)
+            ),
+            animated: false
         )
-    )
 
-    var body: some View {
-        Map(position: $position, interactionModes: [.pan, .zoom]) {
-            ForEach(SpotPlace.sample) { place in
-                Annotation(place.name, coordinate: place.coordinate) {
-                    SpotPin(rarity: place.rarity)
-                }
-                .annotationTitles(.hidden)
-            }
+        for place in SpotPlace.sample {
+            let a = SpotAnnotation(place: place)
+            mapView.addAnnotation(a)
         }
-        .mapStyle(.hybrid(elevation: .realistic))
-        .mapControls { }   // keep it clean — no default controls
-        .ignoresSafeArea()
-        .tint(CSColor.accent)
     }
 }
 
-/// A glowing spot marker tinted by the rarity found there.
-private struct SpotPin: View {
-    let rarity: Rarity
-    var body: some View {
-        ZStack {
-            Circle().fill(rarity.primary.opacity(0.25)).frame(width: 26, height: 26).blur(radius: 4)
-            Circle().fill(rarity.linearGradient).frame(width: 12, height: 12)
-                .overlay(Circle().strokeBorder(.white.opacity(0.8), lineWidth: 1.5))
-        }
-        .shadow(color: rarity.primary.opacity(0.6), radius: 6)
+/// The persistent map as a SwiftUI view. Always returns the shared instance.
+struct PersistentMapView: UIViewRepresentable {
+    let host: MapHost
+
+    func makeUIView(context: Context) -> MKMapView {
+        host.configure()
+        host.mapView.delegate = context.coordinator
+        return host.mapView
     }
+
+    func updateUIView(_ uiView: MKMapView, context: Context) {}
+
+    func makeCoordinator() -> Coordinator { Coordinator() }
+
+    final class Coordinator: NSObject, MKMapViewDelegate {
+        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+            guard let spot = annotation as? SpotAnnotation else { return nil }
+            let id = "spot"
+            let view = (mapView.dequeueReusableAnnotationView(withIdentifier: id) as? MKMarkerAnnotationView)
+                ?? MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: id)
+            view.annotation = annotation
+            view.markerTintColor = UIColor(spot.place.rarity.primary)
+            view.glyphImage = UIImage(systemName: "car.fill")
+            view.displayPriority = .required
+            return view
+        }
+    }
+}
+
+final class SpotAnnotation: NSObject, MKAnnotation {
+    let place: SpotPlace
+    var coordinate: CLLocationCoordinate2D { place.coordinate }
+    var title: String? { place.name }
+    init(place: SpotPlace) { self.place = place }
 }
 
 /// Sample spotting locations across Europe for the background map.
@@ -60,5 +87,3 @@ struct SpotPlace: Identifiable {
         SpotPlace(name: "Milano", latitude: 45.46, longitude: 9.19, rarity: .rara)
     ]
 }
-
-#Preview { MapBackground(position: .constant(MapBackground.defaultPosition)) }

@@ -1,11 +1,12 @@
 import SwiftUI
 
 /// App shell: the native iOS 26 `TabView` (authentic Liquid Glass tab bar) over a
-/// persistent map background. Content screens sit in a `SheetCard` so the map
-/// shows above them; the Capture tab is full-bleed for the camera.
+/// single persistent map background. The map is the TabView's `.background`, so
+/// it's mounted once — switching tabs never reloads it or moves the camera.
 struct RootShellView: View {
     @State private var selection: Screen = Self.initialScreen
-    @State private var mapPosition = MapBackground.defaultPosition
+    @State private var mapHost = MapHost()
+    @State private var location = LocationManager()
     @State private var showProfile = false
 
     enum Screen: Hashable { case today, collection, capture, territory }
@@ -13,21 +14,25 @@ struct RootShellView: View {
     var body: some View {
         TabView(selection: $selection) {
             Tab("Oggi", systemImage: "sun.max.fill", value: .today) {
-                mapped { TodayView() }
+                SheetCard { TodayView() }
             }
             Tab("Collezione", systemImage: "square.grid.2x2.fill", value: .collection) {
-                mapped { CollectionView() }
+                SheetCard { CollectionView() }
             }
             Tab("Mappa", systemImage: "map.fill", value: .territory) {
-                mapped { TerritoryView() }
+                SheetCard { TerritoryView() }
             }
             Tab("Cattura", systemImage: "camera.viewfinder", value: .capture, role: .search) {
                 CaptureView()
             }
         }
+        .background {
+            PersistentMapView(host: mapHost).ignoresSafeArea()
+        }
         .tabBarMinimizeBehavior(.onScrollDown)
         .tint(CSColor.accent)
         .environment(\.openProfile) { showProfile = true }
+        .task { location.request() }
         .sheet(isPresented: $showProfile) {
             ZStack {
                 AsphaltBackground(tint: Rarity.leggendaria.primary)
@@ -35,14 +40,6 @@ struct RootShellView: View {
             }
             .presentationDragIndicator(.visible)
             .preferredColorScheme(.dark)
-        }
-    }
-
-    /// Wraps a screen above the shared map background, inside a bottom card.
-    private func mapped<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        ZStack {
-            MapBackground(position: $mapPosition).ignoresSafeArea()
-            SheetCard { content() }
         }
     }
 
@@ -60,5 +57,5 @@ struct RootShellView: View {
 #Preview {
     RootShellView()
         .preferredColorScheme(.dark)
-        .modelContainer(for: StoredCard.self, inMemory: true)
+        .modelContainer(for: [StoredCard.self, PlayerProfile.self], inMemory: true)
 }

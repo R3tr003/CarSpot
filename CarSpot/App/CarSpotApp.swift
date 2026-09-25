@@ -15,7 +15,7 @@ struct CarSpotApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootShellView()
+            RootGate()
                 .preferredColorScheme(.dark)
                 .tint(CSColor.accent)
                 .task {
