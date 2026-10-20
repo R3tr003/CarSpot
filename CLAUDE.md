@@ -10,9 +10,9 @@ automaticamente nel target — **non serve (e non si deve) editare `project.pbxp
 aggiungere/rinominare/spostare file Swift.
 
 ```bash
-# Build (simulatore iOS 26)
+# Build (Xcode 27 · simulatore iOS 27 — gli iOS 26 non sono più installati; deployment target resta 26)
 xcodebuild -project CarSpot.xcodeproj -scheme CarSpot -configuration Debug \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+  -destination 'platform=iOS Simulator,name=iPhone 18 Pro' \
   -derivedDataPath build build 2>&1 | grep -E "error:|BUILD SUCCEEDED|BUILD FAILED"
 
 # Install + launch
@@ -27,16 +27,31 @@ Preferire i tool **XcodeBuildMCP** quando disponibili (`build_run_sim`, `snapsho
 L'automazione UI a tap di XcodeBuildMCP **non è abilitata** in questa configurazione.
 
 ### Gotcha verificati (non ripeterli)
-- **Bundle id = `com.carspot.andrea.app`** (NON `com.carspot.app`). Usare l'id sbagliato
-  con `simctl launch` dà `FBSOpenApplicationServiceErrorDomain code=4` e con `uninstall`
-  rimuove l'app vera: non fare `uninstall`/`erase` per "riparare" — ricontrolla l'id.
+- **Bundle id = `com.carspot.andrea.app`** (registrato sul Personal Team). `com.carspot.app`
+  è GIÀ preso da un altro team Apple → "Failed Registering Bundle Identifier / No profiles"
+  e l'app non si installa su device (provato il 2026-10-19/20, annullato). Non cambiarlo senza
+  chiedere: gli id sono globali e vanno aggiornati anche nei Native applications di Clerk.
+  Leggilo sempre da `PRODUCT_BUNDLE_IDENTIFIER` nel pbxproj: l'id sbagliato con `simctl launch`
+  dà `FBSOpenApplicationServiceErrorDomain code=4`. Non fare `uninstall`/`erase` per
+  "riparare" — ricontrolla l'id.
+- **Run da Xcode che compila ma non installa/avvia nulla** (sim e device): il target deve avere
+  `productReference` → `CarSpot.app` nel pbxproj e lo schema condiviso
+  (`xcshareddata/xcschemes/CarSpot.xcscheme`) un `BuildableProductRunnable` con
+  `BuildableName = "CarSpot.app"`. Mancavano (pbxproj scritto a mano) — sistemato il 2026-10-20.
+- **Team = Personal Team (gratuito):** NON supporta la capability **Sign in with Apple**
+  (né Push/APNs, Associated Domains…). Aggiungerla rompe il provisioning e Xcode non
+  avvia l'app. Il login Apple via Clerk richiede l'Apple Developer Program a pagamento;
+  fino ad allora niente `CODE_SIGN_ENTITLEMENTS` con quelle capability.
+- **Simulatore appeso** (`simctl install`/`listapps` che non tornano, `SimError 405`):
+  `killall -9 com.apple.CoreSimulator.CoreSimulatorService`, poi `simctl boot` —
+  si rilancia da solo, non cancella nulla. Mai `erase`.
 - **Rilancio:** `simctl launch` su app già in foreground NON rilancia. `simctl terminate`
   PRIMA di `launch` quando serve rivedere lo stato iniziale.
 - **Dopo `simctl erase`:** la cache tile di MapKit è azzerata e GeoServices può non avere
   rete per un po' (`geod: TMGetReferenceTime reliable -1`): lo sfondo mappa resta NERO
   finché i tile non si scaricano. Non è un bug del codice — evitare `erase`.
-- **Debug auth:** `-skipAuth YES` salta onboarding+login → app; `-showLogin YES` va al
-  login; `-resetAuth YES` riazzera i flag (`hasOnboarded`/`isSignedIn` in `RootGate`).
+- **Debug auth:** `-skipAuth YES` salta onboarding+login → app (come ospite);
+  `-showLogin YES` va al login; `-resetAuth YES` riazzera onboarding e sessione.
 - **Schermo nero al launch:** se lanci con `--console-pty` e poi uccidi il processo, chiudi
   l'app. Per screenshot lancia senza console e attendi ~3s.
 - **Simulatore = niente camera né giroscopio:** il foil olografico appare statico e la camera
@@ -64,17 +79,40 @@ L'automazione UI a tap di XcodeBuildMCP **non è abilitata** in questa configura
   UI `@MainActor`. Usare `@Observable` (non `ObservableObject`). Lavoro CPU pesante →
   `@concurrent` solo dopo averlo misurato (vedi skill `write-swift`).
 - **Persistenza:** SwiftData (`@Model`). Le view leggono via `@Query`.
+- **DB Supabase** (ref `rdezjqbxqekteextolvh`, accesso via MCP; CLI non installata): auth
+  utente = **Clerk** via third-party auth → id utente `text` = `auth.jwt()->>'sub'`
+  (MAI `auth.uid()`, niente FK verso `auth.users`). Policy sempre `to authenticated` +
+  `((select auth.jwt()) ->> 'sub')`; niente accesso `anon`; colonne di gioco
+  (xp/level/currency, `verified`) scrivibili solo dal backend. PostGIS sta nello schema
+  `extensions` (tipi `extensions.geography`). Dopo ogni DDL: `get_advisors` security +
+  performance. Migration in `supabase/migrations/<versione>_<nome>.sql` allineate alla
+  cronologia remota.
 - **Test:** nuovi test con **Swift Testing** (`@Test`, `#expect`, `try #require`); XCTest solo
   per UI test.
 - **Logging:** `Logger` di `os`, non `print`.
 - **Stile codice:** commenti in italiano brevi e mirati come nel codice esistente.
 
 ### Gate iniziale (auth)
-`RootGate` decide cosa mostrare: **onboarding → login → app**. Stato in `@AppStorage`
-(`hasOnboarded`, `isSignedIn`). `OnboardingFlow` = carosello Flighty (pag.0 statica con
-la macchina, le altre animate: stats/collezione/territorio). `LoginView` = sfondo
-animato `DottedBackdrop` + `SignInWithAppleButton` + bottone Google (auth reale Supabase
-da collegare; per ora segna loggato). NON aggiungere chiavi/endpoint nelle view.
+`RootGate` decide cosa mostrare: **onboarding → login → app** in base a
+`@AppStorage("hasOnboarded")` e `AppServices.auth.state` (`signedOut`/`guest`/
+`signedIn(userId:)`). `OnboardingFlow` = carosello Flighty (pag.0 statica con la macchina,
+le altre animate) + **ultima pagina consenso statistiche** (GDPR, non saltabile).
+`LoginView` = sfondo animato `DottedBackdrop` + Apple + Google + "Continua senza account".
+
+**Servizi esterni dietro protocollo** (`CarSpot/Services/AppServices.swift`):
+- `AppServices.auth: AuthService` → `ClerkAuthService` (ClerkKit) se `Secrets.clerkPublishableKey`
+  è una `pk_…`, altrimenti `LocalAuthService` (login simulato, offline). Il token Clerk
+  (TTL 1 min) va chiesto a ogni richiesta con `sessionToken()`, mai salvato.
+- `SupabaseBackend` (supabase-swift) usa il token Clerk via `accessToken`: **mai usare
+  `client.auth`**. Profilo creato lazy al primo login (`ensureProfile`).
+- `AppServices.analytics: AnalyticsService` → `MixpanelAnalytics` (progetto **EU**,
+  `api-eu.mixpanel.com`, niente geolocalizzazione IP) se c'è il token, altrimenti no-op.
+  **Nulla parte senza consenso** (`.granted`). Eventi solo tipizzati (`AnalyticsEvent`),
+  identify solo con l'id Clerk: mai email, nomi, foto, targhe, coordinate.
+- Pacchetti SPM: ClerkKit 1.6.x, Supabase 2.55.x, Mixpanel 7.0.x (`Package.resolved` è
+  committato). Sign in with Apple **non ancora attivo**: serve l'Apple Developer Program
+  (vedi Gotcha "Personal Team"); fino ad allora il bottone Apple con Clerk dà errore inline.
+- NON aggiungere chiavi/endpoint nelle view.
 
 ### Shell (stile Flighty)
 `RootShellView` = **`TabView` nativa di iOS 26** (la barra è Liquid Glass autentico —
@@ -199,5 +237,8 @@ Regole:
 - ✅ Fase 2/3: profilo giocatore (XP/livelli/valuta), obiettivi del giorno.
 - ✅ Auth: onboarding animato + login (Apple/Google) con `RootGate` + permesso posizione
   (`LocationManager`); mappa di sfondo persistente che non si ricarica al cambio tab.
-- ⏭️ Prossima: auth reale Supabase (token Apple/Google), sync cloud carte/profilo,
-  rarità da specs reali, Live Activity. Vedi PROGETTO.md.
+- ✅ Auth reale + analytics (2026-10-20): Clerk (Google funzionante su device; Apple
+  attende Developer Program) → JWT verso Supabase (third-party auth, profilo creato al
+  primo login), Mixpanel EU con consenso GDPR. DB rifatto per Clerk (migration 0002/0003).
+- ⏭️ Prossima: sync cloud carte/profilo (SwiftData ↔ Supabase), Edge Function `recognize`
+  da deployare (verifica JWT Clerk via JWKS), rarità da specs reali, Live Activity.

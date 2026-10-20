@@ -19,7 +19,7 @@ Convenzioni obbligatorie:
 - Non chiamare tipi `Tab`.
 
 Dopo aver scritto: compila con
-`xcodebuild -project CarSpot.xcodeproj -scheme CarSpot -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath build build 2>&1 | grep -E "error:|BUILD SUCCEEDED|BUILD FAILED"`
+`xcodebuild -project CarSpot.xcodeproj -scheme CarSpot -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 18 Pro' -derivedDataPath build build 2>&1 | grep -E "error:|BUILD SUCCEEDED|BUILD FAILED"`
 e correggi finché è verde. Non fare commit.
 
 Report finale: file toccati, cosa fa ciascuna modifica in una riga, esito build, eventuali punti aperti.

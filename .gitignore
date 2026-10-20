@@ -29,7 +29,7 @@ xcuserdata/
 # Swift Package Manager
 .swiftpm/
 .build/
-Package.resolved
+# Package.resolved va committato (versioni SPM riproducibili)
 
 # ─────────────────────────────────────────────────────────────
 # macOS / editor

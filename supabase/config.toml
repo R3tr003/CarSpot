@@ -12,7 +12,7 @@ max_rows = 1000
 
 [db]
 port = 54322
-major_version = 15
+major_version = 17   # come il progetto remoto (Postgres 17)
 
 [studio]
 enabled = true
@@ -20,8 +20,13 @@ port = 54323
 
 [auth]
 enabled = true
-# Sign in with Apple lato app; aggiungi qui i redirect/allow-list quando servono.
+# L'auth utente è Clerk (third-party auth): Supabase accetta i JWT di Clerk e le RLS
+# leggono l'utente da auth.jwt()->>'sub'. Supabase Auth nativa non si usa.
 site_url = "carspot://"
+
+[auth.third_party.clerk]
+enabled = true
+domain = "quiet-oarfish-3994.clerk.accounts.dev"   # Frontend API Clerk (istanza di sviluppo)
 
 [storage]
 enabled = true

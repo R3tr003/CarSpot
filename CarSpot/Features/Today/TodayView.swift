@@ -40,6 +40,7 @@ struct TodayView: View {
 
     private func claim(_ challenge: DailyChallengeVM) {
         if PlayerStore.claim(challenge, in: context) {
+            AppServices.analytics.track(.challengeClaimed(id: challenge.id))
             UINotificationFeedbackGenerator().notificationOccurred(.success)
         }
     }

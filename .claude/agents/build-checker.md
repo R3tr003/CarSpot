@@ -11,7 +11,7 @@ Comandi (dalla root del progetto `/Users/andre/Desktop/CarSpot`):
 
 ```bash
 xcodebuild -project CarSpot.xcodeproj -scheme CarSpot -configuration Debug \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+  -destination 'platform=iOS Simulator,name=iPhone 18 Pro' \
   -derivedDataPath build build 2>&1 | grep -E "error:|warning: .*(Sendable|isolat|concurren)|BUILD SUCCEEDED|BUILD FAILED"
 ```
 

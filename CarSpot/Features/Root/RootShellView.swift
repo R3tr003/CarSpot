@@ -9,7 +9,19 @@ struct RootShellView: View {
     @State private var location = LocationManager()
     @State private var showProfile = false
 
-    enum Screen: Hashable { case today, collection, capture, territory }
+    enum Screen: Hashable {
+        case today, collection, capture, territory
+
+        /// Nome stabile per le statistiche.
+        var analyticsName: String {
+            switch self {
+            case .today: "today"
+            case .collection: "collection"
+            case .capture: "capture"
+            case .territory: "map"
+            }
+        }
+    }
 
     var body: some View {
         TabView(selection: $selection) {
@@ -33,6 +45,9 @@ struct RootShellView: View {
         .tint(CSColor.accent)
         .environment(\.openProfile) { showProfile = true }
         .task { location.request() }
+        .onChange(of: selection, initial: true) { _, screen in
+            AppServices.analytics.track(.tabViewed(name: screen.analyticsName))
+        }
         .sheet(isPresented: $showProfile) {
             ZStack {
                 AsphaltBackground(tint: Rarity.leggendaria.primary)

@@ -20,7 +20,9 @@ final class CaptureViewModel {
     private let areas = ["Centro Storico", "Lungomare", "Quartiere Nord", "Collina", "Stazione"]
 
     /// Run the full pipeline on a freshly captured/picked image.
-    func process(image: UIImage) async {
+    /// `source` è solo per le statistiche: "camera" | "library" | "auto".
+    func process(image: UIImage, source: String = "camera") async {
+        AppServices.analytics.track(.captureStarted(source: source))
         errorMessage = nil
         phase = .processing
 
@@ -62,6 +64,8 @@ final class CaptureViewModel {
         // Award XP/currency for the catch.
         PlayerStore.award(xp: a.rarity.xpReward, currency: a.rarity.currencyReward, in: context)
         lastReward = a.rarity.xpReward
+        // Nome del case (es. "leggendaria"), stabile e indipendente dalla lingua.
+        AppServices.analytics.track(.cardSaved(rarity: String(describing: a.rarity)))
         UINotificationFeedbackGenerator().notificationOccurred(.success)
         phase = .saved
     }

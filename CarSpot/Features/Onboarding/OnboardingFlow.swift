@@ -2,12 +2,14 @@ import SwiftUI
 
 /// Onboarding in stile Flighty/Wheelz: una pagina di intro statica (la macchina)
 /// e poi pagine animate che raccontano cosa fa l'app. Allo "Skip" o all'ultima
-/// pagina si arriva al login.
+/// pagina si arriva al login. L'ultima pagina chiede il consenso alle statistiche
+/// anonime (GDPR): non si può saltare.
 struct OnboardingFlow: View {
     var onFinished: () -> Void
 
     @State private var page = 0
-    private let pageCount = 4
+    private let pageCount = 5
+    private var consentPage: Int { pageCount - 1 }
 
     var body: some View {
         ZStack {
@@ -27,12 +29,16 @@ struct OnboardingFlow: View {
                 // Skip in alto a destra.
                 HStack {
                     Spacer()
-                    Button("Salta") { onFinished() }
-                        .font(CSFont.caption(14))
-                        .foregroundStyle(CSColor.inkSecondary)
-                        .padding(.trailing, CSSpace.lg)
-                        .padding(.top, CSSpace.sm)
-                        .opacity(page == pageCount - 1 ? 0 : 1)
+                    Button("Salta") {
+                        // Il consenso non si salta in silenzio: si va alla sua pagina.
+                        withAnimation(.easeInOut(duration: 0.4)) { page = consentPage }
+                    }
+                    .font(CSFont.caption(14))
+                    .foregroundStyle(CSColor.inkSecondary)
+                    .padding(.trailing, CSSpace.lg)
+                    .padding(.top, CSSpace.sm)
+                    .opacity(page == consentPage ? 0 : 1)
+                    .disabled(page == consentPage)
                 }
 
                 TabView(selection: $page) {
@@ -40,6 +46,7 @@ struct OnboardingFlow: View {
                     StatsPage(active: page == 1).tag(1)
                     CollectionPage(active: page == 2).tag(2)
                     FriendsPage(active: page == 3).tag(3)
+                    ConsentPage().tag(4)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .animation(.easeInOut(duration: 0.4), value: page)
@@ -48,18 +55,20 @@ struct OnboardingFlow: View {
                 VStack(spacing: CSSpace.lg) {
                     PageDots(count: pageCount, index: page, tint: pageTint)
 
-                    PrimaryButton(
-                        title: page == pageCount - 1 ? "Inizia la caccia" : "Avanti",
-                        icon: page == pageCount - 1 ? "bolt.fill" : "arrow.right",
-                        gradient: pageGradient
-                    ) {
-                        if page == pageCount - 1 {
-                            onFinished()
-                        } else {
+                    if page == consentPage {
+                        VStack(spacing: CSSpace.sm) {
+                            PrimaryButton(title: "Accetta", icon: "checkmark", gradient: pageGradient) {
+                                finish(with: .granted)
+                            }
+                            GhostButton(title: "No, grazie") { finish(with: .denied) }
+                        }
+                        .padding(.horizontal, CSSpace.xl)
+                    } else {
+                        PrimaryButton(title: "Avanti", icon: "arrow.right", gradient: pageGradient) {
                             withAnimation(.easeInOut(duration: 0.4)) { page += 1 }
                         }
+                        .padding(.horizontal, CSSpace.xl)
                     }
-                    .padding(.horizontal, CSSpace.xl)
                 }
                 .padding(.bottom, CSSpace.xxl)
             }
@@ -67,11 +76,15 @@ struct OnboardingFlow: View {
         .preferredColorScheme(.dark)
     }
 
-    private var pageTint: Color {
-        [Rarity.leggendaria, .rara, .epica, .rara][page].primary
-    }
-    private var pageGradient: [Color] {
-        [Rarity.leggendaria, .rara, .epica, .rara][page].gradient
+    private static let pageRarities: [Rarity] = [.leggendaria, .rara, .epica, .rara, .epica]
+    private var pageTint: Color { Self.pageRarities[page].primary }
+    private var pageGradient: [Color] { Self.pageRarities[page].gradient }
+
+    /// Salva la scelta (solo ora può partire qualcosa verso Mixpanel) e chiude l'onboarding.
+    private func finish(with consent: AnalyticsConsent) {
+        AppServices.analytics.setConsent(consent)
+        AppServices.analytics.track(.onboardingCompleted)
+        onFinished()
     }
 }
 
@@ -201,6 +214,40 @@ private struct FriendsPage: View {
             .frame(height: 240)
         }
         .onChange(of: active, initial: true) { _, now in appear = now }
+    }
+}
+
+// MARK: - Pagina 4 · Consenso statistiche anonime
+
+private struct ConsentPage: View {
+    var body: some View {
+        OnboardingScaffold(
+            eyebrow: "PRIVACY",
+            title: "Ci aiuti a\nmigliorare CarSpot?",
+            subtitle: "Raccogliamo statistiche anonime d'uso: quali schermate usi e quante carte raccogli per rarità. Puoi cambiare idea quando vuoi in Profilo."
+        ) {
+            GlassPanel {
+                VStack(alignment: .leading, spacing: CSSpace.md) {
+                    row("eye.slash.fill", "Mai foto, targhe o posizione")
+                    row("globe.europe.africa.fill", "Dati conservati in Europa")
+                    row("slider.horizontal.3", "Modificabile in ogni momento")
+                }
+            }
+            .padding(.horizontal, CSSpace.lg)
+        }
+    }
+
+    private func row(_ icon: String, _ text: String) -> some View {
+        HStack(spacing: CSSpace.md) {
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(CSColor.accent)
+                .frame(width: 24)
+            Text(text)
+                .font(CSFont.body(14))
+                .foregroundStyle(CSColor.ink)
+            Spacer(minLength: 0)
+        }
     }
 }
 

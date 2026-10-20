@@ -1,14 +1,12 @@
 import SwiftUI
-import AuthenticationServices
 
 /// Login in stile Flighty: sfondo animato a puntini, titolo e i due pulsanti
-/// "Accedi con Apple" / "Accedi con Google". Per ora l'autenticazione è un
-/// placeholder locale (segna l'utente come loggato); il token reale Supabase
-/// verrà collegato in una fase successiva.
+/// "Accedi con Apple" / "Accedi con Google". L'auth passa da `AppServices.auth`
+/// (Clerk, o login simulato senza chiavi); `RootGate` reagisce al cambio di stato,
+/// quindi qui non serve nessuna callback.
 struct LoginView: View {
-    var onSignedIn: () -> Void
-
     @State private var working = false
+    @State private var errorMessage: String?
 
     var body: some View {
         ZStack {
@@ -47,19 +45,32 @@ struct LoginView: View {
                 Spacer()
 
                 VStack(spacing: CSSpace.sm) {
-                    SignInWithAppleButton(.signIn) { request in
-                        request.requestedScopes = [.fullName, .email]
-                    } onCompletion: { result in
-                        // A prescindere dall'esito (entitlement non attivo sul
-                        // simulatore) entriamo nell'app: l'auth reale arriva dopo.
-                        finishSignIn()
+                    if let errorMessage {
+                        Text(errorMessage)
+                            .font(CSFont.caption(13))
+                            .foregroundStyle(CSColor.accentWarm)
+                            .multilineTextAlignment(.center)
                     }
-                    .signInWithAppleButtonStyle(.white)
-                    .frame(height: 52)
-                    .clipShape(Capsule())
+
+                    // Stesso aspetto del pulsante di sistema (bianco, capsula); Clerk apre
+                    // da solo il suo prompt Apple, quindi niente `SignInWithAppleButton`
+                    // (farebbe partire un secondo prompt).
+                    Button {
+                        signIn(method: "apple") { try await AppServices.auth.signInWithApple() }
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "apple.logo").font(.system(size: 18, weight: .semibold))
+                            Text("Accedi con Apple").font(CSFont.title(17))
+                        }
+                        .foregroundStyle(CSColor.base)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 52)
+                        .background(Color.white, in: .capsule)
+                    }
+                    .buttonStyle(.plain)
 
                     Button {
-                        finishSignIn()
+                        signIn(method: "google") { try await AppServices.auth.signInWithGoogle() }
                     } label: {
                         HStack(spacing: 8) {
                             Image(systemName: "g.circle.fill").font(.system(size: 18, weight: .bold))
@@ -72,11 +83,16 @@ struct LoginView: View {
                     }
                     .buttonStyle(.plain)
 
-                    Button("Continua senza account") { finishSignIn() }
+                    Button("Continua senza account") {
+                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                        AppServices.auth.continueAsGuest()
+                        AppServices.analytics.track(.signedIn(method: "guest"))
+                    }
                         .font(CSFont.caption(14))
                         .foregroundStyle(CSColor.inkSecondary)
                         .padding(.top, CSSpace.xs)
                 }
+                .disabled(working)
                 .padding(.horizontal, CSSpace.xl)
                 .padding(.bottom, CSSpace.xxl)
             }
@@ -89,12 +105,25 @@ struct LoginView: View {
         .preferredColorScheme(.dark)
     }
 
-    private func finishSignIn() {
+    /// Esegue il login; l'annullamento dell'utente non lancia (il servizio lo assorbe).
+    private func signIn(method: String, _ action: @escaping () async throws -> Void) {
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-        onSignedIn()
+        errorMessage = nil
+        working = true
+        Task {
+            defer { working = false }
+            do {
+                try await action()
+                if AppServices.auth.state != .signedOut {
+                    AppServices.analytics.track(.signedIn(method: method))
+                }
+            } catch {
+                errorMessage = "Accesso non riuscito. Riprova tra poco."
+            }
+        }
     }
 }
 
 #Preview {
-    LoginView(onSignedIn: {})
+    LoginView()
 }

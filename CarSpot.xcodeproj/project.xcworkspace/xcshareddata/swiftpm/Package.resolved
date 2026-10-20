@@ -1,0 +1,123 @@
+{
+  "originHash" : "86447fdea6b734e90799eb789aec653914df998815d60ad646cf875ff4d30fd4",
+  "pins" : [
+    {
+      "identity" : "clerk-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/clerk/clerk-ios",
+      "state" : {
+        "revision" : "173d9382073d6a7a9b439c1e810c42c9ec77a25f",
+        "version" : "1.6.1"
+      }
+    },
+    {
+      "identity" : "mixpanel-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mixpanel/mixpanel-swift",
+      "state" : {
+        "revision" : "dbd9cda95101410dd697bf2b2284b3d5b64dd82e",
+        "version" : "7.0.0"
+      }
+    },
+    {
+      "identity" : "mixpanel-swift-common",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mixpanel/mixpanel-swift-common.git",
+      "state" : {
+        "revision" : "610ff36228d347ad174f8216c74c9e70bfaa14ab",
+        "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "nuke",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kean/Nuke",
+      "state" : {
+        "revision" : "30f7a7e72e0607d304fbf69c799474bd5fb6d1ce",
+        "version" : "13.2.0"
+      }
+    },
+    {
+      "identity" : "phonenumberkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/PhoneNumberKit/PhoneNumberKit",
+      "state" : {
+        "revision" : "df3bcccd1d88ba96fb89cccf51b84b7b6f7f53fe",
+        "version" : "5.0.12"
+      }
+    },
+    {
+      "identity" : "supabase-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/supabase/supabase-swift",
+      "state" : {
+        "revision" : "fee4bd78997f8b4e919c1c9711e0cfb346fd7a55",
+        "version" : "2.55.4"
+      }
+    },
+    {
+      "identity" : "swift-asn1",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-asn1.git",
+      "state" : {
+        "revision" : "3b6410f7dee09eb33cdd26260c5fd47fda19b0e2",
+        "version" : "1.7.3"
+      }
+    },
+    {
+      "identity" : "swift-clocks",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/swift-clocks",
+      "state" : {
+        "revision" : "82440fa0a8b1c381a6d1e8e0fc7bbba53ec63204",
+        "version" : "1.1.1"
+      }
+    },
+    {
+      "identity" : "swift-concurrency-extras",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/swift-concurrency-extras",
+      "state" : {
+        "revision" : "8a4260f7373493435bd21194585c95b72bfdd401",
+        "version" : "1.4.3"
+      }
+    },
+    {
+      "identity" : "swift-crypto",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-crypto.git",
+      "state" : {
+        "revision" : "da9d28d69ebe3894b18376c8f2395c2f37b8448f",
+        "version" : "4.5.2"
+      }
+    },
+    {
+      "identity" : "swift-http-types",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-http-types.git",
+      "state" : {
+        "revision" : "bff4b6903cdc99dda49649dd52f46c11cfd3ed50",
+        "version" : "1.8.0"
+      }
+    },
+    {
+      "identity" : "swift-issue-reporting",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/swift-issue-reporting",
+      "state" : {
+        "revision" : "b23bb4493c439d3e05152bc167014235ba3d47fc",
+        "version" : "2.1.2"
+      }
+    },
+    {
+      "identity" : "xctest-dynamic-overlay",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/xctest-dynamic-overlay",
+      "state" : {
+        "revision" : "d9308ad679143c26a30dec52daefe82f54af2b82",
+        "version" : "1.13.1"
+      }
+    }
+  ],
+  "version" : 3
+}

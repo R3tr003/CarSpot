@@ -32,7 +32,7 @@ struct CaptureView: View {
             // Debug: `-autoCapture YES` esegue la pipeline con un'immagine sintetica,
             // utile per verificare il flusso sul simulatore senza PHPicker.
             if UserDefaults.standard.bool(forKey: "autoCapture"), vm.phase == .aiming {
-                await vm.process(image: Self.debugImage())
+                await vm.process(image: Self.debugImage(), source: "auto")
                 if UserDefaults.standard.bool(forKey: "autoSave"), vm.phase == .result {
                     vm.save(into: context)
                 }
@@ -44,7 +44,7 @@ struct CaptureView: View {
             Task {
                 if let data = try? await item.loadTransferable(type: Data.self),
                    let image = UIImage(data: data) {
-                    await vm.process(image: image)
+                    await vm.process(image: image, source: "library")
                 }
                 pickerItem = nil
             }

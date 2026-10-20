@@ -1,10 +1,15 @@
 import SwiftUI
 import SwiftData
+import os
 
 struct ProfileView: View {
     @Environment(\.dismiss) private var dismiss
     @Query private var profiles: [PlayerProfile]
     @Query private var cards: [StoredCard]
+
+    @State private var consent = AppServices.analytics.consent
+    @State private var isSigningOut = false
+    private let auth = AppServices.auth
 
     private var profile: PlayerProfile? { profiles.first }
 
@@ -16,6 +21,8 @@ struct ProfileView: View {
                 statsRow
                 myCarCard
                 sightingsCard
+                privacyCard
+                if auth.state != .signedOut { signOutButton }
             }
             .padding(CSSpace.lg)
             .padding(.bottom, 40)
@@ -106,6 +113,56 @@ struct ProfileView: View {
                 sightingRow("Avvistata al Lungomare", "2 giorni fa", "👀")
             }
         }
+    }
+
+    private var privacyCard: some View {
+        GlassPanel(cornerRadius: CSRadius.md) {
+            VStack(alignment: .leading, spacing: CSSpace.sm) {
+                Text("Privacy").eyebrow()
+                Toggle(isOn: Binding(
+                    get: { consent == .granted },
+                    set: { on in
+                        let value: AnalyticsConsent = on ? .granted : .denied
+                        AppServices.analytics.setConsent(value)
+                        consent = value
+                    }
+                )) {
+                    Text("Statistiche anonime")
+                        .font(CSFont.body(15))
+                        .foregroundStyle(CSColor.ink)
+                }
+                .tint(CSColor.accent)
+                Text("Ci dicono come viene usata l'app. Mai foto, targhe o posizione.")
+                    .font(CSFont.caption(12))
+                    .foregroundStyle(CSColor.inkSecondary)
+            }
+        }
+    }
+
+    private var signOutButton: some View {
+        Button {
+            guard !isSigningOut else { return }
+            isSigningOut = true
+            Task {
+                defer { isSigningOut = false }
+                do {
+                    // `signed_out` + reset di analytics li fa RootGate al cambio di stato.
+                    try await auth.signOut()
+                } catch {
+                    Logger(subsystem: "com.carspot.andrea.app", category: "profile")
+                        .error("Uscita non riuscita: \(error.localizedDescription, privacy: .public)")
+                }
+            }
+        } label: {
+            Label("Esci", systemImage: "rectangle.portrait.and.arrow.right")
+                .font(CSFont.body(16))
+                .foregroundStyle(CSColor.accentWarm)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 15)
+                .glassEffect(.regular, in: .capsule)
+        }
+        .buttonStyle(.plain)
+        .disabled(isSigningOut)
     }
 
     private func sightingRow(_ text: String, _ time: String, _ emoji: String) -> some View {

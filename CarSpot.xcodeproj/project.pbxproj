@@ -6,6 +6,16 @@
 	objectVersion = 71;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		CA000030 /* ClerkKit in Frameworks */ = {isa = PBXBuildFile; productRef = CA000040 /* ClerkKit */; };
+		CA000031 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = CA000041 /* Supabase */; };
+		CA000032 /* Mixpanel in Frameworks */ = {isa = PBXBuildFile; productRef = CA000042 /* Mixpanel */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		CA000005 /* CarSpot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CarSpot.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		CA000001 /* CarSpot */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = CarSpot; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -15,6 +25,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CA000030 /* ClerkKit in Frameworks */,
+				CA000031 /* Supabase in Frameworks */,
+				CA000032 /* Mixpanel in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -32,6 +45,7 @@
 		CA000004 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				CA000005 /* CarSpot.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -55,7 +69,13 @@
 				CA000001 /* CarSpot */,
 			);
 			name = CarSpot;
+			packageProductDependencies = (
+				CA000040 /* ClerkKit */,
+				CA000041 /* Supabase */,
+				CA000042 /* Mixpanel */,
+			);
 			productName = CarSpot;
+			productReference = CA000005 /* CarSpot.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -83,6 +103,11 @@
 			);
 			mainGroup = CA000003;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				CA000020 /* XCRemoteSwiftPackageReference "clerk-ios" */,
+				CA000021 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				CA000022 /* XCRemoteSwiftPackageReference "mixpanel-swift" */,
+			);
 			productRefGroup = CA000004 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -244,8 +269,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CarSpot/Preview Content\"";
+				DEVELOPMENT_TEAM = CD6XZYNW86;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports-games";
 				INFOPLIST_KEY_NSCameraUsageDescription = "CarSpot usa la fotocamera per riconoscere e collezionare le auto che incontri.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "CarSpot usa la posizione per assegnare gli avvistamenti al quartiere giusto, senza mai mostrare la posizione esatta.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -275,8 +302,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CarSpot/Preview Content\"";
+				DEVELOPMENT_TEAM = CD6XZYNW86;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports-games";
 				INFOPLIST_KEY_NSCameraUsageDescription = "CarSpot usa la fotocamera per riconoscere e collezionare le auto che incontri.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "CarSpot usa la posizione per assegnare gli avvistamenti al quartiere giusto, senza mai mostrare la posizione esatta.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -320,6 +349,51 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CA000020 /* XCRemoteSwiftPackageReference "clerk-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/clerk/clerk-ios";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 1.6.1;
+			};
+		};
+		CA000021 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 2.55.4;
+			};
+		};
+		CA000022 /* XCRemoteSwiftPackageReference "mixpanel-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mixpanel/mixpanel-swift";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CA000040 /* ClerkKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CA000020 /* XCRemoteSwiftPackageReference "clerk-ios" */;
+			productName = ClerkKit;
+		};
+		CA000041 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CA000021 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+		CA000042 /* Mixpanel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CA000022 /* XCRemoteSwiftPackageReference "mixpanel-swift" */;
+			productName = Mixpanel;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CA00000A /* Project object */;
 }

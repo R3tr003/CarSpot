@@ -14,6 +14,22 @@ enum AppConfig {
             && !Secrets.supabaseURL.contains("YOUR-PROJECT")
     }
 
+    /// Clerk attivo quando c'è una publishable key vera (`pk_test_…`/`pk_live_…`).
+    /// Senza, l'app resta in modalità locale (ospite) e il login è simulato.
+    static var isClerkConfigured: Bool {
+        Secrets.clerkPublishableKey.hasPrefix("pk_")
+    }
+
+    /// Mixpanel attivo solo con un token vero; parte comunque spento finché
+    /// l'utente non dà il consenso (vedi `Analytics`).
+    static var isMixpanelConfigured: Bool {
+        !Secrets.mixpanelToken.isEmpty && !Secrets.mixpanelToken.hasPrefix("YOUR-")
+    }
+
+    /// Il progetto Mixpanel ha residenza dati EU: i dati verso il server US
+    /// verrebbero scartati.
+    static let mixpanelServerURL = "https://api-eu.mixpanel.com"
+
     /// Real vehicle recognition needs a paid provider wired into the `recognize`
     /// Edge Function. Until that's live, keep mock so capture keeps working even
     /// when Supabase is otherwise configured. Flip to `true` when ready.
