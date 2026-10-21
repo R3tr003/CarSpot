@@ -4,6 +4,7 @@ import Foundation
 /// Proprietà solo non personali (mai email, nome, foto, coordinate).
 enum AnalyticsEvent: Sendable {
     case onboardingCompleted
+    case profileSetupCompleted
     case signedIn(method: String)        // "apple" | "google"
     case signedOut
     case tabViewed(name: String)         // "today" | "collection" | "map" | "capture"

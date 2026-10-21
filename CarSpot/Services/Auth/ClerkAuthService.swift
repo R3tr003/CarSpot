@@ -16,6 +16,13 @@ final class ClerkAuthService: AuthService {
     /// Ospite solo in memoria (debug `-skipAuth`). Stored property per essere osservata.
     private var isGuest = false
 
+    /// Tentativo di accesso/registrazione col codice in corso (serve a verify/resend).
+    private enum CodeAttempt {
+        case signIn(SignIn, CodeChannel)
+        case signUp(SignUp, CodeChannel)
+    }
+    @ObservationIgnored private var codeAttempt: CodeAttempt?
+
     init() {
         UserDefaults.standard.removeObject(forKey: Self.legacyGuestKey)
     }
@@ -33,6 +40,90 @@ final class ClerkAuthService: AuthService {
 
     func signInWithGoogle() async throws {
         try await perform { try await Clerk.shared.auth.signInWithOAuth(provider: .google) }
+    }
+
+    func startCodeSignIn(_ channel: CodeChannel, identifier: String) async throws {
+        let id = identifier.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !id.isEmpty else { throw AuthCodeError.invalidIdentifier }
+        do {
+            // Prima accesso (invia già il codice); se l'account non esiste → registrazione.
+            let signIn = switch channel {
+            case .email: try await Clerk.shared.auth.signInWithEmailCode(emailAddress: id)
+            case .phone: try await Clerk.shared.auth.signInWithPhoneCode(phoneNumber: id)
+            }
+            codeAttempt = .signIn(signIn, channel)
+        } catch let e as ClerkAPIError where Self.notFoundCodes.contains(e.code) {
+            do {
+                var signUp = switch channel {
+                case .email: try await Clerk.shared.auth.signUp(emailAddress: id)
+                case .phone: try await Clerk.shared.auth.signUp(phoneNumber: id)
+                }
+                signUp = switch channel {
+                case .email: try await signUp.sendEmailCode()
+                case .phone: try await signUp.sendPhoneCode()
+                }
+                codeAttempt = .signUp(signUp, channel)
+            } catch {
+                throw fail("Registrazione col codice fallita", error)
+            }
+        } catch {
+            throw fail("Invio codice fallito", error)
+        }
+    }
+
+    func verifyCode(_ code: String) async throws {
+        guard let attempt = codeAttempt else { throw AuthCodeError.expired }
+        do {
+            switch attempt {
+            case .signIn(let signIn, _):
+                let result = try await signIn.verifyCode(code)
+                guard result.status == .complete, let sessionId = result.createdSessionId else {
+                    if result.firstFactorVerification?.status == .expired { throw AuthCodeError.expired }
+                    Self.log.error("Accesso non completato, stato: \(result.status.rawValue, privacy: .public)")
+                    throw AuthCodeError.generic("Accesso non completato. Riprova.")
+                }
+                try await activate(sessionId: sessionId)
+            case .signUp(let signUp, let channel):
+                let result = switch channel {
+                case .email: try await signUp.verifyEmailCode(code)
+                case .phone: try await signUp.verifyPhoneCode(code)
+                }
+                guard result.status == .complete, let sessionId = result.createdSessionId else {
+                    let key = channel == .email ? "email_address" : "phone_number"
+                    if result.verifications[key]??.status == .expired { throw AuthCodeError.expired }
+                    let missing = result.missingFields.map(\.rawValue).joined(separator: ",")
+                    Self.log.error("Registrazione incompleta: stato \(String(describing: result.status), privacy: .public), campi mancanti [\(missing, privacy: .public)]")
+                    throw AuthCodeError.generic("Registrazione non completata: servono altri dati. Prova con Google o Apple.")
+                }
+                try await activate(sessionId: sessionId)
+            }
+            codeAttempt = nil
+            setGuest(false)
+        } catch {
+            throw fail("Verifica codice fallita", error)
+        }
+    }
+
+    func resendCode() async throws {
+        guard let attempt = codeAttempt else { throw AuthCodeError.expired }
+        do {
+            switch attempt {
+            case .signIn(let signIn, let channel):
+                let updated = switch channel {
+                case .email: try await signIn.sendEmailCode()
+                case .phone: try await signIn.sendPhoneCode()
+                }
+                codeAttempt = .signIn(updated, channel)
+            case .signUp(let signUp, let channel):
+                let updated = switch channel {
+                case .email: try await signUp.sendEmailCode()
+                case .phone: try await signUp.sendPhoneCode()
+                }
+                codeAttempt = .signUp(updated, channel)
+            }
+        } catch {
+            throw fail("Reinvio codice fallito", error)
+        }
     }
 
     func continueAsGuest() {
@@ -63,6 +154,43 @@ final class ClerkAuthService: AuthService {
             Self.log.error("Login fallito: \(error.localizedDescription, privacy: .public)")
             throw error
         }
+    }
+
+    /// Codici Clerk per "account inesistente" → si passa alla registrazione.
+    private static let notFoundCodes: Set<String> = ["form_identifier_not_found", "invitation_account_not_exists"]
+
+    /// Attiva la sessione creata dal codice, se Clerk non l'ha già resa corrente.
+    private func activate(sessionId: String) async throws {
+        if Clerk.shared.session?.id != sessionId {
+            try await Clerk.shared.auth.setActive(sessionId: sessionId)
+        }
+    }
+
+    /// Logga e converte l'errore in `AuthCodeError`.
+    private func fail(_ what: String, _ error: any Error) -> any Error {
+        let mapped = Self.map(error)
+        Self.log.error("\(what, privacy: .public): \(error.localizedDescription, privacy: .public)")
+        return mapped
+    }
+
+    private static func map(_ error: any Error) -> any Error {
+        if error is AuthCodeError || isCancellation(error) { return error }
+        if let e = error as? ClerkAPIError {
+            switch e.code {
+            case "form_code_incorrect":
+                return AuthCodeError.wrongCode
+            case "verification_expired", "form_code_expired":
+                return AuthCodeError.expired
+            case "form_param_format_invalid", "form_identifier_invalid", "form_param_nil",
+                 "form_param_value_invalid":
+                return AuthCodeError.invalidIdentifier
+            case "too_many_requests", "rate_limit_exceeded":
+                return AuthCodeError.tooManyAttempts
+            default:
+                return AuthCodeError.generic("Qualcosa è andato storto. Riprova.")
+            }
+        }
+        return AuthCodeError.generic("Qualcosa è andato storto. Riprova.")
     }
 
     private func setGuest(_ value: Bool) {

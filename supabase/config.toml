@@ -37,3 +37,9 @@ enabled = true
 [functions.recognize]
 enabled = true
 verify_jwt = false
+
+# Webhook Clerk → Supabase (user.created / user.deleted). Lo chiama Clerk, non l'app:
+# niente JWT, la sicurezza è la firma Svix (secret CLERK_WEBHOOK_SIGNING_SECRET).
+[functions.clerk-webhook]
+enabled = true
+verify_jwt = false

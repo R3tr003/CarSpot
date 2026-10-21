@@ -16,6 +16,38 @@ enum AuthState: Equatable, Sendable {
     }
 }
 
+/// Canale del codice monouso (accesso senza password).
+enum CodeChannel: Sendable {
+    case email, phone
+
+    /// Valore per `AnalyticsEvent.signedIn(method:)`.
+    var analyticsMethod: String {
+        switch self {
+        case .email: "email"
+        case .phone: "phone"
+        }
+    }
+}
+
+/// Errori tipizzati dell'accesso con codice, con messaggio pronto per l'utente.
+enum AuthCodeError: LocalizedError, Sendable, Equatable {
+    case wrongCode
+    case expired
+    case invalidIdentifier
+    case tooManyAttempts
+    case generic(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .wrongCode:         "Codice non corretto"
+        case .expired:           "Codice scaduto, richiedine uno nuovo"
+        case .invalidIdentifier: "Email o numero non valido"
+        case .tooManyAttempts:   "Troppi tentativi, riprova tra poco"
+        case .generic(let msg):  msg
+        }
+    }
+}
+
 /// Autenticazione dietro protocollo (convenzione del progetto): implementazione Clerk
 /// quando `AppConfig.isClerkConfigured`, altrimenti locale (login simulato, offline).
 /// Le implementazioni sono `@Observable`: le view che leggono `state` si aggiornano da sole.
@@ -28,6 +60,13 @@ protocol AuthService: AnyObject {
 
     func signInWithApple() async throws
     func signInWithGoogle() async throws
+    /// Avvia accesso o registrazione e invia il codice. Ritorna quando il codice è partito.
+    /// Un solo flusso per utenti nuovi ed esistenti.
+    func startCodeSignIn(_ channel: CodeChannel, identifier: String) async throws
+    /// Verifica il codice ricevuto; al successo la sessione è attiva (state → .signedIn).
+    func verifyCode(_ code: String) async throws
+    /// Reinvia il codice per il tentativo in corso.
+    func resendCode() async throws
     /// Solo debug `-skipAuth`: stato ospite in memoria, mai persistito.
     func continueAsGuest()
     func signOut() async throws

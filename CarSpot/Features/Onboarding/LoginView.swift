@@ -1,12 +1,15 @@
 import SwiftUI
 
 /// Login in stile Flighty: sfondo animato a puntini, titolo e i due pulsanti
-/// "Accedi con Apple" / "Accedi con Google". L'auth passa da `AppServices.auth`
+/// "Accedi con Apple" / "Accedi con Google" più email e telefono (codice monouso, sheet
+/// `CodeSignInView`). L'auth passa da `AppServices.auth`
 /// (Clerk, o login simulato senza chiavi); `RootGate` reagisce al cambio di stato,
 /// quindi qui non serve nessuna callback.
 struct LoginView: View {
     @State private var working = false
     @State private var errorMessage: String?
+    /// Canale del codice monouso: se presente, mostra la sheet email/telefono.
+    @State private var codeChannel: CodeChannel?
 
     var body: some View {
         ZStack {
@@ -82,6 +85,9 @@ struct LoginView: View {
                         .glassEffect(.regular, in: .capsule)
                     }
                     .buttonStyle(.plain)
+
+                    codeButton("Continua con email", icon: "envelope.fill", channel: .email)
+                    codeButton("Continua con telefono", icon: "phone.fill", channel: .phone)
                 }
                 .disabled(working)
                 .padding(.horizontal, CSSpace.xl)
@@ -94,6 +100,26 @@ struct LoginView: View {
             }
         }
         .preferredColorScheme(.dark)
+        .sheet(item: $codeChannel) { CodeSignInView(channel: $0) }
+    }
+
+    /// Pulsante "Continua con…" per l'accesso con codice (stessa famiglia del tasto Google).
+    private func codeButton(_ title: String, icon: String, channel: CodeChannel) -> some View {
+        Button {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            errorMessage = nil
+            codeChannel = channel
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: icon).font(.system(size: 17, weight: .semibold))
+                Text(title).font(CSFont.title(17))
+            }
+            .foregroundStyle(CSColor.ink)
+            .frame(maxWidth: .infinity)
+            .frame(height: 52)
+            .glassEffect(.regular, in: .capsule)
+        }
+        .buttonStyle(.plain)
     }
 
     /// Esegue il login; l'annullamento dell'utente non lancia (il servizio lo assorbe).

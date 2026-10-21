@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-/// Decide cosa mostrare all'avvio: (attesa sessione) → onboarding → login → app.
+/// Decide cosa mostrare all'avvio: (attesa sessione) → onboarding → login → setup profilo → app.
 /// Il login vive in `AppServices.auth` (Clerk o locale); `hasOnboarded` è in `@AppStorage`.
 /// Argomenti di debug per gli screenshot: `-skipAuth YES` salta tutto e va all'app
 /// (come ospite, con le carte demo); `-showLogin YES` salta l'onboarding e mostra il login; `-resetAuth YES`
@@ -13,15 +13,28 @@ struct RootGate: View {
     @AppStorage("hasOnboarded") private var hasOnboarded = false
     @State private var identifiedUserId: String?
     @State private var debugFlagsApplied = false
+    /// Nome da spotter e primo setup (`onboarded_at`) dell'utente Clerk.
+    @State private var account = ProfileAccount()
 
     private var auth: any AuthService { AppServices.auth }
 
-    private enum Phase { case loading, onboarding, login, app }
+    private enum Phase { case loading, onboarding, login, profileSetup, app }
 
     private var phase: Phase {
         if !auth.isReady { return .loading }
         if !hasOnboarded { return .onboarding }
-        return auth.state == .signedOut ? .login : .app
+        switch auth.state {
+        case .signedOut:
+            return .login
+        case .guest:
+            return .app
+        case .signedIn(let id):
+            // Senza Supabase (auth locale) il setup non esiste: mai bloccare.
+            guard SupabaseBackend.shared != nil else { return .app }
+            // Profilo ancora in caricamento: stesso sfondo neutro dell'attesa sessione.
+            guard account.userId == id, let needsSetup = account.needsSetup else { return .loading }
+            return needsSetup ? .profileSetup : .app
+        }
     }
 
     var body: some View {
@@ -36,6 +49,9 @@ struct RootGate: View {
             case .login:
                 LoginView()
                     .transition(.move(edge: .trailing).combined(with: .opacity))
+            case .profileSetup:
+                ProfileSetupFlow(account: account)
+                    .transition(.opacity)
             case .onboarding:
                 OnboardingFlow { hasOnboarded = true }
                     .transition(.opacity)
@@ -64,9 +80,13 @@ struct RootGate: View {
             identifiedUserId = id
             AppServices.analytics.identify(userId: id)
             if let backend = SupabaseBackend.shared {
-                // Il profilo deve esistere prima della prima carta (FK): poi parte il sync.
+                // Se l'utente ha già finito il setup (cache locale) l'app si apre subito.
+                account.prepare(userId: id)
+                // Il profilo deve esistere prima della prima carta (FK): poi si legge
+                // lo stato del setup e parte il sync.
                 Task {
                     try? await backend.ensureProfile(userId: id)
+                    await account.load(userId: id)
                     await sync?.signedIn(userId: id)
                 }
             }

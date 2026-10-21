@@ -23,6 +23,32 @@ final class LocalAuthService: AuthService {
 
     func signInWithApple() async throws { set(.signedIn(userId: "local-user")) }
     func signInWithGoogle() async throws { set(.signedIn(userId: "local-user")) }
+
+    /// Simulazione del codice: accetta solo `simulatedCode`.
+    private static let simulatedCode = "424242"
+    private var pendingChannel: CodeChannel?
+
+    func startCodeSignIn(_ channel: CodeChannel, identifier: String) async throws {
+        guard !identifier.trimmingCharacters(in: .whitespaces).isEmpty else {
+            throw AuthCodeError.invalidIdentifier
+        }
+        try? await Task.sleep(for: .milliseconds(400))
+        pendingChannel = channel
+    }
+
+    func verifyCode(_ code: String) async throws {
+        guard pendingChannel != nil else { throw AuthCodeError.expired }
+        try? await Task.sleep(for: .milliseconds(400))
+        guard code == Self.simulatedCode else { throw AuthCodeError.wrongCode }
+        pendingChannel = nil
+        set(.signedIn(userId: "local-user"))
+    }
+
+    func resendCode() async throws {
+        guard pendingChannel != nil else { throw AuthCodeError.expired }
+        try? await Task.sleep(for: .milliseconds(300))
+    }
+
     func continueAsGuest() { set(.guest) }
     func signOut() async throws { set(.signedOut) }
     func sessionToken() async throws -> String? { nil }

@@ -9,6 +9,7 @@ extension AnalyticsEvent {
     var name: String {
         switch self {
         case .onboardingCompleted: "onboarding_completed"
+        case .profileSetupCompleted: "profile_setup_completed"
         case .signedIn: "signed_in"
         case .signedOut: "signed_out"
         case .tabViewed: "tab_viewed"
@@ -20,7 +21,7 @@ extension AnalyticsEvent {
 
     var properties: [String: String] {
         switch self {
-        case .onboardingCompleted, .signedOut: [:]
+        case .onboardingCompleted, .profileSetupCompleted, .signedOut: [:]
         case .signedIn(let method): ["method": method]
         case .tabViewed(let name): ["name": name]
         case .captureStarted(let source): ["source": source]

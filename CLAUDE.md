@@ -93,18 +93,27 @@ L'automazione UI a tap di XcodeBuildMCP **non è abilitata** in questa configura
 - **Stile codice:** commenti in italiano brevi e mirati come nel codice esistente.
 
 ### Gate iniziale (auth)
-`RootGate` decide cosa mostrare: **onboarding → login → app** in base a
-`@AppStorage("hasOnboarded")` e `AppServices.auth.state` (`signedOut`/`guest`/
-`signedIn(userId:)`). `OnboardingFlow` = carosello Flighty (pag.0 statica con la macchina,
-le altre animate) + **ultima pagina consenso statistiche** (GDPR, non saltabile).
-`LoginView` = sfondo animato `DottedBackdrop` + Apple + Google + "Continua senza account".
+`RootGate` decide cosa mostrare: **onboarding → login → setup profilo → app** in base a
+`@AppStorage("hasOnboarded")`, `AppServices.auth.state` (`signedOut`/`guest`/
+`signedIn(userId:)`) e `ProfileAccount.needsSetup` (`profiles.onboarded_at` null).
+`OnboardingFlow` = carosello Flighty (pag.0 statica con la macchina, le altre animate) +
+**ultima pagina consenso statistiche** (GDPR, non saltabile).
+`LoginView` = sfondo animato `DottedBackdrop` + Apple + Google + **email** e **telefono** con
+codice OTP (`CodeSignInView`, niente password: accesso o registrazione nello stesso flusso).
+Niente modalità ospite in UI (`.guest` solo per il debug `-skipAuth`).
+`ProfileSetupFlow` (solo la prima volta, dopo il login): nome da spotter univoco
+(`^[a-z0-9_.]{3,20}$`, controllo disponibilità) → permessi fotocamera/posizione spiegati →
+"Pronto" (scrive `onboarded_at`). Offline o senza Supabase non blocca mai l'accesso.
 
 **Servizi esterni dietro protocollo** (`CarSpot/Services/AppServices.swift`):
 - `AppServices.auth: AuthService` → `ClerkAuthService` (ClerkKit) se `Secrets.clerkPublishableKey`
   è una `pk_…`, altrimenti `LocalAuthService` (login simulato, offline). Il token Clerk
   (TTL 1 min) va chiesto a ogni richiesta con `sessionToken()`, mai salvato.
 - `SupabaseBackend` (supabase-swift) usa il token Clerk via `accessToken`: **mai usare
-  `client.auth`**. Profilo creato lazy al primo login (`ensureProfile`).
+  `client.auth`**. Profilo creato lazy al primo login (`ensureProfile`) e anche dal
+  webhook Clerk (`supabase/functions/clerk-webhook`, firma Svix, `verify_jwt=false`):
+  `user.created` → profilo, `user.deleted` → cancella foto + profilo (cascade). Gli utenti
+  con email/telefono stanno in **Clerk**; in Supabase solo `public.profiles` (niente PII).
 - `AppServices.analytics: AnalyticsService` → `MixpanelAnalytics` (progetto **EU**,
   `api-eu.mixpanel.com`, niente geolocalizzazione IP) se c'è il token, altrimenti no-op.
   **Nulla parte senza consenso** (`.granted`). Eventi solo tipizzati (`AnalyticsEvent`),
@@ -240,5 +249,9 @@ Regole:
 - ✅ Auth reale + analytics (2026-10-20): Clerk (Google funzionante su device; Apple
   attende Developer Program) → JWT verso Supabase (third-party auth, profilo creato al
   primo login), Mixpanel EU con consenso GDPR. DB rifatto per Clerk (migration 0002/0003).
-- ⏭️ Prossima: sync cloud carte/profilo (SwiftData ↔ Supabase), Edge Function `recognize`
-  da deployare (verifica JWT Clerk via JWKS), rarità da specs reali, Live Activity.
+- ✅ Sync cloud carte/profilo (SwiftData ↔ Supabase, migration 0004) e icona Liquid Glass
+  (`CarSpot/AppIcon.icon`, light + dark) — 2026-10-21.
+- ✅ Login email/telefono (OTP Clerk), setup profilo post-registrazione (migration 0005),
+  webhook Clerk → Supabase — 2026-10-21, da provare su device.
+- ⏭️ Prossima: Edge Function `recognize` da deployare (verifica JWT Clerk via JWKS),
+  rarità da specs reali, Live Activity.
