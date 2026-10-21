@@ -22,7 +22,11 @@ final class MapHost: NSObject, MKMapViewDelegate {
         configured = true
 
         mapView.delegate = self
-        mapView.preferredConfiguration = MKHybridMapConfiguration(elevationStyle: .realistic)
+        // Stile sobrio alla Flighty: mappa standard scura e attenuata, i marker
+        // delle rarità restano l'unico colore forte.
+        mapView.preferredConfiguration = MKStandardMapConfiguration(elevationStyle: .flat,
+                                                                    emphasisStyle: .muted)
+        mapView.overrideUserInterfaceStyle = .dark
         mapView.pointOfInterestFilter = .excludingAll
         mapView.showsUserLocation = true
         mapView.isRotateEnabled = true

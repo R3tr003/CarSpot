@@ -26,10 +26,11 @@ enum SheetDetent: Int, CaseIterable, Sendable {
     }
 }
 
-/// Ancora il contenuto di una schermata in una card scura trascinabile in basso,
-/// con la mappa visibile e interattiva sopra (stile Flighty). Tre posizioni:
-/// chiusa, media (default) e aperta a tutto schermo. La tab bar Liquid Glass
-/// nativa fluttua sopra il fondo della card.
+/// Ancora il contenuto di una schermata in una card scura trascinabile, con la
+/// mappa visibile e interattiva sopra (stile Flighty). Da chiusa e media la card
+/// è flottante: staccata dai bordi, angoli concentrici a quelli del display e la
+/// tab bar Liquid Glass nativa che ci sta dentro, in fondo. Salendo verso
+/// "aperta" si allarga a tutta larghezza e si ferma sotto la Dynamic Island.
 struct SheetCard<Content: View>: View {
     /// Frazione dell'altezza disponibile lasciata alla mappa in posizione media.
     var mapPeek: CGFloat = 0.30
@@ -40,41 +41,41 @@ struct SheetCard<Content: View>: View {
     @GestureState private var isDragging = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    /// Parte di card visibile da chiusa (maniglia + prima riga dell'header).
-    private let collapsedVisible: CGFloat = 120
-    /// Altezza della zona di trascinamento in cima alla card.
-    private let dragZoneHeight: CGFloat = 56
+    /// Distacco della card dai bordi (lati e fondo) da chiusa/media.
+    private let floatingInset: CGFloat = 12
+    /// Altezza della zona di trascinamento in cima alla card (maniglia + header).
+    private let dragZoneHeight: CGFloat = 80
     /// Larghezza riservata ai pulsanti dell'header (condividi + avatar) a destra.
     private let trailingControlsWidth: CGFloat = 140
-    /// Extra di card sotto lo schermo per il rubber-band verso l'alto.
-    private let overscrollSlack: CGFloat = 80
 
     var body: some View {
+        // Il GeometryReader rispetta la safe area per leggerne gli inset reali;
+        // solo la card la ignora. (Con `.ignoresSafeArea()` sul reader l'inset top
+        // valeva 0 e "aperto" finiva sotto la Dynamic Island.)
         GeometryReader { geo in
-            let m = Metrics(size: geo.size, safeTop: geo.safeAreaInsets.top,
-                            safeBottom: geo.safeAreaInsets.bottom,
-                            mapPeek: mapPeek, collapsedVisible: collapsedVisible)
-            let top = currentTop(m, base: detent, translation: translation)
-
-            card(m)
-                .frame(height: m.height - m.expandedTop + overscrollSlack, alignment: .top)
-                .offset(y: top)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            let m = Metrics(size: geo.size, insets: geo.safeAreaInsets, mapPeek: mapPeek)
+            card(m, top: currentTop(m, base: detent, translation: translation))
+                .ignoresSafeArea()
         }
-        .ignoresSafeArea()
         .sensoryFeedback(.selection, trigger: detent)
         .onChange(of: isDragging) { _, dragging in
             // Gesto annullato dal sistema: torna alla posizione di riposo.
-            if !dragging, translation != 0 { settle(to: detent, velocity: 0) }
+            if !dragging, translation != 0 { settle(to: detent, velocity: 0, distance: 0) }
         }
     }
 
     // MARK: - Card
 
-    private func card(_ m: Metrics) -> some View {
-        // Spazio che la card tiene sotto lo schermo nella posizione di riposo:
-        // il contenuto scorre fino in fondo anche da medio/chiuso.
-        let hidden = max(0, m.top(for: detent) - m.expandedTop + overscrollSlack)
+    private func card(_ m: Metrics, top: CGFloat) -> some View {
+        // 0 = flottante (chiusa/media) → 1 = a tutta larghezza (aperta).
+        let progress = m.expansion(at: top)
+        let inset = floatingInset * (1 - progress)
+        // Parte di contenuto sotto il fondo della card a riposo: con questo padding
+        // lo scroll arriva fino in fondo anche da media/chiusa.
+        let hidden = max(0, m.top(for: detent) + floatingInset * (1 - m.expansion(at: m.top(for: detent))) - m.expandedTop)
+        let shape = ConcentricRectangle(
+            uniformTopCorners: .concentric(minimum: .fixed(CSRadius.lg)),
+            uniformBottomCorners: .concentric(minimum: .fixed(CSRadius.lg)))
 
         return VStack(spacing: 0) {
             Capsule()
@@ -86,19 +87,24 @@ struct SheetCard<Content: View>: View {
                 .safeAreaPadding(.bottom, hidden)
                 .animation(nil, value: detent)
         }
+        // Altezza fissa: trascinando cambia solo la finestra visibile, il contenuto
+        // (ScrollView) non si ri-impagina a ogni frame in verticale.
+        .frame(height: m.height - m.expandedTop, alignment: .top)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(cardBackground.ignoresSafeArea(edges: .bottom))
-        .clipShape(.rect(topLeadingRadius: CSRadius.lg, topTrailingRadius: CSRadius.lg))
-        .overlay(alignment: .top) {
-            UnevenRoundedRectangle(topLeadingRadius: CSRadius.lg, topTrailingRadius: CSRadius.lg)
-                .strokeBorder(
-                    LinearGradient(colors: [CSColor.specular.opacity(0.45), .clear],
-                                   startPoint: .top, endPoint: .bottom),
-                    lineWidth: 1)
+        .background(cardBackground)
+        .clipShape(shape)
+        .contentShape(shape)
+        .overlay {
+            shape
+                .stroke(LinearGradient(colors: [CSColor.specular.opacity(0.45), .clear],
+                                       startPoint: .top, endPoint: .center),
+                        lineWidth: 1)
                 .allowsHitTesting(false)
         }
         .overlay(alignment: .top) { dragZone(m) }
-        .shadow(color: .black.opacity(0.5), radius: 22, y: -6)
+        .shadow(color: .black.opacity(0.45), radius: 24, y: 4)
+        .padding(EdgeInsets(top: max(0, top), leading: inset, bottom: inset, trailing: inset))
+        .frame(width: m.width, height: m.height)
     }
 
     /// Zona di trascinamento: maniglia + header, tranne i pulsanti a destra.
@@ -117,15 +123,15 @@ struct SheetCard<Content: View>: View {
         Color.clear
             .frame(width: 88, height: 30)
             .contentShape(Rectangle())
-            .onTapGesture { settle(to: detent.cycled, velocity: 0) }
+            .onTapGesture { settle(to: detent.cycled, velocity: 0, distance: 0) }
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("Pannello")
             .accessibilityValue(detent.label)
             .accessibilityAddTraits(.isButton)
             .accessibilityAdjustableAction { direction in
                 switch direction {
-                case .increment: settle(to: detent.up, velocity: 0)
-                case .decrement: settle(to: detent.down, velocity: 0)
+                case .increment: settle(to: detent.up, velocity: 0, distance: 0)
+                case .decrement: settle(to: detent.down, velocity: 0, distance: 0)
                 @unknown default: break
                 }
             }
@@ -145,7 +151,7 @@ struct SheetCard<Content: View>: View {
                 let target = SheetDetent.allCases.min {
                     abs(m.top(for: $0) - projected) < abs(m.top(for: $1) - projected)
                 } ?? detent
-                settle(to: target, velocity: velocity)
+                settle(to: target, velocity: velocity, distance: m.top(for: target) - current)
             }
     }
 
@@ -165,11 +171,16 @@ struct SheetCard<Content: View>: View {
         (d * h * 0.55) / (h + 0.55 * abs(d))
     }
 
-    private func settle(to target: SheetDetent, velocity: CGFloat) {
+    /// Molla senza rimbalzo; un po' di bounce solo dopo un flick. La velocità del
+    /// dito passa alla molla (relativa alla distanza) così non c'è uno stacco.
+    private func settle(to target: SheetDetent, velocity: CGFloat, distance: CGFloat) {
         let animation: Animation = if reduceMotion {
             .easeOut(duration: 0.2)
         } else {
-            .spring(duration: 0.35, bounce: abs(velocity) > 800 ? 0.15 : 0)
+            .interpolatingSpring(duration: 0.38,
+                                 bounce: abs(velocity) > 800 ? 0.15 : 0,
+                                 initialVelocity: abs(distance) > 1
+                                    ? min(max(velocity / distance, -12), 12) : 0)
         }
         withAnimation(animation) {
             detent = target
@@ -189,17 +200,23 @@ struct SheetCard<Content: View>: View {
 
     /// Quote y (dall'alto dello schermo intero) delle tre posizioni.
     private struct Metrics {
+        let width: CGFloat
         let height: CGFloat
         let expandedTop: CGFloat
         let mediumTop: CGFloat
         let collapsedTop: CGFloat
 
-        init(size: CGSize, safeTop: CGFloat, safeBottom: CGFloat,
-             mapPeek: CGFloat, collapsedVisible: CGFloat) {
-            height = size.height
-            expandedTop = safeTop
-            mediumTop = safeTop + (size.height - safeTop) * mapPeek
-            collapsedTop = max(mediumTop, size.height - safeBottom - collapsedVisible)
+        init(size: CGSize, insets: EdgeInsets, mapPeek: CGFloat) {
+            width = size.width + insets.leading + insets.trailing
+            height = size.height + insets.top + insets.bottom
+            // Sotto status bar / Dynamic Island, mai sopra.
+            expandedTop = insets.top + 8
+            mediumTop = insets.top + (height - insets.top) * mapPeek
+            // Parte visibile da chiusa sopra la tab bar (maniglia + header), con
+            // spazio minimo per la tab bar flottante in fondo alla card.
+            let collapsedVisible: CGFloat = 84
+            let tabBarClearance: CGFloat = 90
+            collapsedTop = max(mediumTop, height - max(insets.bottom, tabBarClearance) - collapsedVisible)
         }
 
         func top(for detent: SheetDetent) -> CGFloat {
@@ -208,6 +225,13 @@ struct SheetCard<Content: View>: View {
             case .medium: mediumTop
             case .expanded: expandedTop
             }
+        }
+
+        /// 0 da media in giù, 1 ad aperta (e oltre, nel rubber-band).
+        func expansion(at top: CGFloat) -> CGFloat {
+            let span = mediumTop - expandedTop
+            guard span > 0 else { return 1 }
+            return min(max((mediumTop - top) / span, 0), 1)
         }
     }
 }
