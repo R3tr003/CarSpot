@@ -155,6 +155,7 @@ final class ClerkAuthService: AuthService {
             Self.log.debug("Login annullato dall'utente")
         } catch {
             Self.log.error("Login fallito: \(error.localizedDescription, privacy: .public)")
+            AppServices.errors.record(error, area: .auth, step: "oauth")
             throw error
         }
     }
@@ -175,9 +176,13 @@ final class ClerkAuthService: AuthService {
 
     /// Logga e converte l'errore in `AuthCodeError`. In debug l'errore generico porta
     /// anche passo e causa reale (codice Clerk), per diagnosticare dal telefono.
-    private func fail(_ what: String, _ error: any Error) -> any Error {
+    private func fail(_ what: StaticString, _ error: any Error) -> any Error {
         let mapped = Self.map(error)
         Self.log.error("\(what, privacy: .public): \(Self.describe(error), privacy: .private)")
+        // Al report remoto solo gli errori inattesi (codice sbagliato/scaduto sono normali).
+        if case .generic? = mapped as? AuthCodeError {
+            AppServices.errors.record(error, area: .auth, step: what)
+        }
         #if DEBUG
         if !(error is AuthCodeError), case .generic(let message)? = mapped as? AuthCodeError {
             return AuthCodeError.generic("\(message)\n[debug] \(what): \(Self.describe(error))")

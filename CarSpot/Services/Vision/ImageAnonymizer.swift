@@ -96,6 +96,7 @@ enum ImageAnonymizer {
             try handler.perform([faceRequest, textRequest])
         } catch {
             visionLog.error("Vision fallita: \(error.localizedDescription)")
+            AppServices.errors.record(error, area: .vision, step: "anonymize")
         }
 
         if let faces = faceRequest.results {

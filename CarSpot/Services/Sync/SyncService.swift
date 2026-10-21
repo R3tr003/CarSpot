@@ -99,6 +99,7 @@ final class SyncService {
             if self.userId == userId { lastPullAt = .now }
         } catch {
             Self.log.error("Pull non riuscito: \(error.localizedDescription, privacy: .public)")
+            AppServices.errors.record(error, area: .sync, step: "pull")
         }
     }
 
@@ -163,6 +164,7 @@ final class SyncService {
             try? context.save()
         } catch {
             Self.log.error("Download foto fallito: \(error.localizedDescription, privacy: .public)")
+            AppServices.errors.record(error, area: .sync, step: "download_photo")
         }
     }
 
@@ -222,6 +224,7 @@ final class SyncService {
             return true
         } catch {
             Self.log.error("Invio carta fallito: \(error.localizedDescription, privacy: .public)")
+            AppServices.errors.record(error, area: .sync, step: "push_card")
             return false
         }
     }
@@ -238,6 +241,7 @@ final class SyncService {
                 Self.log.notice("Riscatto rifiutato dal server, lo scarto: \(key, privacy: .public)")
             } catch {
                 Self.log.error("Invio riscatto fallito: \(error.localizedDescription, privacy: .public)")
+                AppServices.errors.record(error, area: .sync, step: "push_claim")
                 return false
             }
             guard self.userId == userId else { return false }

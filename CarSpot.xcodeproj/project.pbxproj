@@ -10,6 +10,7 @@
 		CA000030 /* ClerkKit in Frameworks */ = {isa = PBXBuildFile; productRef = CA000040 /* ClerkKit */; };
 		CA000031 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = CA000041 /* Supabase */; };
 		CA000032 /* Mixpanel in Frameworks */ = {isa = PBXBuildFile; productRef = CA000042 /* Mixpanel */; };
+		CA000033 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = CA000043 /* Sentry */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 				CA000030 /* ClerkKit in Frameworks */,
 				CA000031 /* Supabase in Frameworks */,
 				CA000032 /* Mixpanel in Frameworks */,
+				CA000033 /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -73,6 +75,7 @@
 				CA000040 /* ClerkKit */,
 				CA000041 /* Supabase */,
 				CA000042 /* Mixpanel */,
+				CA000043 /* Sentry */,
 			);
 			productName = CarSpot;
 			productReference = CA000005 /* CarSpot.app */;
@@ -107,6 +110,7 @@
 				CA000020 /* XCRemoteSwiftPackageReference "clerk-ios" */,
 				CA000021 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 				CA000022 /* XCRemoteSwiftPackageReference "mixpanel-swift" */,
+				CA000023 /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 			);
 			productRefGroup = CA000004 /* Products */;
 			projectDirPath = "";
@@ -375,6 +379,14 @@
 				minimumVersion = 7.0.0;
 			};
 		};
+		CA000023 /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/getsentry/sentry-cocoa";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 9.30.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -392,6 +404,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CA000022 /* XCRemoteSwiftPackageReference "mixpanel-swift" */;
 			productName = Mixpanel;
+		};
+		CA000043 /* Sentry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CA000023 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

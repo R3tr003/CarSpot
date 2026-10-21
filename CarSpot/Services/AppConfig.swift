@@ -26,6 +26,11 @@ enum AppConfig {
         !Secrets.mixpanelToken.isEmpty && !Secrets.mixpanelToken.hasPrefix("YOUR-")
     }
 
+    /// Sentry attivo solo con un DSN vero; come Mixpanel parte solo col consenso.
+    static var isSentryConfigured: Bool {
+        Secrets.sentryDSN.hasPrefix("https://") && Secrets.sentryDSN.contains("@")
+    }
+
     /// Il progetto Mixpanel ha residenza dati EU: i dati verso il server US
     /// verrebbero scartati.
     static let mixpanelServerURL = "https://api-eu.mixpanel.com"

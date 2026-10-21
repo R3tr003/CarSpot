@@ -9,6 +9,8 @@ struct CarSpotApp: App {
     let sync: SyncService
 
     init() {
+        // Report crash prima di tutto il resto, ma solo col consenso statistiche.
+        AppServices.errors.apply(consent: AnalyticsConsentStore.load())
         // Clerk va configurato una sola volta, e solo con la chiave vera (senza,
         // l'app usa l'auth locale e non tocca Clerk).
         if AppConfig.isClerkConfigured {

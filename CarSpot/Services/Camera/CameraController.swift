@@ -96,6 +96,7 @@ final class CameraController: NSObject {
                     session.addInput(input)
                 } catch {
                     cameraLog.error("Input fotocamera non creato: \(error.localizedDescription)")
+                    AppServices.errors.record(error, area: .camera, step: "configure_input")
                     continuation.resume(returning: nil); return
                 }
                 guard session.canAddOutput(photoOutput) else {
@@ -169,6 +170,7 @@ extension CameraController: AVCapturePhotoCaptureDelegate {
         let result: Result<Data, Error>
         if let error {
             cameraLog.error("Scatto fallito: \(error.localizedDescription)")
+            AppServices.errors.record(error, area: .camera, step: "capture_photo")
             result = .failure(error)
         } else if let data = photo.fileDataRepresentation() {
             result = .success(data)

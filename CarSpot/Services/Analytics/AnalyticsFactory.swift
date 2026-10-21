@@ -14,8 +14,10 @@ enum AnalyticsConsentStore {
         UserDefaults.standard.string(forKey: key).flatMap(AnalyticsConsent.init(rawValue:)) ?? .unknown
     }
 
-    static func save(_ consent: AnalyticsConsent) {
+    /// Lo stesso consenso vale per il report errori/crash (Sentry): un punto solo.
+    @MainActor static func save(_ consent: AnalyticsConsent) {
         UserDefaults.standard.set(consent.rawValue, forKey: key)
+        AppServices.errors.apply(consent: consent)
     }
 }
 

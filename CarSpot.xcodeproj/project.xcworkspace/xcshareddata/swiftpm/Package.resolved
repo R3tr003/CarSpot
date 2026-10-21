@@ -1,5 +1,5 @@
 {
-  "originHash" : "86447fdea6b734e90799eb789aec653914df998815d60ad646cf875ff4d30fd4",
+  "originHash" : "901c29be213a10f08fb27627e91dffea44de25d27e3f9822067f1e937de49e7f",
   "pins" : [
     {
       "identity" : "clerk-ios",
@@ -44,6 +44,15 @@
       "state" : {
         "revision" : "df3bcccd1d88ba96fb89cccf51b84b7b6f7f53fe",
         "version" : "5.0.12"
+      }
+    },
+    {
+      "identity" : "sentry-cocoa",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/getsentry/sentry-cocoa",
+      "state" : {
+        "revision" : "4bb2282661ee6ca2212aa01d19a1214394cd3c45",
+        "version" : "9.30.2"
       }
     },
     {
