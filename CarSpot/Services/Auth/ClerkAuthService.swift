@@ -9,11 +9,16 @@ import os
 @MainActor
 @Observable
 final class ClerkAuthService: AuthService {
-    private static let guestKey = "clerkGuestMode"
+    /// Chiave dell'ex modalità ospite persistita: oggi viene solo rimossa all'avvio.
+    private static let legacyGuestKey = "clerkGuestMode"
     private static let log = Logger(subsystem: "com.carspot.andrea.app", category: "auth")
 
-    /// Modalità "Continua senza account", persistita. Stored property per essere osservata.
-    private var isGuest = UserDefaults.standard.bool(forKey: ClerkAuthService.guestKey)
+    /// Ospite solo in memoria (debug `-skipAuth`). Stored property per essere osservata.
+    private var isGuest = false
+
+    init() {
+        UserDefaults.standard.removeObject(forKey: Self.legacyGuestKey)
+    }
 
     var state: AuthState {
         if let user = Clerk.shared.user { return .signedIn(userId: user.id) }
@@ -62,7 +67,6 @@ final class ClerkAuthService: AuthService {
 
     private func setGuest(_ value: Bool) {
         isGuest = value
-        UserDefaults.standard.set(value, forKey: Self.guestKey)
     }
 
     private static func isCancellation(_ error: any Error) -> Bool {

@@ -1,11 +1,15 @@
 import SwiftUI
+import SwiftData
 
 /// Decide cosa mostrare all'avvio: (attesa sessione) → onboarding → login → app.
 /// Il login vive in `AppServices.auth` (Clerk o locale); `hasOnboarded` è in `@AppStorage`.
 /// Argomenti di debug per gli screenshot: `-skipAuth YES` salta tutto e va all'app
-/// (come ospite); `-showLogin YES` salta l'onboarding e mostra il login; `-resetAuth YES`
+/// (come ospite, con le carte demo); `-showLogin YES` salta l'onboarding e mostra il login; `-resetAuth YES`
 /// riparte dall'onboarding.
 struct RootGate: View {
+    @Environment(\.modelContext) private var context
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(SyncService.self) private var sync: SyncService?
     @AppStorage("hasOnboarded") private var hasOnboarded = false
     @State private var identifiedUserId: String?
     @State private var debugFlagsApplied = false
@@ -46,6 +50,10 @@ struct RootGate: View {
         .onChange(of: auth.state) { old, new in
             handle(new, from: old)
         }
+        .onChange(of: scenePhase) { _, phase in
+            // Ritorno in primo piano: reinvio code + pull (con throttle).
+            if phase == .active { Task { await sync?.syncNow() } }
+        }
     }
 
     /// Analytics e profilo cloud reagiscono ai cambi di stato in un punto solo.
@@ -56,7 +64,11 @@ struct RootGate: View {
             identifiedUserId = id
             AppServices.analytics.identify(userId: id)
             if let backend = SupabaseBackend.shared {
-                Task { try? await backend.ensureProfile(userId: id) }
+                // Il profilo deve esistere prima della prima carta (FK): poi parte il sync.
+                Task {
+                    try? await backend.ensureProfile(userId: id)
+                    await sync?.signedIn(userId: id)
+                }
             }
         case .signedOut:
             identifiedUserId = nil
@@ -79,7 +91,11 @@ struct RootGate: View {
         }
         if d.bool(forKey: "skipAuth") {
             hasOnboarded = true
-            if auth.state == .signedOut { auth.continueAsGuest() }
+            if auth.state == .signedOut {
+                auth.continueAsGuest()
+                // Le carte demo esistono solo in questo percorso di debug.
+                CardSeeder.seedIfNeeded(context)
+            }
         }
         if d.bool(forKey: "showLogin") {
             hasOnboarded = true

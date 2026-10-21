@@ -10,12 +10,26 @@ final class PlayerProfile {
     var lastActiveDay: String = ""           // "yyyy-MM-dd"
     /// Keys of already-claimed daily challenges ("yyyy-MM-dd|challengeID").
     var claimedChallenges: [String] = []
+    /// Id Clerk a cui appartengono questi progressi; "" = mai associato a un account.
+    var ownerId: String = ""
+    /// Riscatti non ancora inviati al cloud (stesse chiavi di `claimedChallenges`).
+    var pendingClaims: [String] = []
 
     init() {
         lastActiveDay = Self.dayKey()
     }
 
     var level: Int { LevelSystem.level(forXP: xp) }
+
+    /// Riparte da zero per un nuovo proprietario (cambio account / primo login).
+    func resetForOwner(_ id: String) {
+        xp = 0
+        currency = 0
+        streak = 1
+        claimedChallenges = []
+        pendingClaims = []
+        ownerId = id
+    }
 
     static func dayKey(_ date: Date = .now) -> String {
         let f = DateFormatter()

@@ -57,13 +57,15 @@ final class CaptureViewModel {
             rarity: a.rarity, colorName: a.colorName,
             power: a.power, agility: a.agility, presence: a.presence,
             spottedArea: areas.randomElement() ?? "Centro",
-            photo: anonymizedImage?.jpegData(compressionQuality: 0.8)
+            photo: anonymizedImage.flatMap { PhotoEncoding.jpeg($0) }
         )
         context.insert(card)
         try? context.save()
         // Award XP/currency for the catch.
         PlayerStore.award(xp: a.rarity.xpReward, currency: a.rarity.currencyReward, in: context)
         lastReward = a.rarity.xpReward
+        // Invio al cloud in background (no-op se sync spento o utente non loggato).
+        if let sync = SyncService.shared { Task { await sync.didSave(card) } }
         // Nome del case (es. "leggendaria"), stabile e indipendente dalla lingua.
         AppServices.analytics.track(.cardSaved(rarity: String(describing: a.rarity)))
         UINotificationFeedbackGenerator().notificationOccurred(.success)

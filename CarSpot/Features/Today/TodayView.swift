@@ -3,6 +3,7 @@ import SwiftData
 
 struct TodayView: View {
     @Environment(\.modelContext) private var context
+    @Environment(SyncService.self) private var sync: SyncService?
     @Query private var cards: [StoredCard]
     @Query private var profiles: [PlayerProfile]
     @State private var appeared = false
@@ -41,6 +42,8 @@ struct TodayView: View {
     private func claim(_ challenge: DailyChallengeVM) {
         if PlayerStore.claim(challenge, in: context) {
             AppServices.analytics.track(.challengeClaimed(id: challenge.id))
+            let key = "\(PlayerProfile.dayKey())|\(challenge.id)"
+            Task { await sync?.didClaim(key: key) }
             UINotificationFeedbackGenerator().notificationOccurred(.success)
         }
     }

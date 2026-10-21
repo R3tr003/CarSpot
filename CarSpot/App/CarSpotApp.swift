@@ -5,6 +5,8 @@ import ClerkKit
 @main
 struct CarSpotApp: App {
     let container: ModelContainer
+    /// Sync cloud; senza Supabase+Clerk configurati è spento (`store == nil`).
+    let sync: SyncService
 
     init() {
         // Clerk va configurato una sola volta, e solo con la chiave vera (senza,
@@ -17,6 +19,9 @@ struct CarSpotApp: App {
         } catch {
             fatalError("Impossibile creare il ModelContainer: \(error)")
         }
+        let store = SupabaseBackend.shared.map { SupabaseCloudStore(client: $0.client) }
+        sync = SyncService(container: container, store: store)
+        SyncService.shared = sync
     }
 
     var body: some Scene {
@@ -24,8 +29,8 @@ struct CarSpotApp: App {
             RootGate()
                 .preferredColorScheme(.dark)
                 .tint(CSColor.accent)
+                .environment(sync)
                 .task {
-                    CardSeeder.seedIfNeeded(container.mainContext)
                     _ = PlayerStore.profile(container.mainContext)
                 }
         }

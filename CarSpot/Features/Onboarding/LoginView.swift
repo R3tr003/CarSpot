@@ -82,15 +82,6 @@ struct LoginView: View {
                         .glassEffect(.regular, in: .capsule)
                     }
                     .buttonStyle(.plain)
-
-                    Button("Continua senza account") {
-                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                        AppServices.auth.continueAsGuest()
-                        AppServices.analytics.track(.signedIn(method: "guest"))
-                    }
-                        .font(CSFont.caption(14))
-                        .foregroundStyle(CSColor.inkSecondary)
-                        .padding(.top, CSSpace.xs)
                 }
                 .disabled(working)
                 .padding(.horizontal, CSSpace.xl)

@@ -4,7 +4,8 @@ import Foundation
 enum AuthState: Equatable, Sendable {
     /// Nessuna sessione: mostrare il login.
     case signedOut
-    /// "Continua senza account": app utilizzabile, dati solo in locale, niente sync.
+    /// Solo debug (`-skipAuth YES`, screenshot su simulatore): app utilizzabile senza account,
+    /// dati solo in locale, niente sync. Non c'è nessuna UI per entrarci né viene persistito.
     case guest
     /// Sessione Clerk attiva. `userId` = Clerk user id ("user_…") = `auth.jwt()->>'sub'`
     /// lato Supabase.
@@ -27,7 +28,7 @@ protocol AuthService: AnyObject {
 
     func signInWithApple() async throws
     func signInWithGoogle() async throws
-    /// "Continua senza account".
+    /// Solo debug `-skipAuth`: stato ospite in memoria, mai persistito.
     func continueAsGuest()
     func signOut() async throws
 

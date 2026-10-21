@@ -1,6 +1,11 @@
 import Foundation
 import SwiftData
 
+/// Stato di sincronizzazione col cloud di una carta.
+enum SyncState: String, Sendable {
+    case pending, synced
+}
+
 /// Persisted collectible. The anonymized photo is stored inline (small JPEG) with
 /// external storage so the DB stays light.
 @Model
@@ -16,6 +21,13 @@ final class StoredCard {
     var presence: Int = 0
     var spottedArea: String = ""
     var capturedAt: Date = Date.now
+
+    // Sync cloud (campi con default: migrazione leggera automatica).
+    /// Id Clerk del proprietario; "" = carta mai associata a un account.
+    var ownerId: String = ""
+    /// Path della foto nel bucket `spots` (`<owner>/<id>.jpg`), valorizzato dopo l'upload.
+    var photoPath: String?
+    var syncStateRaw: String = SyncState.pending.rawValue
 
     @Attribute(.externalStorage) var photo: Data?
 
@@ -36,6 +48,11 @@ final class StoredCard {
     }
 
     var rarity: Rarity { Rarity(rawValue: rarityRaw) ?? .comune }
+
+    var syncState: SyncState {
+        get { SyncState(rawValue: syncStateRaw) ?? .pending }
+        set { syncStateRaw = newValue.rawValue }
+    }
 
     /// Maps the persisted row to the presentation card used across the UI.
     var asSpotCard: SpotCard {

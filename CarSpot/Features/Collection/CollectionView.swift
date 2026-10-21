@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct CollectionView: View {
+    @Environment(SyncService.self) private var sync: SyncService?
     @Query(sort: \StoredCard.capturedAt, order: .reverse) private var stored: [StoredCard]
     @State private var filter: Rarity? = nil
     @Namespace private var cardNamespace
@@ -31,6 +32,8 @@ struct CollectionView: View {
                             } label: {
                                 SpotCardView(card: card)
                                     .matchedTransitionSource(id: card.id, in: cardNamespace)
+                                    // Foto ripristinata dal cloud: si scarica solo quando la carta appare.
+                                    .task(id: card.id) { await sync?.loadPhotoIfNeeded(cardId: card.id) }
                             }
                             .buttonStyle(.plain)
                         }

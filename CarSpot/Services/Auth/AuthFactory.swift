@@ -17,13 +17,8 @@ final class LocalAuthService: AuthService {
 
     init() {
         let d = UserDefaults.standard
-        switch d.string(forKey: Self.key) {
-        case "guest":  state = .guest
-        case "signed": state = .signedIn(userId: "local-user")
-        default:
-            // Migrazione: il vecchio flag `isSignedIn` (login simulato) diventa ospite.
-            state = d.bool(forKey: "isSignedIn") ? .guest : .signedOut
-        }
+        // L'ospite non è più persistito: il vecchio "guest" (e il flag `isSignedIn`) → login.
+        state = d.string(forKey: Self.key) == "signed" ? .signedIn(userId: "local-user") : .signedOut
     }
 
     func signInWithApple() async throws { set(.signedIn(userId: "local-user")) }
@@ -35,9 +30,8 @@ final class LocalAuthService: AuthService {
     private func set(_ new: AuthState) {
         state = new
         let raw: String? = switch new {
-        case .signedOut: nil
-        case .guest:     "guest"
-        case .signedIn:  "signed"
+        case .signedOut, .guest: nil   // ospite solo in memoria (debug)
+        case .signedIn:          "signed"
         }
         UserDefaults.standard.set(raw, forKey: Self.key)
     }

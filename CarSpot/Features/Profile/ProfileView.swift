@@ -4,11 +4,15 @@ import os
 
 struct ProfileView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(SyncService.self) private var sync: SyncService?
     @Query private var profiles: [PlayerProfile]
     @Query private var cards: [StoredCard]
 
     @State private var consent = AppServices.analytics.consent
     @State private var isSigningOut = false
+    /// Elementi non ancora nel cloud trovati al logout (> 0 = chiede conferma).
+    @State private var unsyncedCount = 0
+    @State private var showUnsyncedAlert = false
     private let auth = AppServices.auth
 
     private var profile: PlayerProfile? { profiles.first }
@@ -28,6 +32,12 @@ struct ProfileView: View {
             .padding(.bottom, 40)
         }
         .scrollIndicators(.hidden)
+        .alert("Dati non sincronizzati", isPresented: $showUnsyncedAlert) {
+            Button("Esci comunque", role: .destructive) { signOut() }
+            Button("Annulla", role: .cancel) {}
+        } message: {
+            Text("Hai \(unsyncedCount) elementi non ancora salvati nel cloud. Se esci ora li perdi.")
+        }
     }
 
     private var statsRow: some View {
@@ -143,14 +153,16 @@ struct ProfileView: View {
         Button {
             guard !isSigningOut else { return }
             isSigningOut = true
+            let sync = sync
             Task {
-                defer { isSigningOut = false }
-                do {
-                    // `signed_out` + reset di analytics li fa RootGate al cambio di stato.
-                    try await auth.signOut()
-                } catch {
-                    Logger(subsystem: "com.carspot.andrea.app", category: "profile")
-                        .error("Uscita non riuscita: \(error.localizedDescription, privacy: .public)")
+                // Prima si prova a inviare ciò che è in attesa; se resta qualcosa si chiede conferma.
+                let left = await sync?.flushPending() ?? 0
+                if left > 0 {
+                    unsyncedCount = left
+                    showUnsyncedAlert = true
+                    isSigningOut = false
+                } else {
+                    signOut()
                 }
             }
         } label: {
@@ -163,6 +175,24 @@ struct ProfileView: View {
         }
         .buttonStyle(.plain)
         .disabled(isSigningOut)
+    }
+
+    /// Esce e toglie dal telefono carte e progressi (restano nel cloud).
+    /// `signed_out` + reset di analytics li fa RootGate al cambio di stato.
+    private func signOut() {
+        isSigningOut = true
+        let auth = auth
+        let sync = sync
+        Task {
+            defer { isSigningOut = false }
+            do {
+                try await auth.signOut()
+                sync?.signedOutExplicitly()
+            } catch {
+                Logger(subsystem: "com.carspot.andrea.app", category: "profile")
+                    .error("Uscita non riuscita: \(error.localizedDescription, privacy: .public)")
+            }
+        }
     }
 
     private func sightingRow(_ text: String, _ time: String, _ emoji: String) -> some View {
