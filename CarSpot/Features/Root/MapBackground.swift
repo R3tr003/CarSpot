@@ -1,23 +1,33 @@
 import SwiftUI
 import MapKit
 
-/// Holds the ONE shared `MKMapView` for the whole app. Because the same map
-/// instance is reused everywhere, switching tabs never reloads tiles nor resets
-/// the camera — it's configured once at startup.
+/// Possiede l'UNICA `MKMapView` dell'app. La stessa istanza viene riusata ovunque:
+/// cambiando tab la mappa non si ricarica e la camera non si resetta. Invece di
+/// stare dietro la `TabView` (dove i container UIKit della tab bar si mangiano i
+/// tocchi), viene riagganciata come subview del container della tab attiva.
 @MainActor
-final class MapHost {
+final class MapHost: NSObject, MKMapViewDelegate {
     let mapView = MKMapView()
     private var configured = false
+    /// La camera segue l'utente una sola volta, alla prima posizione utile.
+    private var followedUser = false
+
+    /// Frazione di altezza lasciata alla mappa dal pannello in posizione media.
+    private let sheetPeek: CGFloat = 0.30
+    /// Zoom "città" del primo centraggio.
+    private let citySpan: CLLocationDegrees = 0.05
 
     func configure() {
         guard !configured else { return }
         configured = true
 
+        mapView.delegate = self
         mapView.preferredConfiguration = MKHybridMapConfiguration(elevationStyle: .realistic)
         mapView.pointOfInterestFilter = .excludingAll
         mapView.showsUserLocation = true
         mapView.isRotateEnabled = true
         mapView.isPitchEnabled = true
+        mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
         mapView.setRegion(
             MKCoordinateRegion(
@@ -28,38 +38,100 @@ final class MapHost {
         )
 
         for place in SpotPlace.sample {
-            let a = SpotAnnotation(place: place)
-            mapView.addAnnotation(a)
+            mapView.addAnnotation(SpotAnnotation(place: place))
         }
+    }
+
+    /// Sposta la mappa nel container indicato (un solo genitore alla volta).
+    /// Non tocca la regione: stessa istanza, stessa camera.
+    func attach(to container: UIView) {
+        configure()
+        guard mapView.superview !== container else { return }
+        mapView.removeFromSuperview()
+        mapView.frame = container.bounds
+        container.insertSubview(mapView, at: 0)
+        updateMargins(forHeight: container.bounds.height)
+    }
+
+    /// Margine in basso: legale/bussola restano nella parte visibile sopra il pannello.
+    func updateMargins(forHeight height: CGFloat) {
+        guard height > 0 else { return }
+        let bottom = height * (1 - sheetPeek)
+        guard abs(mapView.directionalLayoutMargins.bottom - bottom) > 0.5 else { return }
+        mapView.directionalLayoutMargins.bottom = bottom
+    }
+
+    // MARK: MKMapViewDelegate
+
+    func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
+        guard !followedUser, let location = userLocation.location,
+              location.horizontalAccuracy >= 0 else { return }
+        followedUser = true
+        // Centro spostato a sud: l'utente cade a metà della fascia di mappa visibile
+        // sopra il pannello (media), non dietro la card.
+        let userY = sheetPeek / 2
+        let center = CLLocationCoordinate2D(
+            latitude: location.coordinate.latitude - (0.5 - userY) * citySpan,
+            longitude: location.coordinate.longitude)
+        mapView.setRegion(
+            MKCoordinateRegion(center: center,
+                               span: MKCoordinateSpan(latitudeDelta: citySpan, longitudeDelta: citySpan)),
+            animated: true)
+    }
+
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        guard let spot = annotation as? SpotAnnotation else { return nil }
+        let id = "spot"
+        let view = (mapView.dequeueReusableAnnotationView(withIdentifier: id) as? MKMarkerAnnotationView)
+            ?? MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: id)
+        view.annotation = annotation
+        view.markerTintColor = UIColor(spot.place.rarity.primary)
+        view.glyphImage = UIImage(systemName: "car.fill")
+        view.displayPriority = .required
+        return view
     }
 }
 
-/// The persistent map as a SwiftUI view. Always returns the shared instance.
-struct PersistentMapView: UIViewRepresentable {
+/// Container UIKit semplice: ospita la mappa condivisa quando la sua tab è attiva.
+final class MapContainerView: UIView {
     let host: MapHost
+    var isActive = false
 
-    func makeUIView(context: Context) -> MKMapView {
-        host.configure()
-        host.mapView.delegate = context.coordinator
-        return host.mapView
+    init(host: MapHost) {
+        self.host = host
+        super.init(frame: .zero)
+        backgroundColor = .black
     }
 
-    func updateUIView(_ uiView: MKMapView, context: Context) {}
+    required init?(coder: NSCoder) { fatalError("init(coder:) non supportato") }
 
-    func makeCoordinator() -> Coordinator { Coordinator() }
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        if window != nil, isActive { host.attach(to: self) }
+    }
 
-    final class Coordinator: NSObject, MKMapViewDelegate {
-        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-            guard let spot = annotation as? SpotAnnotation else { return nil }
-            let id = "spot"
-            let view = (mapView.dequeueReusableAnnotationView(withIdentifier: id) as? MKMarkerAnnotationView)
-                ?? MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: id)
-            view.annotation = annotation
-            view.markerTintColor = UIColor(spot.place.rarity.primary)
-            view.glyphImage = UIImage(systemName: "car.fill")
-            view.displayPriority = .required
-            return view
-        }
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if host.mapView.superview === self { host.updateMargins(forHeight: bounds.height) }
+    }
+}
+
+/// Segnaposto della mappa dentro una tab: se `isActive` la mappa condivisa si
+/// aggancia a questo container. Le altre tab restano vuote finché non diventano attive.
+struct MapSlot: UIViewRepresentable {
+    let host: MapHost
+    let isActive: Bool
+
+    func makeUIView(context: Context) -> MapContainerView {
+        let container = MapContainerView(host: host)
+        container.isActive = isActive
+        if isActive { host.attach(to: container) }
+        return container
+    }
+
+    func updateUIView(_ container: MapContainerView, context: Context) {
+        container.isActive = isActive
+        if isActive { host.attach(to: container) }
     }
 }
 

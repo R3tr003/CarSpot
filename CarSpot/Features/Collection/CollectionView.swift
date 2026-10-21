@@ -45,6 +45,9 @@ struct CollectionView: View {
             }
             .scrollIndicators(.hidden)
             .toolbar(.hidden, for: .navigationBar)
+            // Sfondo trasparente: sopra la card si deve vedere la mappa.
+            .containerBackground(.clear, for: .navigation)
+            .scrollContentBackground(.hidden)
         }
     }
 

@@ -1,8 +1,8 @@
 import SwiftUI
 
-/// App shell: the native iOS 26 `TabView` (authentic Liquid Glass tab bar) over a
-/// single persistent map background. The map is the TabView's `.background`, so
-/// it's mounted once — switching tabs never reloads it or moves the camera.
+/// App shell: the native iOS 26 `TabView` (authentic Liquid Glass tab bar) with a
+/// single persistent map. La `MKMapView` è una sola (`MapHost`) e viene riagganciata
+/// al container della tab attiva: cambiando tab non si ricarica né sposta la camera.
 struct RootShellView: View {
     @State private var selection: Screen = Self.initialScreen
     @State private var mapHost = MapHost()
@@ -26,20 +26,17 @@ struct RootShellView: View {
     var body: some View {
         TabView(selection: $selection) {
             Tab("Oggi", systemImage: "sun.max.fill", value: .today) {
-                SheetCard { TodayView() }
+                mapTab(.today) { TodayView() }
             }
             Tab("Collezione", systemImage: "square.grid.2x2.fill", value: .collection) {
-                SheetCard { CollectionView() }
+                mapTab(.collection) { CollectionView() }
             }
             Tab("Mappa", systemImage: "map.fill", value: .territory) {
-                SheetCard { TerritoryView() }
+                mapTab(.territory) { TerritoryView() }
             }
             Tab("Cattura", systemImage: "camera.viewfinder", value: .capture, role: .search) {
                 CaptureView()
             }
-        }
-        .background {
-            PersistentMapView(host: mapHost).ignoresSafeArea()
         }
         .tabBarMinimizeBehavior(.onScrollDown)
         .tint(CSColor.accent)
@@ -55,6 +52,17 @@ struct RootShellView: View {
             }
             .presentationDragIndicator(.visible)
             .preferredColorScheme(.dark)
+        }
+    }
+
+    /// Tab di contenuto: mappa condivisa sotto, pannello trascinabile sopra.
+    /// Lo spazio sopra la card non intercetta tocchi: li riceve la mappa.
+    private func mapTab<Content: View>(_ screen: Screen,
+                                       @ViewBuilder content: () -> Content) -> some View {
+        ZStack {
+            MapSlot(host: mapHost, isActive: selection == screen)
+                .ignoresSafeArea()
+            SheetCard { content() }
         }
     }
 

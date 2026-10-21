@@ -35,6 +35,8 @@ enum AuthCodeError: LocalizedError, Sendable, Equatable {
     case expired
     case invalidIdentifier
     case tooManyAttempts
+    /// Il provider non invia SMS verso quel paese (es. Clerk in sviluppo).
+    case unsupportedCountry
     case generic(String)
 
     var errorDescription: String? {
@@ -43,6 +45,7 @@ enum AuthCodeError: LocalizedError, Sendable, Equatable {
         case .expired:           "Codice scaduto, richiedine uno nuovo"
         case .invalidIdentifier: "Email o numero non valido"
         case .tooManyAttempts:   "Troppi tentativi, riprova tra poco"
+        case .unsupportedCountry: "Per ora non possiamo mandare SMS a questo numero. Usa l'email o Google."
         case .generic(let msg):  msg
         }
     }

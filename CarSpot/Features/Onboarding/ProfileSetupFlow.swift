@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Primo setup del profilo, mostrato una sola volta dopo il primo accesso:
-/// nome da spotter → permessi → pronto. Non si salta; solo il passo permessi è
+/// benvenuto → nome da spotter → permessi → pronto. Non si salta; solo il passo permessi è
 /// facoltativo al suo interno. `RootGate` lo mostra finché `account.needsSetup == true`.
 struct ProfileSetupFlow: View {
     let account: ProfileAccount
@@ -14,8 +14,8 @@ struct ProfileSetupFlow: View {
     @State private var errorMessage: String?
     @FocusState private var nameFocused: Bool
 
-    private let stepCount = 3
-    private static let rarities: [Rarity] = [.rara, .epica, .leggendaria]
+    private let stepCount = 4
+    private static let rarities: [Rarity] = [.rara, .rara, .epica, .leggendaria]
 
     init(account: ProfileAccount) {
         self.account = account
@@ -46,7 +46,7 @@ struct ProfileSetupFlow: View {
 
     // MARK: - Struttura
 
-    /// Freccia indietro (passi 2-3); sul primo passo resta come spazio vuoto.
+    /// Freccia indietro (dal nome in poi); sul benvenuto resta come spazio vuoto.
     private var backBar: some View {
         HStack {
             Button {
@@ -69,7 +69,7 @@ struct ProfileSetupFlow: View {
         .padding(.top, CSSpace.sm)
     }
 
-    /// Le tre pagine affiancate: scorrono in orizzontale con una molla senza rimbalzo
+    /// Le quattro pagine affiancate: scorrono in orizzontale con una molla senza rimbalzo
     /// (o dissolvenza incrociata con "Riduci movimento").
     private var pager: some View {
         GeometryReader { geo in
@@ -92,11 +92,13 @@ struct ProfileSetupFlow: View {
     private func page(_ index: Int) -> some View {
         switch index {
         case 0:
-            ProfileSetupNameStep(account: account, checker: checker, focused: $nameFocused, errorMessage: step == 0 ? errorMessage : nil)
+            ProfileSetupWelcomeStep()
         case 1:
+            ProfileSetupNameStep(account: account, checker: checker, focused: $nameFocused, errorMessage: step == 1 ? errorMessage : nil)
+        case 2:
             ProfileSetupPermissionsStep(location: location)
         default:
-            ProfileSetupReadyStep(username: checker.text, errorMessage: step == 2 ? errorMessage : nil)
+            ProfileSetupReadyStep(username: checker.text, errorMessage: step == 3 ? errorMessage : nil)
         }
     }
 
@@ -112,9 +114,15 @@ struct ProfileSetupFlow: View {
         .padding(.bottom, CSSpace.xxl)
     }
 
-    private var ctaTitle: String { step == stepCount - 1 ? "Inizia" : "Continua" }
+    private var ctaTitle: String {
+        switch step {
+        case 0: "Iniziamo"
+        case stepCount - 1: "Inizia"
+        default: "Continua"
+        }
+    }
     private var ctaIcon: String { step == stepCount - 1 ? "flag.checkered" : "arrow.right" }
-    private var canAdvance: Bool { step == 0 ? checker.canContinue : true }
+    private var canAdvance: Bool { step == 1 ? checker.canContinue : true }
 
     // MARK: - Azioni
 
@@ -130,8 +138,9 @@ struct ProfileSetupFlow: View {
     private func advance() {
         errorMessage = nil
         switch step {
-        case 0: saveName()
-        case 1: go(to: 2)
+        case 0: go(to: 1)
+        case 1: saveName()
+        case 2: go(to: 3)
         default: finish()
         }
     }
@@ -139,7 +148,7 @@ struct ProfileSetupFlow: View {
     private func saveName() {
         guard checker.canContinue else { return }
         if checker.status == .unchanged {
-            go(to: 1)
+            go(to: 2)
             return
         }
         let value = checker.text
@@ -149,7 +158,7 @@ struct ProfileSetupFlow: View {
             do {
                 try await account.saveUsername(value)
                 checker.markSaved()
-                go(to: 1)
+                go(to: 2)
             } catch ProfileAccountError.usernameTaken {
                 checker.markTaken()
             } catch let error as ProfileAccountError {

@@ -11,6 +11,8 @@ final class CaptureViewModel {
 
     var phase: Phase = .aiming
     var anonymizedImage: UIImage?
+    /// Miniatura (non anonimizzata, solo in memoria) per lo sfondo sfocato durante l'elaborazione.
+    var previewImage: UIImage?
     var candidates: [VehicleCandidate] = []
     var selected: VehicleCandidate?
     var errorMessage: String?
@@ -19,19 +21,31 @@ final class CaptureViewModel {
     private let recognizer: any RecognitionService = AppConfig.makeRecognitionService()
     private let areas = ["Centro Storico", "Lungomare", "Quartiere Nord", "Collina", "Stazione"]
 
-    /// Run the full pipeline on a freshly captured/picked image.
+    /// Pipeline su un'immagine già in memoria (percorso debug `-autoCapture`).
     /// `source` è solo per le statistiche: "camera" | "library" | "auto".
     func process(image: UIImage, source: String = "camera") async {
+        errorMessage = nil
+        guard let data = image.jpegData(compressionQuality: 0.9) else {
+            fail("Immagine non valida."); return
+        }
+        await process(data: data, source: source)
+    }
+
+    /// Run the full pipeline on raw captured/picked data (HEIC/JPEG).
+    /// Decodifica, riduzione e codifica girano fuori dal main actor.
+    func process(data: Data, source: String = "camera") async {
         AppServices.analytics.track(.captureStarted(source: source))
         errorMessage = nil
         phase = .processing
 
-        guard let jpeg = image.jpegData(compressionQuality: 0.9) else {
+        // 0. Riduzione ImageIO (≤1600 px) + miniatura per il fermo-immagine sfocato.
+        guard let prepared = await ImageDownsampler.prepare(data: data) else {
             fail("Immagine non valida."); return
         }
+        previewImage = UIImage(data: prepared.thumbnail)
 
         // 1. Anonymize on-device BEFORE anything else touches the photo.
-        let safeData = await ImageAnonymizer.anonymize(jpegData: jpeg)
+        let safeData = await ImageAnonymizer.anonymize(jpegData: prepared.jpeg)
         anonymizedImage = UIImage(data: safeData)
 
         // 2. Recognize (mock offline, or Supabase Edge Function when configured).
@@ -74,6 +88,7 @@ final class CaptureViewModel {
 
     func reset() {
         anonymizedImage = nil
+        previewImage = nil
         candidates = []
         selected = nil
         errorMessage = nil
@@ -82,6 +97,7 @@ final class CaptureViewModel {
 
     private func fail(_ message: String) {
         errorMessage = message
+        previewImage = nil
         phase = .aiming
         UINotificationFeedbackGenerator().notificationOccurred(.error)
     }

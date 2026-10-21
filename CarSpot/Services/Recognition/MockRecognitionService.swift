@@ -20,7 +20,7 @@ struct MockRecognitionService: RecognitionService {
 
     func recognize(imageData: Data) async throws -> [VehicleCandidate] {
         // Simulate provider latency.
-        try? await Task.sleep(for: .milliseconds(900))
+        try? await Task.sleep(for: .milliseconds(300))
 
         // Seed the pick on the image bytes so the same photo is stable.
         let seed = imageData.prefix(64).reduce(0) { $0 &+ Int($1) }

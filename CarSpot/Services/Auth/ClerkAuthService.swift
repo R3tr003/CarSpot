@@ -80,7 +80,8 @@ final class ClerkAuthService: AuthService {
                 guard result.status == .complete, let sessionId = result.createdSessionId else {
                     if result.firstFactorVerification?.status == .expired { throw AuthCodeError.expired }
                     Self.log.error("Accesso non completato, stato: \(result.status.rawValue, privacy: .public)")
-                    throw AuthCodeError.generic("Accesso non completato. Riprova.")
+                    throw AuthCodeError.generic(Self.debugSuffix("Accesso non completato. Riprova.",
+                                                                 "stato \(result.status.rawValue)"))
                 }
                 try await activate(sessionId: sessionId)
             case .signUp(let signUp, let channel):
@@ -93,7 +94,9 @@ final class ClerkAuthService: AuthService {
                     if result.verifications[key]??.status == .expired { throw AuthCodeError.expired }
                     let missing = result.missingFields.map(\.rawValue).joined(separator: ",")
                     Self.log.error("Registrazione incompleta: stato \(String(describing: result.status), privacy: .public), campi mancanti [\(missing, privacy: .public)]")
-                    throw AuthCodeError.generic("Registrazione non completata: servono altri dati. Prova con Google o Apple.")
+                    throw AuthCodeError.generic(Self.debugSuffix(
+                        "Registrazione non completata: servono altri dati. Prova con Google o Apple.",
+                        "stato \(String(describing: result.status)), mancano [\(missing)]"))
                 }
                 try await activate(sessionId: sessionId)
             }
@@ -161,16 +164,42 @@ final class ClerkAuthService: AuthService {
 
     /// Attiva la sessione creata dal codice, se Clerk non l'ha già resa corrente.
     private func activate(sessionId: String) async throws {
-        if Clerk.shared.session?.id != sessionId {
+        guard Clerk.shared.session?.id != sessionId else { return }
+        do {
             try await Clerk.shared.auth.setActive(sessionId: sessionId)
+        } catch {
+            // Passo separato per capire dalla diagnostica se fallisce l'attivazione.
+            throw fail("Attivazione sessione fallita", error)
         }
     }
 
-    /// Logga e converte l'errore in `AuthCodeError`.
+    /// Logga e converte l'errore in `AuthCodeError`. In debug l'errore generico porta
+    /// anche passo e causa reale (codice Clerk), per diagnosticare dal telefono.
     private func fail(_ what: String, _ error: any Error) -> any Error {
         let mapped = Self.map(error)
-        Self.log.error("\(what, privacy: .public): \(error.localizedDescription, privacy: .public)")
+        Self.log.error("\(what, privacy: .public): \(Self.describe(error), privacy: .private)")
+        #if DEBUG
+        if !(error is AuthCodeError), case .generic(let message)? = mapped as? AuthCodeError {
+            return AuthCodeError.generic("\(message)\n[debug] \(what): \(Self.describe(error))")
+        }
+        #endif
         return mapped
+    }
+
+    /// Dettaglio aggiunto al messaggio solo nelle build di debug.
+    private static func debugSuffix(_ message: String, _ detail: String) -> String {
+        #if DEBUG
+        "\(message)\n[debug] \(detail)"
+        #else
+        message
+        #endif
+    }
+
+    private static func describe(_ error: any Error) -> String {
+        if let e = error as? ClerkAPIError {
+            return "\(e.code) — \(e.longMessage ?? e.message ?? "")"
+        }
+        return "\(type(of: error)) — \(error.localizedDescription)"
     }
 
     private static func map(_ error: any Error) -> any Error {
@@ -186,6 +215,8 @@ final class ClerkAuthService: AuthService {
                 return AuthCodeError.invalidIdentifier
             case "too_many_requests", "rate_limit_exceeded":
                 return AuthCodeError.tooManyAttempts
+            case "unsupported_country_code":
+                return AuthCodeError.unsupportedCountry
             default:
                 return AuthCodeError.generic("Qualcosa è andato storto. Riprova.")
             }
