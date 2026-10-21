@@ -153,20 +153,12 @@ struct LoginView: View {
                     AppServices.analytics.track(.signedIn(method: method))
                 }
             } catch {
-                let message = Self.message(for: error)
+                // Il servizio ha già registrato l'errore inatteso (`ErrorReporting`).
+                let message = AppError.message(for: error, fallback: .signInFailed)
                 errorMessage = message
                 AccessibilityNotification.Announcement(message).post()
             }
         }
-    }
-
-    /// Offline se l'errore è di rete, altrimenti messaggio generico.
-    private static func message(for error: any Error) -> String {
-        if let urlError = error as? URLError,
-           [.notConnectedToInternet, .networkConnectionLost, .timedOut].contains(urlError.code) {
-            return "Sei offline. Controlla la connessione e riprova."
-        }
-        return "Accesso non riuscito. Riprova."
     }
 }
 

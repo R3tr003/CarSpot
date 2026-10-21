@@ -288,23 +288,12 @@ struct CodeSignInView: View {
             do {
                 try await action()
             } catch {
-                let message = Self.message(for: error)
+                // Messaggio dell'auth se c'è (con [debug] in DEBUG), offline per la rete.
+                let message = AppError.message(for: error)
                 errorMessage = message
                 AccessibilityNotification.Announcement(message).post()
             }
         }
-    }
-
-    /// Messaggio dell'auth se c'è, offline per gli errori di rete, altrimenti generico.
-    private static func message(for error: any Error) -> String {
-        if let authError = error as? AuthCodeError, let text = authError.errorDescription {
-            return text
-        }
-        if let urlError = error as? URLError,
-           [.notConnectedToInternet, .networkConnectionLost, .timedOut].contains(urlError.code) {
-            return "Sei offline. Controlla la connessione e riprova."
-        }
-        return "Qualcosa è andato storto. Riprova."
     }
 
     // MARK: - Identificatore

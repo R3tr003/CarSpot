@@ -53,9 +53,6 @@ final class CaptureViewModel {
         case save        // ripete il salvataggio
     }
 
-    /// Errori a copy fisso generati dalla view.
-    enum Failure { case photoUnreadable, captureFailed }
-
     /// Sotto questa soglia il primo candidato non è preselezionato.
     static let lowConfidenceThreshold = 0.5
 
@@ -93,7 +90,7 @@ final class CaptureViewModel {
     /// `source` è solo per le statistiche: "camera" | "library" | "auto".
     func process(image: UIImage, source: String = "camera") async {
         guard let data = image.jpegData(compressionQuality: 0.9) else {
-            fail("Non sono riuscito a leggere l'immagine. Riprova."); return
+            fail(.photoUnreadable); return
         }
         await process(data: data, source: source)
     }
@@ -108,7 +105,8 @@ final class CaptureViewModel {
 
         // 0. Riduzione ImageIO (≤1600 px) + miniatura per il fermo-immagine sfocato.
         guard let prepared = await ImageDownsampler.prepare(data: data) else {
-            fail("Non sono riuscito a leggere l'immagine. Riprova."); return
+            AppServices.errors.breadcrumb("Foto non decodificabile", area: .capture)
+            fail(.photoUnreadable); return
         }
         previewImage = UIImage(data: prepared.thumbnail)
 
@@ -131,7 +129,7 @@ final class CaptureViewModel {
         do {
             let result = try await recognizer.recognize(imageData: data)
             guard !result.isEmpty else {
-                fail(Self.message(for: RecognitionError.noMatch)); return
+                fail(.noVehicleFound); return
             }
             candidates = result
             // Con bassa confidenza nessuna preselezione: sceglie l'utente.
@@ -142,8 +140,12 @@ final class CaptureViewModel {
             captureLog.error("Riconoscimento fallito: \(error.localizedDescription)")
             // Ripetere ha senso per rete/server; "nessuna auto" richiede un'altra foto.
             var retry = Retry.recognize
-            if case RecognitionError.noMatch = error { retry = .dismiss }
-            fail(Self.message(for: error), retry: retry)
+            if case RecognitionError.noMatch = error {
+                retry = .dismiss
+            } else {
+                AppServices.errors.record(error, area: .recognition, step: "recognize")
+            }
+            fail(AppError.message(for: error, fallback: .recognitionFailed), retry: retry)
         }
     }
 
@@ -168,7 +170,8 @@ final class CaptureViewModel {
             // Niente stato "salvata" se la scrittura è fallita.
             context.delete(card)
             captureLog.error("Salvataggio carta fallito: \(error.localizedDescription)")
-            showError("Non sono riuscito a salvare la carta. Riprova.", retry: .save)
+            AppServices.errors.record(error, area: .capture, step: "save_card")
+            showError(AppError.message(for: error, fallback: .saveCardFailed), retry: .save)
             return
         }
         // Award XP/currency for the catch.
@@ -198,11 +201,8 @@ final class CaptureViewModel {
     // MARK: Errori
 
     /// Errori a copy fisso segnalati dalla view (scatto, lettura foto).
-    func report(_ failure: Failure) {
-        switch failure {
-        case .photoUnreadable: showError("Non sono riuscito a leggere la foto. Riprova.")
-        case .captureFailed: showError("Scatto non riuscito. Riprova.")
-        }
+    func report(_ error: AppError) {
+        showError(error.message)
     }
 
     /// Chiude il banner (timer o tap) senza ripetere nulla.
@@ -225,6 +225,10 @@ final class CaptureViewModel {
         case .dismiss:
             if phase == .aiming { clearCapture() }
         }
+    }
+
+    private func fail(_ error: AppError, retry: Retry = .dismiss) {
+        fail(error.message, retry: retry)
     }
 
     private func fail(_ message: String, retry: Retry = .dismiss) {
@@ -259,22 +263,5 @@ final class CaptureViewModel {
             : "Trovate \(result.count) corrispondenze, la prima: \(first.title)."
         if isLowConfidence { text += " Non siamo sicuri, scegli quella giusta." }
         AccessibilityNotification.Announcement(text).post()
-    }
-
-    private static func isOffline(_ error: any Error) -> Bool {
-        guard let urlError = error as? URLError else { return false }
-        switch urlError.code {
-        case .notConnectedToInternet, .networkConnectionLost, .timedOut: return true
-        default: return false
-        }
-    }
-
-    /// Errore tecnico → frase per l'utente (mai codici HTTP o testo di sistema).
-    private static func message(for error: any Error) -> String {
-        if isOffline(error) { return "Sei offline. Riprova quando torni in rete." }
-        if case RecognitionError.noMatch = error {
-            return "Nessuna auto riconosciuta. Inquadra l'auto di 3/4 e riprova."
-        }
-        return "Non sono riuscito a riconoscere l'auto. Riprova."
     }
 }

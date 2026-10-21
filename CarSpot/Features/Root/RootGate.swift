@@ -1,11 +1,15 @@
 import SwiftUI
 import SwiftData
+import os
+
+private let rootLog = Logger(subsystem: "com.carspot.andrea.app", category: "root")
 
 /// Decide cosa mostrare all'avvio: (attesa sessione) → onboarding → login → setup profilo → app.
 /// Il login vive in `AppServices.auth` (Clerk o locale); `hasOnboarded` è in `@AppStorage`.
 /// Argomenti di debug per gli screenshot: `-skipAuth YES` salta tutto e va all'app
 /// (come ospite, con le carte demo); `-showLogin YES` salta l'onboarding e mostra il login; `-resetAuth YES`
-/// riparte dall'onboarding.
+/// riparte dall'onboarding; `-sentryTest YES` (solo DEBUG, serve il consenso) invia un
+/// errore di prova al report errori.
 struct RootGate: View {
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
@@ -64,6 +68,10 @@ struct RootGate: View {
             guard auth.isReady else { return }
             await applyDebugFlags()
             handle(auth.state, from: nil)
+            #if DEBUG
+            // Dopo `handle`: l'evento di prova porta già l'id utente.
+            sendSentryTestIfRequested()
+            #endif
         }
         .onChange(of: auth.state) { old, new in
             handle(new, from: old)
@@ -81,25 +89,33 @@ struct RootGate: View {
             guard identifiedUserId != id else { return }
             identifiedUserId = id
             AppServices.analytics.identify(userId: id)
+            // Al report errori solo l'id Clerk: mai email, telefono o nome.
+            AppServices.errors.setUser(id: id)
             if let backend = SupabaseBackend.shared {
                 // Se l'utente ha già finito il setup (cache locale) l'app si apre subito.
                 account.prepare(userId: id)
                 // Il profilo deve esistere prima della prima carta (FK): poi si legge
                 // lo stato del setup e parte il sync.
                 Task {
-                    try? await backend.ensureProfile(userId: id)
+                    do {
+                        try await backend.ensureProfile(userId: id)
+                    } catch {
+                        AppServices.errors.record(error, area: .profile, step: "ensure_profile")
+                    }
                     await account.load(userId: id)
                     await sync?.signedIn(userId: id)
                 }
             }
         case .signedOut:
             identifiedUserId = nil
+            AppServices.errors.setUser(id: nil)
             if let old, old != .signedOut {
                 AppServices.analytics.track(.signedOut)
                 AppServices.analytics.reset()
             }
         case .guest:
             identifiedUserId = nil
+            AppServices.errors.setUser(id: nil)
         }
     }
 
@@ -125,6 +141,25 @@ struct RootGate: View {
         }
     }
 }
+
+#if DEBUG
+extension RootGate {
+    /// `-sentryTest YES`: un errore di prova al report errori (una volta per avvio).
+    fileprivate func sendSentryTestIfRequested() {
+        guard UserDefaults.standard.bool(forKey: "sentryTest") else { return }
+        guard AnalyticsConsentStore.load() == .granted else {
+            rootLog.notice("sentryTest: consenso statistiche non dato, Sentry è spento")
+            return
+        }
+        AppServices.errors.breadcrumb("Prova report errori da launch argument", area: .debug)
+        AppServices.errors.record(DebugTestError.sentryTest, area: .debug, step: "sentry_test")
+        rootLog.notice("sentryTest: errore di prova inviato")
+    }
+}
+
+/// Errore finto per `-sentryTest`: tipo e codice fissi, così l'issue si raggruppa.
+private enum DebugTestError: Error { case sentryTest }
+#endif
 
 #Preview {
     RootGate()

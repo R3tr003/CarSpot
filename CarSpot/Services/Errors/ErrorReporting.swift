@@ -5,6 +5,8 @@ import Supabase
 /// Area dell'app in cui nasce l'errore: prima parte del raggruppamento (fingerprint).
 enum ErrorArea: String, Sendable {
     case auth, profile, sync, capture, recognition, camera, vision
+    /// Solo prove manuali in DEBUG (`-sentryTest`).
+    case debug
 }
 
 /// Report di errori e crash dal campo dietro protocollo: Sentry (EU) quando c'è il DSN,

@@ -114,6 +114,7 @@ final class ProfileAccount {
             }
         } catch {
             Self.log.error("Caricamento profilo fallito: \(error.localizedDescription, privacy: .public)")
+            AppServices.errors.record(error, area: .profile, step: "load")
             if self.userId == userId, needsSetup == nil { needsSetup = false }
         }
     }
@@ -123,13 +124,18 @@ final class ProfileAccount {
     /// `true` se nessun altro utente usa già `value`.
     func isUsernameAvailable(_ value: String) async throws -> Bool {
         guard let backend = SupabaseBackend.shared, let userId else { throw ProfileAccountError.unavailable }
-        let rows: [IdRow] = try await backend.client.from("profiles")
-            .select("id")
-            .eq("username", value: value)
-            .neq("id", value: userId)
-            .limit(1)
-            .execute().value
-        return rows.isEmpty
+        do {
+            let rows: [IdRow] = try await backend.client.from("profiles")
+                .select("id")
+                .eq("username", value: value)
+                .neq("id", value: userId)
+                .limit(1)
+                .execute().value
+            return rows.isEmpty
+        } catch {
+            AppServices.errors.record(error, area: .profile, step: "check_username")
+            throw error
+        }
     }
 
     func saveUsername(_ value: String) async throws {
@@ -145,18 +151,28 @@ final class ProfileAccount {
             switch error.code {
             case "23505": throw ProfileAccountError.usernameTaken
             case "23514": throw ProfileAccountError.invalidFormat
-            default: throw error
+            default:
+                AppServices.errors.record(error, area: .profile, step: "save_username")
+                throw error
             }
+        } catch {
+            AppServices.errors.record(error, area: .profile, step: "save_username")
+            throw error
         }
     }
 
     /// Chiude il setup: `onboarded_at = now()`.
     func completeOnboarding() async throws {
         guard let backend = SupabaseBackend.shared, let userId else { throw ProfileAccountError.unavailable }
-        try await backend.client.from("profiles")
-            .update(OnboardedUpdate(onboardedAt: ISO8601DateFormatter().string(from: .now)))
-            .eq("id", value: userId)
-            .execute()
+        do {
+            try await backend.client.from("profiles")
+                .update(OnboardedUpdate(onboardedAt: ISO8601DateFormatter().string(from: .now)))
+                .eq("id", value: userId)
+                .execute()
+        } catch {
+            AppServices.errors.record(error, area: .profile, step: "complete_setup")
+            throw error
+        }
         Self.cacheOnboarded(userId)
         needsSetup = false
     }

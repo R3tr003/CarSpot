@@ -223,10 +223,10 @@ final class ClerkAuthService: AuthService {
             case "unsupported_country_code":
                 return AuthCodeError.unsupportedCountry
             default:
-                return AuthCodeError.generic("Qualcosa è andato storto. Riprova.")
+                return AuthCodeError.generic(AppError.generic.message)
             }
         }
-        return AuthCodeError.generic("Qualcosa è andato storto. Riprova.")
+        return AuthCodeError.generic(AppError.generic.message)
     }
 
     private func setGuest(_ value: Bool) {

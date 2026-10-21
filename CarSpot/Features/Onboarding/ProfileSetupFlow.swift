@@ -222,10 +222,8 @@ struct ProfileSetupFlow: View {
                 go(to: 2)
             } catch ProfileAccountError.usernameTaken {
                 checker.markTaken()
-            } catch let error as ProfileAccountError {
-                errorMessage = error.localizedDescription
             } catch {
-                errorMessage = "Non riesco a salvare il nome. Controlla la connessione e riprova."
+                errorMessage = AppError.message(for: error, fallback: .saveNameFailed)
             }
         }
     }
@@ -239,7 +237,7 @@ struct ProfileSetupFlow: View {
                 AppServices.analytics.track(.profileSetupCompleted)
                 // RootGate vede `needsSetup == false` e passa all'app.
             } catch {
-                errorMessage = "Non riesco a completare ora. Controlla la connessione e riprova."
+                errorMessage = AppError.message(for: error, fallback: .completeSetupFailed)
             }
         }
     }

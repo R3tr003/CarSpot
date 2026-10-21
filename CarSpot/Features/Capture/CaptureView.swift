@@ -104,6 +104,7 @@ struct CaptureView: View {
                         vm.report(.photoUnreadable)
                     }
                 } catch {
+                    AppServices.errors.record(error, area: .capture, step: "load_library_photo")
                     vm.report(.photoUnreadable)
                 }
                 pickerItem = nil
