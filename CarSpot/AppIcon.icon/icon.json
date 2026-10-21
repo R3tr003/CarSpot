@@ -1,0 +1,43 @@
+{
+  "fill" : {
+    "automatic-gradient" : "extended-srgb:0.00000,0.53333,1.00000,1.00000"
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "hidden" : false,
+          "image-name" : "carspot-light.png",
+          "image-name-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : "carspot-dark.png"
+            }
+          ],
+          "name" : "CarSpot",
+          "position" : {
+            "scale" : 0.97,
+            "translation-in-points" : [
+              3.08,
+              -10.185
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.3
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
