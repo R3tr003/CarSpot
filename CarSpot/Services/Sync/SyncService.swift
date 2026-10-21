@@ -27,6 +27,8 @@ final class SyncService {
     @ObservationIgnored private var isSyncing = false
     @ObservationIgnored private var isPushing = false
     @ObservationIgnored private var pushAgain = false
+    /// Elementi (carte + riscatti) inviati con successo dall'ultimo `pushPending` concluso.
+    @ObservationIgnored private var pushedCount = 0
     @ObservationIgnored private var lastPullAt: Date?
     /// Cresce a ogni modifica locale ottimistica (carta salvata, riscatto): un pull del
     /// profilo iniziato prima di una modifica non deve sovrascriverne i valori.
@@ -93,13 +95,24 @@ final class SyncService {
         guard due else { return }
 
         do {
-            try await pullCards(store: store, userId: userId)
-            try await pullProfile(store: store, userId: userId)
-            try await pullClaims(store: store, userId: userId)
-            if self.userId == userId { lastPullAt = .now }
+            var pulledCards = 0
+            try await AppServices.errors.measure("sync.pull", operation: "sync") {
+                pulledCards = try await pullCards(store: store, userId: userId)
+                try await pullProfile(store: store, userId: userId)
+                try await pullClaims(store: store, userId: userId)
+            }
+            if self.userId == userId {
+                lastPullAt = .now
+                reportCollectionSize()
+                AppServices.errors.log("sync completed", attributes: [
+                    "pulled_cards": .int(pulledCards),
+                    "pending": .int(pendingCount(userId: userId)),
+                ])
+            }
         } catch {
             Self.log.error("Pull non riuscito: \(error.localizedDescription, privacy: .public)")
             AppServices.errors.record(error, area: .sync, step: "pull")
+            Self.reportFailure(stage: "pull", error: error)
         }
     }
 
@@ -176,10 +189,19 @@ final class SyncService {
         isPushing = true
         defer { isPushing = false }
         // Si ripete se nel frattempo è arrivata un'altra carta/riscatto.
-        repeat {
-            pushAgain = false
-            guard await pushOnce(store: store, userId: userId) else { return }
-        } while pushAgain
+        pushedCount = 0
+        await AppServices.errors.measure("sync.push", operation: "sync") {
+            repeat {
+                pushAgain = false
+                guard await pushOnce(store: store, userId: userId) else { return }
+            } while pushAgain
+        }
+        // Coda residua dopo ogni giro (0 = tutto inviato) e quanto è partito.
+        guard self.userId == userId else { return }
+        if pushedCount > 0 {
+            AppServices.errors.metric(count: "sync.pushed", value: UInt(pushedCount))
+        }
+        AppServices.errors.metric(gauge: "sync.pending", value: Double(pendingCount(userId: userId)))
     }
 
     /// Un giro su carte e riscatti in attesa. `false` al primo errore (si ritenta al prossimo sync).
@@ -221,10 +243,12 @@ final class SyncService {
                 live.syncState = .synced
                 try? context.save()
             }
+            pushedCount += 1
             return true
         } catch {
             Self.log.error("Invio carta fallito: \(error.localizedDescription, privacy: .public)")
             AppServices.errors.record(error, area: .sync, step: "push_card")
+            Self.reportFailure(stage: "push", error: error)
             return false
         }
     }
@@ -235,6 +259,7 @@ final class SyncService {
             do {
                 if parts.count == 2 {
                     try await store.insertClaim(CloudClaim(day: parts[0], challengeId: parts[1]))
+                    pushedCount += 1
                 }
             } catch let error as PostgrestError where error.code == "P0001" {
                 // Rifiutato dal server (giorno fuori finestra o tetto giornaliero): inutile ritentare.
@@ -242,6 +267,7 @@ final class SyncService {
             } catch {
                 Self.log.error("Invio riscatto fallito: \(error.localizedDescription, privacy: .public)")
                 AppServices.errors.record(error, area: .sync, step: "push_claim")
+                Self.reportFailure(stage: "push", error: error)
                 return false
             }
             guard self.userId == userId else { return false }
@@ -254,22 +280,25 @@ final class SyncService {
 
     // MARK: - Pull
 
-    private func pullCards(store: any CloudStore, userId: String) async throws {
+    /// Ritorna quante carte nuove sono state inserite.
+    private func pullCards(store: any CloudStore, userId: String) async throws -> Int {
         let allCards = (try? context.fetch(FetchDescriptor<StoredCard>())) ?? []
         var known = Set(allCards.map(\.id))
         // Senza carte locali il cursore non ha senso: pull completo.
         var cursor = allCards.isEmpty ? nil : Self.cursor(for: userId)
         let start = cursor.map { $0.addingTimeInterval(-Self.cursorOverlap) }
         var offset = 0
+        var inserted = 0
 
         while true {
             let page = try await store.fetchCards(
                 createdAfter: start, offset: offset, limit: Self.pageSize)
-            guard self.userId == userId else { return }
+            guard self.userId == userId else { return inserted }
 
             for c in page where !known.contains(c.id) {
                 context.insert(Self.makeCard(from: c, ownerId: userId))
                 known.insert(c.id)
+                inserted += 1
             }
             try? context.save()
 
@@ -280,6 +309,7 @@ final class SyncService {
             if page.count < Self.pageSize { break }
             offset += Self.pageSize
         }
+        return inserted
     }
 
     private func pullProfile(store: any CloudStore, userId: String) async throws {
@@ -312,6 +342,25 @@ final class SyncService {
     }
 
     // MARK: - Helper
+
+    /// Gauge con il numero di carte in collezione (dopo il pull, quindi una volta per avvio e a ogni sync).
+    private func reportCollectionSize() {
+        let count = (try? context.fetchCount(FetchDescriptor<StoredCard>())) ?? 0
+        AppServices.errors.metric(gauge: "collection.size", value: Double(count))
+    }
+
+    /// Metrica + log di un guasto di sync: `stage` (push | pull), tipo e codice dell'errore,
+    /// mai il messaggio. Gli annullamenti non contano; l'offline conta ma è un warning.
+    private static func reportFailure(stage: String, error: any Error) {
+        let summary = ErrorSummary(error)
+        guard !summary.isCancellation else { return }
+        AppServices.errors.metric(count: "sync.failure", attributes: ["stage": .string(stage)])
+        AppServices.errors.log("sync failed", level: summary.isConnectivity ? .warning : .error, attributes: [
+            "stage": .string(stage),
+            "error_type": .string(summary.type),
+            "error_code": .string(summary.code),
+        ])
+    }
 
     private func pendingCards(userId: String) -> [StoredCard] {
         let pending = SyncState.pending.rawValue

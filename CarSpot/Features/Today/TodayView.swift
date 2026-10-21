@@ -48,15 +48,17 @@ struct TodayView: View {
         }
     }
 
-    /// Data lunga con la sola iniziale maiuscola ("Mercoledì 21 ottobre").
+    /// Data lunga con la sola iniziale maiuscola ("Mercoledì 21 ottobre" / "Wednesday, October 21"),
+    /// nella lingua in cui gira l'app.
     private var dateText: String {
-        let text = Date.now.formatted(.dateTime.weekday(.wide).day().month())
+        let text = Date.now.formatted(.dateTime.weekday(.wide).day().month(.wide)
+            .locale(.app))
         return text.prefix(1).uppercased() + text.dropFirst()
     }
 
     private var greetingText: String {
-        guard let name = account?.username, !name.isEmpty else { return "Buona caccia" }
-        return "Buona caccia, @\(name)"
+        guard let name = account?.username, !name.isEmpty else { return String(localized: "Buona caccia") }
+        return String(localized: "Buona caccia, @\(name)")
     }
 
     private var greeting: some View {
@@ -73,20 +75,28 @@ struct TodayView: View {
         }
     }
 
+    private var dayUnitSingular: LocalizedStringKey { "giorno" }
+    private var dayUnitPlural: LocalizedStringKey { "giorni" }
+
     private var streakPill: some View {
         let streak = profile?.streak ?? 0
         return HStack(spacing: CSSpace.xs) {
-            Text("🔥").font(CSFont.body(18))
+            Image(systemName: "flame.fill")
+                .font(CSFont.body(18))
+                .foregroundStyle(CSColor.accentWarm)
+                .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: -2) {
                 Text("\(streak)").font(CSFont.numeric(18)).foregroundStyle(CSColor.ink)
-                Text(streak == 1 ? "giorno" : "giorni")
+                // Solo l'unità (il numero è sopra): due chiavi, il plurale del catalogo
+                // richiede il numero nella stringa.
+                Text(streak == 1 ? dayUnitSingular : dayUnitPlural)
                     .font(CSFont.micro).foregroundStyle(CSColor.inkTertiary)
             }
         }
         .padding(.horizontal, CSSpace.md).padding(.vertical, CSSpace.sm)
         .glassEffect(.regular, in: .rect(cornerRadius: CSRadius.sm))
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Serie di \(streak) \(streak == 1 ? "giorno" : "giorni")")
+        .accessibilityLabel("Serie di \(streak) giorni")
     }
 
     private var levelCard: some View {
@@ -104,7 +114,7 @@ struct TodayView: View {
                     }
                     .foregroundStyle(CSColor.accentWarm)
                 }
-                StatBar(label: "verso il livello \(p.level + 1)",
+                StatBar(label: "Verso il livello \(p.level + 1)",
                         value: percent, tint: CSColor.accent, animate: false,
                         valueText: "\(percent)%")
                 Text("\(max(0, p.needed - p.into)) PE al prossimo livello")

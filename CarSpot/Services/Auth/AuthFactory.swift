@@ -11,14 +11,19 @@ extension AppServices {
 @Observable
 final class LocalAuthService: AuthService {
     private static let key = "localAuthState"
+    private static let firstNameKey = "localPersonFirst"
+    private static let lastNameKey = "localPersonLast"
 
     private(set) var state: AuthState
     let isReady = true
+    private(set) var personName: PersonName?
 
     init() {
         let d = UserDefaults.standard
         // L'ospite non è più persistito: il vecchio "guest" (e il flag `isSignedIn`) → login.
         state = d.string(forKey: Self.key) == "signed" ? .signedIn(userId: "local-user") : .signedOut
+        personName = PersonName(first: d.string(forKey: Self.firstNameKey),
+                                last: d.string(forKey: Self.lastNameKey))
     }
 
     func signInWithApple() async throws { set(.signedIn(userId: "local-user")) }
@@ -50,8 +55,22 @@ final class LocalAuthService: AuthService {
     }
 
     func continueAsGuest() { set(.guest) }
-    func signOut() async throws { set(.signedOut) }
+    func signOut() async throws {
+        set(.signedOut)
+        personName = nil
+        UserDefaults.standard.removeObject(forKey: Self.firstNameKey)
+        UserDefaults.standard.removeObject(forKey: Self.lastNameKey)
+    }
+    func deleteAccount() async throws { try await signOut() }
+    var accountImageURL: URL? { nil }
     func sessionToken() async throws -> String? { nil }
+
+    func updatePersonName(first: String, last: String) async throws {
+        let name = PersonName(first: first, last: last)
+        personName = name
+        UserDefaults.standard.set(name?.first, forKey: Self.firstNameKey)
+        UserDefaults.standard.set(name?.last, forKey: Self.lastNameKey)
+    }
 
     private func set(_ new: AuthState) {
         state = new

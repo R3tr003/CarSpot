@@ -45,7 +45,7 @@ struct CodeSignInView: View {
                 topBar
 
                 VStack(alignment: .leading, spacing: CSSpace.sm) {
-                    Text(step == .identifier ? "Accesso" : "Verifica").eyebrow(Rarity.rara.primary)
+                    Text(stepEyebrow).eyebrow(Rarity.rara.primary)
                     Text(title)
                         .font(CSFont.display(30))
                         .foregroundStyle(CSColor.ink)
@@ -99,7 +99,7 @@ struct CodeSignInView: View {
                         .glassEffect(.regular, in: .circle)
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel(channel == .email ? "Cambia email" : "Cambia numero")
+                .accessibilityLabel(changeTitle)
             }
             Spacer()
             Button { dismiss() } label: {
@@ -115,20 +115,36 @@ struct CodeSignInView: View {
         .disabled(working)
     }
 
-    private var title: String {
+    private var stepEyebrow: LocalizedStringKey {
+        step == .identifier ? "Accesso" : "Verifica"
+    }
+
+    private var title: LocalizedStringKey {
         switch step {
         case .identifier: channel == .email ? "Continua con email" : "Continua con telefono"
         case .code: "Inserisci il codice"
         }
     }
 
-    private var subtitle: String {
+    private var subtitle: LocalizedStringKey {
         switch step {
         case .identifier:
             "Ti mandiamo un codice di 6 cifre. Niente password."
         case .code:
             "Codice inviato a \(channel == .email ? trimmedEmail : normalizedPhone)."
         }
+    }
+
+    private var changeTitle: LocalizedStringKey {
+        channel == .email ? "Cambia email" : "Cambia numero"
+    }
+
+    private var resendTitle: LocalizedStringKey {
+        resendRemaining > 0 ? "Invia di nuovo tra \(resendRemaining) s" : "Invia di nuovo"
+    }
+
+    private var resendSpoken: LocalizedStringKey {
+        resendRemaining > 0 ? "Invia di nuovo tra \(resendRemaining) secondi" : "Invia di nuovo"
     }
 
     // MARK: - Passo 1: email o numero
@@ -206,16 +222,16 @@ struct CodeSignInView: View {
             errorText
 
             Button(action: resend) {
-                Text(resendRemaining > 0 ? "Invia di nuovo tra \(resendRemaining) s" : "Invia di nuovo")
+                Text(resendTitle)
                     .font(CSFont.body(16))
                     .foregroundStyle(resendRemaining > 0 ? CSColor.inkSecondary : CSColor.accent)
                     .frame(maxWidth: .infinity, minHeight: CSSize.minTap)
             }
             .buttonStyle(.plain)
             .disabled(resendRemaining > 0)
-            .accessibilityLabel(resendRemaining > 0 ? "Invia di nuovo tra \(resendRemaining) secondi" : "Invia di nuovo")
+            .accessibilityLabel(resendSpoken)
 
-            GhostButton(title: channel == .email ? "Cambia email" : "Cambia numero", action: backToIdentifier)
+            GhostButton(title: changeTitle, action: backToIdentifier)
         }
         .onAppear { focus = .code }
     }
@@ -289,7 +305,7 @@ struct CodeSignInView: View {
                 try await action()
             } catch {
                 // Messaggio dell'auth se c'è (con [debug] in DEBUG), offline per la rete.
-                let message = AppError.message(for: error)
+                let message = AppError.shown(for: error)
                 errorMessage = message
                 AccessibilityNotification.Announcement(message).post()
             }

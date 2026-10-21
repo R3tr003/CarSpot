@@ -81,7 +81,7 @@ final class UsernameChecker {
     func markTaken() { status = .taken }
 }
 
-/// Passo 1 · scelta del nome da spotter.
+/// Passo 2 · scelta del nome da spotter.
 struct ProfileSetupNameStep: View {
     let account: ProfileAccount
     @Bindable var checker: UsernameChecker
@@ -96,7 +96,7 @@ struct ProfileSetupNameStep: View {
 
     var body: some View {
         ProfileSetupPage(
-            eyebrow: "PASSO 1 DI 3",
+            eyebrow: "PASSO 2 DI 5",
             title: "Come ti chiami in strada?",
             subtitle: "È il nome che vedono gli altri spotter nelle classifiche."
         ) {
@@ -121,19 +121,19 @@ struct ProfileSetupNameStep: View {
             }
         }
         .onChange(of: checker.droppedInput) { _, dropped in
-            if dropped { AccessibilityNotification.Announcement(Self.droppedMessage).post() }
+            if dropped { AccessibilityNotification.Announcement(String(localized: Self.droppedMessage)).post() }
         }
     }
 
-    private static let droppedMessage = "Spazi e simboli non sono ammessi"
-    private static let rulesMessage = "3–20 caratteri: lettere minuscole, numeri, _ e ."
+    private static let droppedMessage: LocalizedStringResource = "Spazi e simboli non sono ammessi"
+    private static let rulesMessage: LocalizedStringResource = "3–20 caratteri: lettere minuscole, numeri, _ e ."
 
     private func announcement(for status: UsernameChecker.Status) -> String? {
         switch status {
-        case .checking: "Controllo disponibilità"
-        case .available: "Nome disponibile"
-        case .taken: "Nome già preso"
-        case .unverified: "Non riesco a verificare il nome ora"
+        case .checking: String(localized: "Controllo disponibilità")
+        case .available: String(localized: "Nome disponibile")
+        case .taken: String(localized: "Nome già preso")
+        case .unverified: String(localized: "Non riesco a verificare il nome ora")
         default: nil
         }
     }
@@ -144,7 +144,7 @@ struct ProfileSetupNameStep: View {
                 .font(CSFont.title(20))
                 .foregroundStyle(CSColor.inkTertiary)
                 .accessibilityHidden(true)
-            TextField("", text: $checker.text, prompt: Text("nome_spotter").foregroundStyle(CSColor.inkTertiary))
+            TextField(text: $checker.text, prompt: Text("nome_spotter").foregroundStyle(CSColor.inkTertiary)) { EmptyView() }
                 .font(CSFont.title(20))
                 .foregroundStyle(CSColor.ink)
                 .tint(CSColor.accent)
@@ -211,12 +211,12 @@ struct ProfileSetupNameStep: View {
     }
 
     /// "Già preso", con un'alternativa solo se resta un nome valido (≤ 20 caratteri).
-    private var takenMessage: String {
+    private var takenMessage: LocalizedStringResource {
         let alternative = "\(checker.text)_2"
         return ProfileAccount.isValid(alternative) ? "Già preso. Prova \(alternative)" : "Già preso"
     }
 
-    private func hintRow(_ icon: String, _ text: String, _ color: Color) -> some View {
+    private func hintRow(_ icon: String, _ text: LocalizedStringResource, _ color: Color) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: CSSpace.xs) {
             Image(systemName: icon).font(CSFont.caption(13))
             Text(text).font(CSFont.caption(13)).multilineTextAlignment(.leading)

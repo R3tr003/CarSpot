@@ -128,14 +128,19 @@ Niente modalità ospite in UI (`.guest` solo per il debug `-skipAuth`).
 NON sostituirla con una barra custom, l'utente la vuole nativa). **3 tab + camera**
 come Flighty: Oggi/Collezione/Mappa + Cattura come `role: .search` (cerchio camera a
 destra). Niente tab Profilo: il **profilo si apre toccando l'avatar** nello
-`SheetHeader` (env `\.openProfile`), presentato come `.sheet`. La mappa è UNA sola
-`MKMapView` (`MapHost` in `MapBackground.swift`) montata come `.background` del `TabView`
-via `PersistentMapView`: configurata una volta sola, **non si ricarica né resetta la
-camera** al cambio tab. Niente polilinee, solo i marker delle posizioni. Ogni tab di
-contenuto è una `SheetCard` (card scura ancorata in basso, top trasparente per far
-vedere la mappa). La tab Cattura è full-bleed (camera). Le schermate sono **contenuto
-incorporabile**: niente sfondo/NavigationStack proprio (tranne Collection, che spinge al
-dettaglio), header via `SheetHeader` (titolo + share + avatar a destra), padding ~130.
+`SheetHeader` (env `\.openProfile`), presentato come `.sheet` annidato. **Struttura
+(2026-10-21):** alla radice UNA sola `MKMapView` (`MapHost`/`MapSlot` in
+`MapBackground.swift`, configurata una volta, non si ricarica) e sopra un **pannello di
+sistema** (`.sheet` sempre presentato, `interactiveDismissDisabled`) che CONTIENE la
+`TabView`: detent piccola (`.height(200)`: titolo + tab bar), media (`.fraction(0.5)`),
+`.large`; `presentationBackgroundInteraction(.enabled)` (mappa sempre toccabile),
+`presentationContentInteraction(.resizes)`, sfondo `CSColor.base`. NON tornare a un
+pannello fatto a mano (il vecchio `SheetCard` si trascinava solo dalla cima e non era
+fluido). La Cattura è il tab `role: .search` ma apre `CaptureView` in
+`.fullScreenCover` (con X per chiudere) e la selezione torna alla tab precedente.
+Niente polilinee, solo marker. Le schermate sono **contenuto incorporabile**: niente
+sfondo/NavigationStack proprio (tranne Collection, che spinge al dettaglio), header via
+`SheetHeader` (titolo + share + avatar a destra).
 
 ### Design system — usalo, non reinventare
 Tutto in `CarSpot/DesignSystem/`, documentato (regole, motion, do/don't) in

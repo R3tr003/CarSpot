@@ -34,6 +34,8 @@ final class PlayerProfile {
     static func dayKey(_ date: Date = .now) -> String {
         let f = DateFormatter()
         f.dateFormat = "yyyy-MM-dd"
+        // Chiave interna: stabile, indipendente dalla lingua e dal calendario del telefono.
+        f.locale = Locale(identifier: "en_US_POSIX")
         return f.string(from: date)
     }
 }
@@ -96,6 +98,20 @@ enum PlayerStore {
         p.xp += xp
         p.currency += currency
         try? context.save()
+        reportProgress(context)
+    }
+
+    /// Gauge di progressione per le dashboard: livello, PE e sfide completate oggi.
+    /// Si chiama dopo ogni cambio rilevante (cattura, riscatto) e all'avvio.
+    static func reportProgress(_ context: ModelContext) {
+        let p = profile(context)
+        let cards = (try? context.fetch(FetchDescriptor<StoredCard>())) ?? []
+        let completed = ChallengeEngine.today(cards: cards, claimed: p.claimedChallenges)
+            .filter(\.done).count
+        let errors = AppServices.errors
+        errors.metric(gauge: "player.level", value: Double(p.level))
+        errors.metric(gauge: "player.xp", value: Double(p.xp))
+        errors.metric(gauge: "challenge.progress", value: Double(completed))
     }
 
     /// Claims a completed daily challenge once, awarding its reward.
@@ -109,6 +125,8 @@ enum PlayerStore {
         p.xp += challenge.reward
         p.currency += challenge.reward / 4
         try? context.save()
+        AppServices.errors.metric(count: "challenge.claimed")
+        reportProgress(context)
         return true
     }
 }

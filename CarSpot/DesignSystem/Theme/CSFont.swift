@@ -1,7 +1,8 @@
 import SwiftUI
 
-/// Typography. SF Pro Rounded carries the "game" tone for numbers and titles;
-/// a tight, wide-tracked condensed treatment is used for eyebrow labels.
+/// Tipografia sobria stile Flighty: SF Pro per titoli e testo; SF Pro Rounded
+/// solo per i numeri di gioco (livello, PE, statistiche), dove porta il tono "gioco".
+/// Niente etichette in maiuscolo spaziato: le etichette sono testo normale, piccolo.
 ///
 /// Dynamic Type: la `size` richiesta viene mappata sullo stile di testo di sistema
 /// più vicino (34 → largeTitle, 22 → title2, 15 → subheadline…), quindi ogni testo
@@ -9,27 +10,27 @@ import SwiftUI
 enum CSFont {
 
     static func display(_ size: CGFloat) -> Font {
-        .system(style(for: size), design: .rounded, weight: .heavy)
+        .system(style(for: size), weight: .bold)
     }
 
     static func title(_ size: CGFloat = 22) -> Font {
-        .system(style(for: size), design: .rounded, weight: .bold)
+        .system(style(for: size), weight: .semibold)
     }
 
     static func numeric(_ size: CGFloat) -> Font {
-        .system(style(for: size), design: .rounded, weight: .black)
+        .system(style(for: size), design: .rounded, weight: .bold).monospacedDigit()
     }
 
     static func body(_ size: CGFloat = 16) -> Font {
-        .system(style(for: size), design: .rounded, weight: .medium)
+        .system(style(for: size), weight: .regular)
     }
 
     static func caption(_ size: CGFloat = 13) -> Font {
-        .system(style(for: size), design: .rounded, weight: .semibold)
+        .system(style(for: size), weight: .medium)
     }
 
     /// Micro-etichetta sotto un numero ("PE", "giorni", "uniche"): la più piccola ammessa.
-    static let micro: Font = .system(.caption2, design: .rounded, weight: .bold)
+    static let micro: Font = .system(.caption2, weight: .medium)
 
     /// Stile di testo di sistema con la dimensione di default più vicina a `size`.
     static func style(for size: CGFloat) -> Font.TextStyle {
@@ -49,12 +50,11 @@ enum CSFont {
 }
 
 extension View {
-    /// Wide-tracked uppercase eyebrow label used throughout the UI.
-    func eyebrow(_ color: Color = CSColor.inkTertiary) -> some View {
+    /// Etichetta di sezione: testo normale (niente maiuscolo spaziato), piccolo e
+    /// secondario. Il colore passato si ignora: l'accent è riservato ad azioni e progressi.
+    func eyebrow(_ color: Color = CSColor.inkSecondary) -> some View {
         self
-            .font(CSFont.micro)
-            .tracking(2.2)
-            .textCase(.uppercase)
-            .foregroundStyle(color)
+            .font(.system(.footnote, weight: .semibold))
+            .foregroundStyle(CSColor.inkSecondary)
     }
 }

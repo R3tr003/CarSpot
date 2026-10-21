@@ -35,14 +35,20 @@ final class ClerkAuthService: AuthService {
     var isReady: Bool { Clerk.shared.isLoaded }
 
     func signInWithApple() async throws {
-        try await perform { try await Clerk.shared.auth.signInWithApple() }
+        try await perform(method: "apple") { try await Clerk.shared.auth.signInWithApple() }
     }
 
     func signInWithGoogle() async throws {
-        try await perform { try await Clerk.shared.auth.signInWithOAuth(provider: .google) }
+        try await perform(method: "google") { try await Clerk.shared.auth.signInWithOAuth(provider: .google) }
     }
 
     func startCodeSignIn(_ channel: CodeChannel, identifier: String) async throws {
+        try await AppServices.errors.measure("auth.code.send", operation: "auth") {
+            try await sendCode(channel, identifier: identifier)
+        }
+    }
+
+    private func sendCode(_ channel: CodeChannel, identifier: String) async throws {
         let id = identifier.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !id.isEmpty else { throw AuthCodeError.invalidIdentifier }
         do {
@@ -72,7 +78,16 @@ final class ClerkAuthService: AuthService {
     }
 
     func verifyCode(_ code: String) async throws {
+        try await AppServices.errors.measure("auth.code.verify", operation: "auth") {
+            try await checkCode(code)
+        }
+    }
+
+    private func checkCode(_ code: String) async throws {
         guard let attempt = codeAttempt else { throw AuthCodeError.expired }
+        let channel: CodeChannel = switch attempt {
+        case .signIn(_, let channel), .signUp(_, let channel): channel
+        }
         do {
             switch attempt {
             case .signIn(let signIn, _):
@@ -80,7 +95,7 @@ final class ClerkAuthService: AuthService {
                 guard result.status == .complete, let sessionId = result.createdSessionId else {
                     if result.firstFactorVerification?.status == .expired { throw AuthCodeError.expired }
                     Self.log.error("Accesso non completato, stato: \(result.status.rawValue, privacy: .public)")
-                    throw AuthCodeError.generic(Self.debugSuffix("Accesso non completato. Riprova.",
+                    throw AuthCodeError.generic(Self.debugSuffix(String(localized: "Accesso non completato. Riprova."),
                                                                  "stato \(result.status.rawValue)"))
                 }
                 try await activate(sessionId: sessionId)
@@ -95,14 +110,16 @@ final class ClerkAuthService: AuthService {
                     let missing = result.missingFields.map(\.rawValue).joined(separator: ",")
                     Self.log.error("Registrazione incompleta: stato \(String(describing: result.status), privacy: .public), campi mancanti [\(missing, privacy: .public)]")
                     throw AuthCodeError.generic(Self.debugSuffix(
-                        "Registrazione non completata: servono altri dati. Prova con Google o Apple.",
+                        String(localized: "Registrazione non completata: servono altri dati. Prova con Google o Apple."),
                         "stato \(String(describing: result.status)), mancano [\(missing)]"))
                 }
                 try await activate(sessionId: sessionId)
             }
             codeAttempt = nil
             setGuest(false)
+            Self.trackSignIn(method: channel.analyticsMethod, success: true)
         } catch {
+            Self.trackSignIn(method: channel.analyticsMethod, success: false, error: error)
             throw fail("Verifica codice fallita", error)
         }
     }
@@ -140,24 +157,79 @@ final class ClerkAuthService: AuthService {
         setGuest(false)
     }
 
+    func deleteAccount() async throws {
+        guard let user = Clerk.shared.user else { throw AppError.generic }
+        do {
+            try await user.delete()
+        } catch {
+            Self.log.error("Eliminazione account fallita: \(Self.describe(error), privacy: .private)")
+            AppServices.errors.record(error, area: .auth, step: "delete_account")
+            throw error
+        }
+        // Normalmente Clerk azzera già la sessione; se resta un utente locale, la chiude.
+        if Clerk.shared.user != nil {
+            try? await Clerk.shared.auth.signOut()
+        }
+        setGuest(false)
+    }
+
     func sessionToken() async throws -> String? {
         try await Clerk.shared.auth.getToken()
+    }
+
+    var personName: PersonName? {
+        PersonName(first: Clerk.shared.user?.firstName, last: Clerk.shared.user?.lastName)
+    }
+
+    var accountImageURL: URL? {
+        guard let user = Clerk.shared.user else { return nil }
+        if user.hasImage, !user.imageUrl.isEmpty, let url = URL(string: user.imageUrl) { return url }
+        return user.externalAccounts
+            .compactMap(\.imageUrl)
+            .first { !$0.isEmpty }
+            .flatMap { URL(string: $0) }
+    }
+
+    func updatePersonName(first: String, last: String) async throws {
+        guard let user = Clerk.shared.user else { throw AppError.signInFailed }
+        do {
+            try await user.update(.init(
+                firstName: first.trimmingCharacters(in: .whitespacesAndNewlines),
+                lastName: last.trimmingCharacters(in: .whitespacesAndNewlines)
+            ))
+        } catch {
+            Self.log.error("Salvataggio nome fallito: \(Self.describe(error), privacy: .private)")
+            AppServices.errors.record(error, area: .auth, step: "update_name")
+            throw error
+        }
     }
 
     // MARK: - Privato
 
     /// Esegue il flusso di login; l'annullamento dell'utente esce in silenzio.
-    private func perform<T>(_ flow: () async throws -> T) async throws {
+    private func perform<T>(method: String, _ flow: () async throws -> T) async throws {
         do {
             _ = try await flow()
             setGuest(false)
+            Self.trackSignIn(method: method, success: true)
         } catch where Self.isCancellation(error) {
             Self.log.debug("Login annullato dall'utente")
         } catch {
+            Self.trackSignIn(method: method, success: false, error: error)
             Self.log.error("Login fallito: \(error.localizedDescription, privacy: .public)")
             AppServices.errors.record(error, area: .auth, step: "oauth")
             throw error
         }
+    }
+
+    /// Metrica + log operativo dell'esito. `method` è un valore enumerato (google | apple |
+    /// email | phone); gli annullamenti dell'utente non contano come fallimenti.
+    private static func trackSignIn(method: String, success: Bool, error: (any Error)? = nil) {
+        if let error, isCancellation(error) { return }
+        let result = success ? "success" : "failure"
+        let attributes: TelemetryAttributes = ["method": .string(method), "result": .string(result)]
+        AppServices.errors.metric(count: "auth.sign_in", attributes: attributes)
+        AppServices.errors.log("sign in finished", level: success ? .info : .warning, attributes: attributes)
     }
 
     /// Codici Clerk per "account inesistente" → si passa alla registrazione.

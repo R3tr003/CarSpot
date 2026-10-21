@@ -16,7 +16,7 @@ enum ConfidenceLevel: Sendable {
         }
     }
 
-    var label: String {
+    var label: LocalizedStringKey {
         switch self {
         case .alta: "Alta"
         case .media: "Media"
@@ -80,6 +80,17 @@ final class CaptureViewModel {
     private let recognizer: any RecognitionService = AppConfig.makeRecognitionService()
     private let areas = ["Centro Storico", "Lungomare", "Quartiere Nord", "Collina", "Stazione"]
 
+    /// Esito della pipeline per le metriche: valori enumerati e stabili.
+    private enum Outcome: String {
+        case success, noVehicle = "no_vehicle", unreadable
+        case recognitionFailed = "recognition_failed", offline, cancelled, error
+    }
+
+    /// Origine dello scatto per le metriche: "camera" | "library" (l'auto-capture di debug è camera).
+    private var metricSource = "camera"
+    /// Inizio della pipeline in corso (o del riconoscimento ripetuto).
+    private var pipelineStart = ContinuousClock.now
+
     /// JPEG anonimizzato, tenuto per ripetere il riconoscimento senza rifare la pipeline.
     private var safeData: Data?
     /// Foto da salvare, già codificata in background durante il riconoscimento.
@@ -98,20 +109,36 @@ final class CaptureViewModel {
     /// Run the full pipeline on raw captured/picked data (HEIC/JPEG).
     /// Decodifica, riduzione e codifica girano fuori dal main actor.
     func process(data: Data, source: String = "camera") async {
+        // Un'unica transazione per la pipeline; i passi interni sono span figli.
+        await AppServices.errors.measure("capture.pipeline", operation: "capture") {
+            await runPipeline(data: data, source: source)
+        }
+    }
+
+    private func runPipeline(data: Data, source: String) async {
         AppServices.analytics.track(.captureStarted(source: source))
+        metricSource = source == "library" ? "library" : "camera"
+        pipelineStart = .now
+        AppServices.errors.metric(count: "capture.started")
         clearCapture()
         errorMessage = nil
         phase = .processing
 
         // 0. Riduzione ImageIO (≤1600 px) + miniatura per il fermo-immagine sfocato.
-        guard let prepared = await ImageDownsampler.prepare(data: data) else {
+        let preparedImage = await AppServices.errors.measure("capture.prepare", operation: "capture") {
+            await ImageDownsampler.prepare(data: data)
+        }
+        guard let prepared = preparedImage else {
             AppServices.errors.breadcrumb("Foto non decodificabile", area: .capture)
+            finish(.unreadable)
             fail(.photoUnreadable); return
         }
         previewImage = UIImage(data: prepared.thumbnail)
 
         // 1. Anonymize on-device BEFORE anything else touches the photo.
-        let safe = await ImageAnonymizer.anonymize(jpegData: prepared.jpeg)
+        let safe = await AppServices.errors.measure("capture.anonymize", operation: "capture") {
+            await ImageAnonymizer.anonymize(jpegData: prepared.jpeg)
+        }
         anonymizedImage = UIImage(data: safe)
         safeData = safe
 
@@ -127,33 +154,50 @@ final class CaptureViewModel {
 
     private func recognize(_ data: Data) async {
         do {
-            let result = try await recognizer.recognize(imageData: data)
+            let result = try await AppServices.errors.measure("capture.recognize", operation: "capture") {
+                try await recognizer.recognize(imageData: data)
+            }
             guard !result.isEmpty else {
+                finish(.noVehicle)
                 fail(.noVehicleFound); return
             }
             candidates = result
             // Con bassa confidenza nessuna preselezione: sceglie l'utente.
             selected = isLowConfidence ? nil : result.first
             phase = .result
+            if let top = result.first {
+                AppServices.errors.metric(distribution: "recognition.confidence", value: top.confidence)
+            }
+            finish(.success, candidates: result.count)
             announceResults(result)
         } catch {
             captureLog.error("Riconoscimento fallito: \(error.localizedDescription)")
             // Ripetere ha senso per rete/server; "nessuna auto" richiede un'altra foto.
+            finish(Self.outcome(for: error))
             var retry = Retry.recognize
             if case RecognitionError.noMatch = error {
                 retry = .dismiss
             } else {
                 AppServices.errors.record(error, area: .recognition, step: "recognize")
             }
-            fail(AppError.message(for: error, fallback: .recognitionFailed), retry: retry)
+            fail(AppError.shown(for: error, fallback: .recognitionFailed), retry: retry)
         }
     }
 
     /// Persist the confirmed candidate as a collectible.
     func save(into context: ModelContext) {
+        // Fuori dalla pipeline (l'utente conferma dopo): transazione propria.
+        AppServices.errors.measureSync("capture.save", operation: "capture") {
+            persist(into: context)
+        }
+    }
+
+    private func persist(into context: ModelContext) {
         guard let candidate = selected else { return }
         let year = candidate.yearEstimate ?? Calendar.current.component(.year, from: .now)
-        let a = RarityEngine.assess(make: candidate.make, model: candidate.model, year: year)
+        let a = AppServices.errors.measureSync("capture.rarity", operation: "capture") {
+            RarityEngine.assess(make: candidate.make, model: candidate.model, year: year)
+        }
         // Se la codifica in background non è ancora pronta (raro) si ricade su quella locale.
         let photo = photoJPEG ?? anonymizedImage.flatMap { PhotoEncoding.jpeg($0) }
         let card = StoredCard(
@@ -171,7 +215,7 @@ final class CaptureViewModel {
             context.delete(card)
             captureLog.error("Salvataggio carta fallito: \(error.localizedDescription)")
             AppServices.errors.record(error, area: .capture, step: "save_card")
-            showError(AppError.message(for: error, fallback: .saveCardFailed), retry: .save)
+            showError(AppError.shown(for: error, fallback: .saveCardFailed), retry: .save)
             return
         }
         // Award XP/currency for the catch.
@@ -181,11 +225,12 @@ final class CaptureViewModel {
         if let sync = SyncService.shared { Task { await sync.didSave(card) } }
         // Nome del case (es. "leggendaria"), stabile e indipendente dalla lingua.
         AppServices.analytics.track(.cardSaved(rarity: String(describing: a.rarity)))
+        AppServices.errors.metric(count: "card.saved", attributes: ["rarity": .string(String(describing: a.rarity))])
         errorMessage = nil
         savedCard = card.asSpotCard
         phase = .saved
         AccessibilityNotification.Announcement(
-            "Aggiunta alla collezione: \(candidate.title), \(a.rarity.rawValue)"
+            String(localized: "Aggiunta alla collezione: \(candidate.title), \(a.rarity.localizedName)")
         ).post()
     }
 
@@ -198,11 +243,44 @@ final class CaptureViewModel {
         phase = .aiming
     }
 
+    // MARK: Metriche
+
+    /// Esito (e durata) della pipeline. Un riconoscimento ripetuto conta come nuovo esito.
+    private func finish(_ outcome: Outcome, candidates: Int = 0) {
+        let elapsed = ContinuousClock.now - pipelineStart
+        let ms = Double(elapsed.components.seconds) * 1_000
+            + Double(elapsed.components.attoseconds) / 1_000_000_000_000_000
+        let attributes: TelemetryAttributes = [
+            "outcome": .string(outcome.rawValue), "source": .string(metricSource),
+        ]
+        AppServices.errors.metric(count: "capture.outcome", attributes: attributes)
+        AppServices.errors.metric(distribution: "capture.duration", value: ms, unit: .millisecond,
+                                  attributes: ["outcome": .string(outcome.rawValue)])
+        AppServices.errors.log("capture finished", level: outcome == .error ? .error : .info, attributes: [
+            "outcome": .string(outcome.rawValue), "source": .string(metricSource),
+            "duration_ms": .int(Int(ms.rounded())), "candidates": .int(candidates),
+        ])
+    }
+
+    /// Esito dal tipo di errore del riconoscimento, senza leggerne il contenuto.
+    private static func outcome(for error: any Error) -> Outcome {
+        let summary = ErrorSummary(error)
+        if summary.isCancellation { return .cancelled }
+        if summary.isConnectivity { return .offline }
+        if let recognition = error as? RecognitionError {
+            switch recognition {
+            case .noMatch: return .noVehicle
+            case .network: return .recognitionFailed
+            }
+        }
+        return .error
+    }
+
     // MARK: Errori
 
     /// Errori a copy fisso segnalati dalla view (scatto, lettura foto).
     func report(_ error: AppError) {
-        showError(error.message)
+        showError(error.shown())
     }
 
     /// Chiude il banner (timer o tap) senza ripetere nulla.
@@ -219,6 +297,7 @@ final class CaptureViewModel {
         case .recognize:
             guard let data = safeData else { dismissError(); return }
             phase = .processing
+            pipelineStart = .now
             await recognize(data)
         case .save:
             save(into: context)
@@ -228,7 +307,7 @@ final class CaptureViewModel {
     }
 
     private func fail(_ error: AppError, retry: Retry = .dismiss) {
-        fail(error.message, retry: retry)
+        fail(error.shown(), retry: retry)
     }
 
     private func fail(_ message: String, retry: Retry = .dismiss) {
@@ -259,9 +338,9 @@ final class CaptureViewModel {
     private func announceResults(_ result: [VehicleCandidate]) {
         guard let first = result.first else { return }
         var text = result.count == 1
-            ? "Trovata una corrispondenza: \(first.title)."
-            : "Trovate \(result.count) corrispondenze, la prima: \(first.title)."
-        if isLowConfidence { text += " Non siamo sicuri, scegli quella giusta." }
+            ? String(localized: "Trovata una corrispondenza: \(first.title).")
+            : String(localized: "Trovate \(result.count) corrispondenze, la prima: \(first.title).")
+        if isLowConfidence { text += " " + String(localized: "Non siamo sicuri, scegli quella giusta.") }
         AccessibilityNotification.Announcement(text).post()
     }
 }

@@ -41,13 +41,36 @@ enum AuthCodeError: LocalizedError, Sendable, Equatable {
 
     var errorDescription: String? {
         switch self {
-        case .wrongCode:         "Codice non corretto"
-        case .expired:           "Codice scaduto, richiedine uno nuovo"
-        case .invalidIdentifier: "Email o numero non valido"
-        case .tooManyAttempts:   "Troppi tentativi, riprova tra poco"
-        case .unsupportedCountry: "Per ora non possiamo mandare SMS a questo numero. Usa l'email o Google."
+        case .wrongCode:         String(localized: "Codice non corretto")
+        case .expired:           String(localized: "Codice scaduto, richiedine uno nuovo")
+        case .invalidIdentifier: String(localized: "Email o numero non valido")
+        case .tooManyAttempts:   String(localized: "Troppi tentativi, riprova tra poco")
+        case .unsupportedCountry: String(localized: "Per ora non possiamo mandare SMS a questo numero. Usa l'email o Google.")
         case .generic(let msg):  msg
         }
+    }
+}
+
+/// Nome e cognome reali dell'utente. Vivono SOLO in Clerk (mai in Supabase) e sono
+/// privati: non li vedono gli altri spotter.
+struct PersonName: Equatable, Sendable {
+    var first: String
+    var last: String
+
+    /// Nome e cognome separati da uno spazio, senza parti vuote.
+    var fullName: String {
+        [first, last].filter { !$0.isEmpty }.joined(separator: " ")
+    }
+
+    var isEmpty: Bool { first.isEmpty && last.isEmpty }
+
+    /// Ritaglia gli spazi; `nil` se resta tutto vuoto.
+    init?(first: String?, last: String?) {
+        let f = (first ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let l = (last ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !f.isEmpty || !l.isEmpty else { return nil }
+        self.first = f
+        self.last = l
     }
 }
 
@@ -73,6 +96,17 @@ protocol AuthService: AnyObject {
     /// Solo debug `-skipAuth`: stato ospite in memoria, mai persistito.
     func continueAsGuest()
     func signOut() async throws
+    /// Elimina definitivamente l'account (Guideline 5.1.1(v)). Con Clerk cancella l'utente;
+    /// la pulizia su Supabase (profilo, carte, foto) la fa il webhook `user.deleted`.
+    /// Al successo `state` torna `.signedOut`.
+    func deleteAccount() async throws
+
+    /// Nome e cognome dell'utente, se presenti (con Google arrivano già da Clerk).
+    var personName: PersonName? { get }
+    /// Salva nome e cognome (solo in Clerk). Lancia se offline o se Clerk rifiuta.
+    func updatePersonName(first: String, last: String) async throws
+    /// Foto dell'account del provider (Google; Apple quando tornerà), se l'utente ne ha una.
+    var accountImageURL: URL? { get }
 
     /// JWT di sessione per Supabase. Dura ~1 minuto: chiederlo a ogni richiesta, mai
     /// salvarlo. `nil` se ospite o non loggato.

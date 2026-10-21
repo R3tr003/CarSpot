@@ -31,6 +31,9 @@ final class CameraController: NSObject {
     private let sessionQueue = DispatchQueue(label: "com.carspot.camera.session")
     /// Dimensioni di scatto scelte in configurazione (lato lungo ≥ 2016 px, le più piccole).
     private var photoDimensions: CMVideoDimensions?
+    /// Inizio dell'apertura, per misurare quanto passa prima che la sessione giri
+    /// (`camera.ready`). Si azzera dopo la misura o se la fotocamera non è utilizzabile.
+    private var openedAt: ContinuousClock.Instant?
 
     var isAvailable: Bool { status == .ready }
 
@@ -43,11 +46,12 @@ final class CameraController: NSObject {
         case .unavailable: return
         case .idle, .denied: break
         }
+        openedAt = .now
 
         // Senza fotocamera (simulatore) non chiediamo nemmeno il permesso.
         guard AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) != nil else {
             cameraLog.notice("Nessuna fotocamera posteriore disponibile")
-            status = .unavailable
+            markUnavailable(.unavailable, reason: "no_device")
             return
         }
 
@@ -57,9 +61,11 @@ final class CameraController: NSObject {
         case .notDetermined:
             status = .configuring
             let granted = await AVCaptureDevice.requestAccess(for: .video)
-            if !granted { status = .denied; return }
+            if !granted { markUnavailable(.denied, reason: "denied"); return }
+            // Il tempo passato davanti all'alert di sistema non conta come attesa.
+            openedAt = .now
         default:
-            status = .denied
+            markUnavailable(.denied, reason: "denied")
             return
         }
 
@@ -69,8 +75,18 @@ final class CameraController: NSObject {
             status = .ready
             start()
         } else {
-            status = .unavailable
+            markUnavailable(.unavailable, reason: "config_failed")
         }
+    }
+
+    /// Fotocamera non utilizzabile: conta il motivo (no_device | denied | config_failed)
+    /// solo al cambio di stato, così riprovare dopo un rifiuto non gonfia il conteggio.
+    private func markUnavailable(_ new: Status, reason: String) {
+        let changed = status != new
+        status = new
+        openedAt = nil
+        guard changed else { return }
+        AppServices.errors.metric(count: "camera.unavailable", attributes: ["reason": .string(reason)])
     }
 
     /// Configura input/output. Ritorna le dimensioni di scatto scelte, `nil` se fallisce.
@@ -119,9 +135,20 @@ final class CameraController: NSObject {
 
     func start() {
         nonisolated(unsafe) let session = self.session
-        sessionQueue.async {
+        sessionQueue.async { [weak self] in
             if !session.isRunning { session.startRunning() }
+            let running = session.isRunning
+            Task { @MainActor [weak self] in self?.sessionDidStart(running: running) }
         }
+    }
+
+    /// Prima volta che la sessione gira dopo l'apertura: misura `camera.ready` (ms).
+    private func sessionDidStart(running: Bool) {
+        guard running, let openedAt else { return }
+        self.openedAt = nil
+        let elapsed = ContinuousClock.now - openedAt
+        AppServices.errors.metric(distribution: "camera.ready", value: elapsed.telemetryMilliseconds,
+                                  unit: .millisecond)
     }
 
     func stop() {

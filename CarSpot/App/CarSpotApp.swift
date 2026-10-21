@@ -11,6 +11,8 @@ struct CarSpotApp: App {
     init() {
         // Report crash prima di tutto il resto, ma solo col consenso statistiche.
         AppServices.errors.apply(consent: AnalyticsConsentStore.load())
+        // Metriche di ciclo di vita (avvio, primo piano, permessi, stato del dispositivo).
+        AppTelemetry.shared.start()
         // Clerk va configurato una sola volta, e solo con la chiave vera (senza,
         // l'app usa l'auth locale e non tocca Clerk).
         if AppConfig.isClerkConfigured {
@@ -34,6 +36,7 @@ struct CarSpotApp: App {
                 .environment(sync)
                 .task {
                     _ = PlayerStore.profile(container.mainContext)
+                    PlayerStore.reportProgress(container.mainContext)
                 }
         }
         .modelContainer(container)

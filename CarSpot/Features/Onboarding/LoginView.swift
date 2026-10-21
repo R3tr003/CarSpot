@@ -120,7 +120,7 @@ struct LoginView: View {
     }
 
     /// Pulsante in vetro nativo, stessa famiglia per Google, email e telefono.
-    private func glassButton(_ title: String, icon: String, action: @escaping () -> Void) -> some View {
+    private func glassButton(_ title: LocalizedStringKey, icon: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: CSSpace.xs) {
                 Image(systemName: icon).font(CSFont.title(17))
@@ -154,7 +154,7 @@ struct LoginView: View {
                 }
             } catch {
                 // Il servizio ha già registrato l'errore inatteso (`ErrorReporting`).
-                let message = AppError.message(for: error, fallback: .signInFailed)
+                let message = AppError.shown(for: error, fallback: .signInFailed)
                 errorMessage = message
                 AccessibilityNotification.Announcement(message).post()
             }

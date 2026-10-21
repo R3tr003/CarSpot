@@ -9,11 +9,11 @@ struct CardDetailView: View {
     private var roll: Double { reduceMotion ? 0 : motion.roll }
     private var pitch: Double { reduceMotion ? 0 : motion.pitch }
 
-    private var infoRows: [(label: String, value: String, icon: String)] {
+    private var infoRows: [(label: LocalizedStringKey, value: String, icon: String)] {
         [("Zona", card.spottedArea, "mappin.and.ellipse"),
          ("Quando", relativeDay(card.spottedDaysAgo), "clock"),
          ("Colore", card.colorName, "paintpalette")]
-            .filter { !$0.1.trimmingCharacters(in: .whitespaces).isEmpty }
+            .filter { !$0.value.trimmingCharacters(in: .whitespaces).isEmpty }
     }
 
     var body: some View {
@@ -73,11 +73,15 @@ struct CardDetailView: View {
         }
         .navigationTitle(card.title)
         .toolbarTitleDisplayMode(.inline)
-        .onAppear { if !reduceMotion { motion.start() } }
+        .onAppear {
+            if !reduceMotion { motion.start() }
+            // Nome del case (es. "epica"), stabile e indipendente dalla lingua.
+            AppServices.errors.metric(count: "card.view", attributes: ["rarity": .string(String(describing: card.rarity))])
+        }
         .onDisappear { motion.stop() }
     }
 
-    private func infoRow(_ label: String, _ value: String, _ icon: String) -> some View {
+    private func infoRow(_ label: LocalizedStringKey, _ value: String, _ icon: String) -> some View {
         // Con Dynamic Type molto grande etichetta e valore vanno in colonna.
         ViewThatFits(in: .horizontal) {
             HStack(alignment: .firstTextBaseline) {
@@ -92,7 +96,7 @@ struct CardDetailView: View {
         }
     }
 
-    private func infoLabel(_ label: String, _ icon: String) -> some View {
+    private func infoLabel(_ label: LocalizedStringKey, _ icon: String) -> some View {
         Label(label, systemImage: icon)
             .font(CSFont.body(15)).foregroundStyle(CSColor.inkSecondary)
     }
@@ -105,12 +109,12 @@ struct CardDetailView: View {
 
     private func relativeDay(_ days: Int) -> String {
         switch days {
-        case 0: return "Oggi"
-        case 1: return "Ieri"
+        case 0: return String(localized: "Oggi")
+        case 1: return String(localized: "Ieri")
         default:
-            // "12 giorni fa", "2 mesi fa", "1 anno fa" in italiano.
+            // "12 giorni fa", "2 mesi fa", "1 anno fa" nella lingua dell'app.
             let formatter = RelativeDateTimeFormatter()
-            formatter.locale = Locale(identifier: "it_IT")
+            formatter.locale = .app
             formatter.unitsStyle = .full
             let date = Calendar.current.date(byAdding: .day, value: -days, to: .now) ?? .now
             return formatter.localizedString(for: date, relativeTo: .now)

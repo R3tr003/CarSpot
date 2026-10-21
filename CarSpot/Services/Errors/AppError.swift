@@ -1,6 +1,6 @@
 import Foundation
 
-/// Messaggio d'errore per l'utente, unico per tutta l'app: breve, in italiano, mai
+/// Messaggio d'errore per l'utente, unico per tutta l'app: breve, localizzato (italiano/inglese), mai
 /// dettagli tecnici. Le view mostrano `message`; la diagnostica va a `ErrorReporting`.
 enum AppError: LocalizedError, Equatable, Sendable {
     case offline
@@ -11,6 +11,8 @@ enum AppError: LocalizedError, Equatable, Sendable {
     case recognitionFailed
     case saveCardFailed
     case saveNameFailed
+    case saveRealNameFailed
+    case saveAvatarFailed
     case completeSetupFailed
     /// Messaggio già pronto di un errore tipizzato (`UserFacingError`).
     case custom(String)
@@ -45,19 +47,57 @@ enum AppError: LocalizedError, Equatable, Sendable {
         return mapped.message
     }
 
+    /// Come `message(for:fallback:)`, ma conta anche l'errore mostrato (`ui.error`).
+    /// Da usare dove il testo finisce a schermo.
+    static func shown(for error: any Error, fallback: AppError = .generic) -> String {
+        AppError(error, fallback: fallback).countedAsShown()
+        return message(for: error, fallback: fallback)
+    }
+
+    /// Messaggio di un caso già noto, contato come mostrato (`ui.error`).
+    func shown() -> String {
+        countedAsShown()
+        return message
+    }
+
+    private func countedAsShown() {
+        AppServices.errors.metric(count: "ui.error", attributes: ["error": .string(caseName)])
+    }
+
+    /// Nome del caso per le statistiche: mai il testo, nemmeno quello di `.custom`.
+    var caseName: String {
+        switch self {
+        case .offline: "offline"
+        case .signInFailed: "signInFailed"
+        case .photoUnreadable: "photoUnreadable"
+        case .captureFailed: "captureFailed"
+        case .noVehicleFound: "noVehicleFound"
+        case .recognitionFailed: "recognitionFailed"
+        case .saveCardFailed: "saveCardFailed"
+        case .saveNameFailed: "saveNameFailed"
+        case .saveRealNameFailed: "saveRealNameFailed"
+        case .saveAvatarFailed: "saveAvatarFailed"
+        case .completeSetupFailed: "completeSetupFailed"
+        case .custom: "custom"
+        case .generic: "generic"
+        }
+    }
+
     var message: String {
         switch self {
-        case .offline: "Sei offline. Controlla la connessione e riprova."
-        case .signInFailed: "Accesso non riuscito. Riprova."
-        case .photoUnreadable: "Non sono riuscito a leggere la foto. Riprova."
-        case .captureFailed: "Scatto non riuscito. Riprova."
-        case .noVehicleFound: "Nessuna auto riconosciuta. Inquadra l'auto di 3/4 e riprova."
-        case .recognitionFailed: "Non sono riuscito a riconoscere l'auto. Riprova."
-        case .saveCardFailed: "Non sono riuscito a salvare la carta. Riprova."
-        case .saveNameFailed: "Non riesco a salvare il nome. Controlla la connessione e riprova."
-        case .completeSetupFailed: "Non riesco a completare ora. Controlla la connessione e riprova."
+        case .offline: String(localized: "Sei offline. Controlla la connessione e riprova.")
+        case .signInFailed: String(localized: "Accesso non riuscito. Riprova.")
+        case .photoUnreadable: String(localized: "Non sono riuscito a leggere la foto. Riprova.")
+        case .captureFailed: String(localized: "Scatto non riuscito. Riprova.")
+        case .noVehicleFound: String(localized: "Nessuna auto riconosciuta. Inquadra l'auto di 3/4 e riprova.")
+        case .recognitionFailed: String(localized: "Non sono riuscito a riconoscere l'auto. Riprova.")
+        case .saveCardFailed: String(localized: "Non sono riuscito a salvare la carta. Riprova.")
+        case .saveNameFailed: String(localized: "Non riesco a salvare il nome. Controlla la connessione e riprova.")
+        case .saveRealNameFailed: String(localized: "Non riesco a salvare nome e cognome. Controlla la connessione e riprova.")
+        case .saveAvatarFailed: String(localized: "Non riesco a salvare la foto. Controlla la connessione e riprova.")
+        case .completeSetupFailed: String(localized: "Non riesco a completare ora. Controlla la connessione e riprova.")
         case .custom(let text): text
-        case .generic: "Qualcosa è andato storto. Riprova."
+        case .generic: String(localized: "Qualcosa è andato storto. Riprova.")
         }
     }
 

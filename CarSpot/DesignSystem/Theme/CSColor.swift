@@ -23,11 +23,6 @@ enum CSColor {
     // MARK: Brand accent — electric "spotting" cyan-green
     static let accent = Color(hex: 0x1CD5F3)
     static let accentWarm = Color(hex: 0xFFB23E)
-    /// Avatar e identità dell'utente: accent, mai i colori di rarità.
-    static let accentGradient = LinearGradient(
-        colors: [Color(hex: 0x1CD5F3), Color(hex: 0x1592B0)],
-        startPoint: .topLeading, endPoint: .bottomTrailing
-    )
     /// Fondo del pulsante "Accedi con Apple" (bianco, come quello di sistema).
     static let appleButton = Color.white
 

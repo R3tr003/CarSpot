@@ -2,7 +2,7 @@ import SwiftUI
 
 /// A labelled 0...100 stat with an animated fill. Used on card detail and duels.
 struct StatBar: View {
-    var label: String
+    var label: LocalizedStringKey
     var value: Int
     var tint: Color
     var animate: Bool = true
@@ -28,16 +28,13 @@ struct StatBar: View {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule().fill(.white.opacity(0.08))
+                    // Riempimento piatto, senza alone.
                     Capsule()
-                        .fill(
-                            LinearGradient(colors: [tint.opacity(0.7), tint],
-                                           startPoint: .leading, endPoint: .trailing)
-                        )
+                        .fill(tint)
                         .frame(width: geo.size.width * shown)
-                        .shadow(color: tint.opacity(0.5), radius: 6, y: 0)
                 }
             }
-            .frame(height: 8)
+            .frame(height: 6)
         }
         .onAppear { update(animated: animate) }
         .onChange(of: value) { update(animated: animate) }

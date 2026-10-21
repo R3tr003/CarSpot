@@ -97,12 +97,16 @@ struct RootGate: View {
                 // Il profilo deve esistere prima della prima carta (FK): poi si legge
                 // lo stato del setup e parte il sync.
                 Task {
-                    do {
-                        try await backend.ensureProfile(userId: id)
-                    } catch {
-                        AppServices.errors.record(error, area: .profile, step: "ensure_profile")
+                    await AppServices.errors.measure("profile.load", operation: "profile") {
+                        do {
+                            try await AppServices.errors.measure("profile.ensure", operation: "profile") {
+                                try await backend.ensureProfile(userId: id)
+                            }
+                        } catch {
+                            AppServices.errors.record(error, area: .profile, step: "ensure_profile")
+                        }
+                        await account.load(userId: id)
                     }
-                    await account.load(userId: id)
                     await sync?.signedIn(userId: id)
                 }
             }

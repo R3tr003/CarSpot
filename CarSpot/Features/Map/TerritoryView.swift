@@ -2,7 +2,7 @@ import SwiftUI
 
 private struct Neighborhood: Identifiable {
     let id = UUID()
-    var name: String
+    var name: LocalizedStringResource
     var supervisor: String?
     var uniqueSpots: Int
     var youHold: Bool
@@ -10,9 +10,9 @@ private struct Neighborhood: Identifiable {
 
 struct TerritoryView: View {
     private let zones: [Neighborhood] = [
-        .init(name: "Centro Storico", supervisor: "Tu", uniqueSpots: 42, youHold: true),
+        .init(name: "Centro Storico", supervisor: String(localized: "Tu"), uniqueSpots: 42, youHold: true),
         .init(name: "Lungomare", supervisor: "marco_rs", uniqueSpots: 38, youHold: false),
-        .init(name: "Quartiere Nord", supervisor: "Tu", uniqueSpots: 27, youHold: true),
+        .init(name: "Quartiere Nord", supervisor: String(localized: "Tu"), uniqueSpots: 27, youHold: true),
         .init(name: "Collina", supervisor: "giulia.v", uniqueSpots: 19, youHold: false),
         .init(name: "Stazione", supervisor: nil, uniqueSpots: 8, youHold: false)
     ]
@@ -41,7 +41,7 @@ struct TerritoryView: View {
         GlassPanel(tint: CSColor.accent) {
             HStack {
                 VStack(alignment: .leading, spacing: CSSpace.xxs) {
-                    Text("Controlli \(heldCount) \(heldCount == 1 ? "quartiere" : "quartieri")").font(CSFont.title(18)).foregroundStyle(CSColor.ink)
+                    Text("Controlli \(heldCount) quartieri").font(CSFont.title(18)).foregroundStyle(CSColor.ink)
                     Text("+45 risorse al giorno").font(CSFont.caption()).foregroundStyle(CSColor.accentWarm)
                 }
                 Spacer()
@@ -63,7 +63,7 @@ struct TerritoryView: View {
                 .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: CSSpace.xxs) {
                     Text(zone.name).font(CSFont.body(16)).foregroundStyle(CSColor.ink)
-                    Text(zone.supervisor.map { "Supervisore: \($0)" } ?? "Nessun supervisore")
+                    Text(zone.supervisor.map { String(localized: "Supervisore: \($0)") } ?? String(localized: "Nessun supervisore"))
                         .font(CSFont.caption(12)).foregroundStyle(CSColor.inkSecondary)
                 }
                 Spacer()
@@ -74,7 +74,7 @@ struct TerritoryView: View {
             }
         }
         .accessibilityElement(children: .combine)
-        .accessibilityValue(zone.youHold ? "Lo controlli tu" : "")
+        .accessibilityValue(zone.youHold ? Text("Lo controlli tu") : Text(verbatim: ""))
     }
 }
 

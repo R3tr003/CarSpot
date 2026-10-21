@@ -24,30 +24,29 @@ colors:
   rarity-leggendaria-rose: "#FF5E7E"
 typography:
   display:
-    fontFamily: "SF Pro Rounded"
+    fontFamily: "SF Pro"
     fontSize: "34pt (largeTitle, Dynamic Type)"
-    fontWeight: 800
-  title:
-    fontFamily: "SF Pro Rounded"
-    fontSize: "22pt (title2, Dynamic Type)"
     fontWeight: 700
+  title:
+    fontFamily: "SF Pro"
+    fontSize: "22pt (title2, Dynamic Type)"
+    fontWeight: 600
   numeric:
     fontFamily: "SF Pro Rounded"
     fontSize: "variabile, stile di testo più vicino"
-    fontWeight: 900
+    fontWeight: 700
   body:
-    fontFamily: "SF Pro Rounded"
+    fontFamily: "SF Pro"
     fontSize: "16pt (callout, Dynamic Type)"
-    fontWeight: 500
+    fontWeight: 400
   caption:
-    fontFamily: "SF Pro Rounded"
+    fontFamily: "SF Pro"
+    fontSize: "13pt (footnote, Dynamic Type)"
+    fontWeight: 500
+  eyebrow:
+    fontFamily: "SF Pro"
     fontSize: "13pt (footnote, Dynamic Type)"
     fontWeight: 600
-  eyebrow:
-    fontFamily: "SF Pro Rounded"
-    fontSize: "11pt (caption2, Dynamic Type)"
-    fontWeight: 700
-    letterSpacing: "2.2pt"
 rounded:
   sm: "14pt"
   md: "22pt"
@@ -114,7 +113,7 @@ tutto il resto si tiene sobrio perché le carte possano brillare.
 - Dark-first, mai nero puro: l'asfalto è `#0B0C0F`, non `#000`.
 - La rarità è la spina dorsale visiva: gradiente, bordo, glow e foil di ogni carta derivano da `Rarity`.
 - Vetro solo nativo (`.glassEffect`), mai blur fatto a mano.
-- Tipografia SF Pro Rounded ovunque, che scala con Dynamic Type.
+- Tipografia SF Pro (Rounded solo sui numeri di gioco), che scala con Dynamic Type.
 - Motion fisica e breve, senza rimbalzi sulle interazioni frequenti; il "momento wow" è riservato al reveal di una carta rara.
 
 ## Colors
@@ -150,18 +149,19 @@ per le ricompense. I colori saturi appartengono alle rarità.
 
 ## Typography
 
-**Font unico:** SF Pro Rounded (`design: .rounded`), pesi da medium a black.
+**Font:** SF Pro per titoli e testo; SF Pro Rounded (`design: .rounded`, bold, cifre a larghezza fissa) solo per i numeri di gioco.
 
-**Character:** arrotondato e pesante sui numeri e sui titoli per il tono da gioco; l'eyebrow maiuscolo con tracking largo dà il registro "scheda tecnica".
+**Character:** sobrio come Flighty. Il tono da gioco lo danno i numeri e le carte, non la tipografia. Niente maiuscolo spaziato: era il segnale più evidente di interfaccia "generata" (restyle 2026-10-21).
 
 ### Hierarchy
 `CSFont` mappa la size richiesta sullo stile di testo di sistema più vicino, quindi tutto scala con Dynamic Type.
-- **Display** (heavy, 34 → largeTitle): titoli di schermata (`SheetHeader`), hero dell'onboarding.
-- **Title** (bold, 17–22 → body/title2): titoli di card, nomi auto, pulsanti.
-- **Numeric** (black): contatori, livello, PE, statistiche.
-- **Body** (medium, 15–16 → subheadline/callout): testo corrente.
-- **Caption** (semibold, 12–13 → caption/footnote): metadati, hint, errori inline.
-- **Eyebrow / Micro** (bold 11 → caption2, tracking 2,2, MAIUSCOLO): etichette di sezione ed etichette sotto i numeri. È la dimensione minima: niente testo sotto gli 11 pt.
+- **Display** (bold, 34 → largeTitle): titoli di schermata (`SheetHeader`), hero dell'onboarding.
+- **Title** (semibold, 17–22 → body/title2): titoli di card, nomi auto, pulsanti.
+- **Numeric** (Rounded bold, cifre fisse): contatori, livello, PE, statistiche.
+- **Body** (regular, 15–16 → subheadline/callout): testo corrente.
+- **Caption** (medium, 12–13 → caption/footnote): metadati, hint, errori inline.
+- **Eyebrow** (`.eyebrow()`, semibold footnote, `inkSecondary`, maiuscola solo iniziale): etichette di sezione. Il colore passato si ignora.
+- **Micro** (`CSFont.micro`, medium 11 → caption2): etichette sotto i numeri. È la dimensione minima: niente testo sotto gli 11 pt.
 
 ### Named Rules
 **The Eleven Point Floor Rule.** Nessun testo sotto `caption2`. Le micro-etichette usano `CSFont.micro`.
@@ -170,16 +170,15 @@ per le ricompense. I colori saturi appartengono alle rarità.
 
 ## Layout
 
-Scala di spaziatura `CSSpace`: 4 · 6 · 10 · 16 · 24 · 36 · 56. Il margine standard di schermata è `lg` (24), quello interno ai pannelli `lg`, e le righe compatte `md` (16). La collezione è una griglia a 2 colonne flessibili con gap `md`. Le schermate dei tab sono contenuto incorporabile dentro `SheetCard`: niente sfondo né NavigationStack proprio (eccetto Collezione), con padding inferiore che lascia libera la tab bar. Ogni target tattile è ≥ 44 pt (`CSSize.minTap`).
+Scala di spaziatura `CSSpace`: 4 · 6 · 10 · 16 · 24 · 36 · 56. Il margine standard di schermata è `lg` (24), quello interno ai pannelli `lg`, e le righe compatte `md` (16). La collezione è una griglia a 2 colonne flessibili con gap `md`. Le schermate dei tab sono contenuto incorporabile dentro il pannello di sistema (`.sheet` con la `TabView`): niente sfondo né NavigationStack proprio (eccetto Collezione), con padding inferiore che lascia libera la tab bar. Ogni target tattile è ≥ 44 pt (`CSSize.minTap`).
 
 ## Elevation & Depth
 
-La profondità viene dal vetro, non dalle ombre. Le superfici in Liquid Glass nativo (`GlassPanel`, `.glassEffect`) stanno sopra la mappa e l'asfalto, con un bordo speculare (gradiente bianco 35% → trasparente → hairline) che dà lo spessore. Le ombre sono riservate alle carte (ombra nera morbida e glow della rarità) e ai pulsanti primari (alone del loro gradiente).
+La profondità viene dal vetro, non dalle ombre. Le superfici in Liquid Glass nativo (`GlassPanel`, `.glassEffect`) stanno sopra la mappa e l'asfalto, e il bordo speculare è quello del materiale di sistema. `GlassPanel` è sempre neutro: niente tint colorato (il parametro `tint` è ignorato). Ombre e glow solo sulle carte e su ciò che fluttua davvero (il pannello di sistema); niente aloni su avatar, barre o pulsanti.
 
 ### Shadow Vocabulary
 - **Carta** (nero 50%, r 20, y 14 + glow `rarity.primary × glowStrength × 0,5`, r 24): dettaglio e reveal.
 - **Carta compatta** (nero 30%, r 10, y 6, nessun glow): griglia della collezione.
-- **Pulsante primario** (primo colore del gradiente 50%, r 18, y 8).
 
 ## Shapes
 
@@ -188,7 +187,7 @@ Forme continue (`style: .continuous`) ovunque. Raggi: 14 per elementi interni (f
 ## Components
 
 ### Buttons
-- **Primary** (`PrimaryButton`): capsula con il gradiente (default Rara), testo `inkInverse`, altezza minima 52, haptic medium (disattivabile con `haptic: false` quando l'azione ha già il suo feedback).
+- **Primary** (`PrimaryButton`): capsula a colore pieno (primo colore di `gradient`, default accent), senza alone, testo `inkInverse`, altezza minima 52, haptic medium (disattivabile con `haptic: false` quando l'azione ha già il suo feedback).
 - **Ghost** (`GhostButton`): capsula in vetro interattivo, testo `ink`. Le scelte di pari peso (es. il consenso statistiche) usano due Ghost.
 - **Pressione** (`CSPressStyle`): scala 0,97 con `.spring(duration: 0.2, bounce: 0)`; con Reduce Motion solo attenuazione. Ogni pulsante custom lo usa: mai `DragGesture` per il press.
 

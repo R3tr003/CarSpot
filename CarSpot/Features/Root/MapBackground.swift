@@ -3,8 +3,7 @@ import MapKit
 
 /// Possiede l'UNICA `MKMapView` dell'app. La stessa istanza viene riusata ovunque:
 /// cambiando tab la mappa non si ricarica e la camera non si resetta. Invece di
-/// stare dietro la `TabView` (dove i container UIKit della tab bar si mangiano i
-/// tocchi), viene riagganciata come subview del container della tab attiva.
+/// sta alla radice del guscio, sotto il pannello di sistema che contiene la `TabView`.
 @MainActor
 final class MapHost: NSObject, MKMapViewDelegate {
     let mapView = MKMapView()
@@ -12,16 +11,24 @@ final class MapHost: NSObject, MKMapViewDelegate {
     /// La camera segue l'utente una sola volta, alla prima posizione utile.
     private var followedUser = false
 
-    /// Frazione di altezza lasciata alla mappa dal pannello in posizione media.
-    private let sheetPeek: CGFloat = 0.30
+    /// Frazione di altezza lasciata alla mappa dal pannello in posizione media
+    /// (`RootShellView.mediumDetent` = metà schermo).
+    private let sheetPeek: CGFloat = 0.50
     /// Zoom "città" del primo centraggio.
     private let citySpan: CLLocationDegrees = 0.05
+    /// Il cambio di regione in corso nasce da un gesto dell'utente (non da `setRegion`).
+    private var userIsMoving = false
+    /// Ultima interazione contata: al massimo una ogni 10 s per le statistiche.
+    private var lastInteractionReport: ContinuousClock.Instant?
+    private let interactionReportInterval: Duration = .seconds(10)
 
     func configure() {
         guard !configured else { return }
         configured = true
 
         mapView.delegate = self
+        // Mostra il punto dell'utente: mai nei replay di sessione.
+        AppServices.errors.maskInReplays(mapView)
         // Stile sobrio alla Flighty: mappa standard scura e attenuata, i marker
         // delle rarità restano l'unico colore forte.
         mapView.preferredConfiguration = MKStandardMapConfiguration(elevationStyle: .flat,
@@ -81,6 +88,22 @@ final class MapHost: NSObject, MKMapViewDelegate {
             MKCoordinateRegion(center: center,
                                span: MKCoordinateSpan(latitudeDelta: citySpan, longitudeDelta: citySpan)),
             animated: true)
+    }
+
+    func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
+        // Un gesto in corso lascia i recognizer interni della mappa in `began`/`ended`.
+        userIsMoving = mapView.subviews.first?.gestureRecognizers?.contains {
+            $0.state == .began || $0.state == .ended
+        } ?? false
+    }
+
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        guard userIsMoving else { return }
+        userIsMoving = false
+        let now = ContinuousClock.now
+        if let last = lastInteractionReport, now - last < interactionReportInterval { return }
+        lastInteractionReport = now
+        AppServices.errors.metric(count: "map.interaction")
     }
 
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -158,8 +181,8 @@ struct SpotPlace: Identifiable {
     static let sample: [SpotPlace] = [
         SpotPlace(name: "Barcelona", latitude: 41.39, longitude: 2.16, rarity: .rara),
         SpotPlace(name: "Madrid", latitude: 40.41, longitude: -3.70, rarity: .comune),
-        SpotPlace(name: "Firenze", latitude: 43.77, longitude: 11.25, rarity: .leggendaria),
-        SpotPlace(name: "Roma", latitude: 41.90, longitude: 12.49, rarity: .epica),
-        SpotPlace(name: "Milano", latitude: 45.46, longitude: 9.19, rarity: .rara)
+        SpotPlace(name: String(localized: "Firenze"), latitude: 43.77, longitude: 11.25, rarity: .leggendaria),
+        SpotPlace(name: String(localized: "Roma"), latitude: 41.90, longitude: 12.49, rarity: .epica),
+        SpotPlace(name: String(localized: "Milano"), latitude: 45.46, longitude: 9.19, rarity: .rara)
     ]
 }

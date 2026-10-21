@@ -11,7 +11,7 @@ struct RarityBadge: View {
                 .font(.system(.caption2, design: .rounded, weight: .heavy))
                 .imageScale(compact ? .medium : .small)
             if !compact {
-                Text(rarity.rawValue)
+                Text(rarity.displayName)
                     .font(.system(.caption2, design: .rounded, weight: .heavy))
                     .tracking(0.6)
                     .textCase(.uppercase)
@@ -28,7 +28,7 @@ struct RarityBadge: View {
         )
         .shadow(color: rarity.primary.opacity(rarity.glowStrength), radius: 8, y: 2)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Rarità \(rarity.rawValue)")
+        .accessibilityLabel("Rarità \(rarity.localizedName)")
     }
 }
 

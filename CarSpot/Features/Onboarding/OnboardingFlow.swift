@@ -261,7 +261,7 @@ private struct ConsentPage: View {
         }
     }
 
-    private func row(_ icon: String, _ text: String) -> some View {
+    private func row(_ icon: String, _ text: LocalizedStringKey) -> some View {
         HStack(spacing: CSSpace.md) {
             Image(systemName: icon)
                 .font(CSFont.title(16))
@@ -279,9 +279,9 @@ private struct ConsentPage: View {
 // MARK: - Scaffold condiviso delle pagine animate
 
 private struct OnboardingScaffold<Content: View>: View {
-    var eyebrow: String
-    var title: String
-    var subtitle: String
+    var eyebrow: LocalizedStringKey
+    var title: LocalizedStringKey
+    var subtitle: LocalizedStringKey
     @ViewBuilder var content: Content
 
     var body: some View {

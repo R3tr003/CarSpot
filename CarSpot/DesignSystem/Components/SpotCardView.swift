@@ -92,20 +92,24 @@ struct SpotCardView: View {
                 radius: compact ? 0 : 24, y: 0)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabelText)
-        .accessibilityValue(showStats
-            ? "Potenza \(card.power), Agilità \(card.agility), Presenza \(card.presence)"
-            : "")
+        .accessibilityValue(statsSpoken)
+    }
+
+    /// Statistiche lette a voce (vuote se la carta non le mostra).
+    private var statsSpoken: String {
+        guard showStats else { return "" }
+        return String(localized: "Potenza \(card.power), Agilità \(card.agility), Presenza \(card.presence)")
     }
 
     private var accessibilityLabelText: String {
         var parts = ["\(card.make) \(card.model)"]
         if card.year > 0 { parts.append(String(card.year)) }
-        parts.append(card.rarity.rawValue)
+        parts.append(card.rarity.localizedName)
         parts.append(card.colorName)
         return parts.joined(separator: ", ")
     }
 
-    private func miniStat(_ label: String, _ value: Int) -> some View {
+    private func miniStat(_ label: LocalizedStringKey, _ value: Int) -> some View {
         VStack(spacing: 1) {
             Text("\(value)").font(CSFont.numeric(15)).foregroundStyle(CSColor.ink)
             Text(label).font(CSFont.micro).tracking(1)

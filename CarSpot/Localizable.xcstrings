@@ -1,0 +1,3169 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+      "comment" : "Stringa vuota (nessun testo): titolo/aiuto assente in certi stati.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "@"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "%@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "%@ L'accesso è limitato dalle restrizioni di questo dispositivo." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Access is limited by this device's restrictions."
+          }
+        }
+      }
+    },
+    "%lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "%lld / %lld PE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld / %2$lld XP"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld / %2$lld PE"
+          }
+        }
+      }
+    },
+    "%lld di %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld of %2$lld"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld di %2$lld"
+          }
+        }
+      }
+    },
+    "%lld PE al livello %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld XP to level %2$lld"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld PE al livello %2$lld"
+          }
+        }
+      }
+    },
+    "%lld PE al prossimo livello" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld XP to next level"
+          }
+        }
+      }
+    },
+    "%lld percento" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld percent"
+          }
+        }
+      }
+    },
+    "%lld su 100" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld out of 100"
+          }
+        }
+      }
+    },
+    "+%lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%lld"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "+%lld PE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%lld XP"
+          }
+        }
+      }
+    },
+    "+39" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+39"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "+45 risorse al giorno" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+45 resources per day"
+          }
+        }
+      }
+    },
+    "000000" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "000000"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "3–20 caratteri: lettere minuscole, numeri, _ e ." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3–20 characters: lowercase letters, numbers, _ and ."
+          }
+        }
+      }
+    },
+    "Accedi per salvare la tua collezione e ritrovarla su ogni dispositivo." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in to save your collection and find it on every device."
+          }
+        }
+      }
+    },
+    "Accesso" : {
+      "comment" : "Intestazione (eyebrow) del passo di accesso.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in"
+          }
+        }
+      }
+    },
+    "Accesso alla fotocamera negato" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Camera access denied"
+          }
+        }
+      }
+    },
+    "Accesso non completato. Riprova." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign-in not completed. Try again."
+          }
+        }
+      }
+    },
+    "Accesso non riuscito. Riprova." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign-in failed. Try again."
+          }
+        }
+      }
+    },
+    "Account" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account"
+          }
+        }
+      }
+    },
+    "Aggiungi 3 auto alla collezione" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add 3 cars to your collection"
+          }
+        }
+      }
+    },
+    "Aggiungi alla collezione" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add to collection"
+          }
+        }
+      }
+    },
+    "Aggiunta alla collezione" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Added to your collection"
+          }
+        }
+      }
+    },
+    "Aggiunta alla collezione: %@, %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Added to your collection: %1$@, %2$@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aggiunta alla collezione: %1$@, %2$@"
+          }
+        }
+      }
+    },
+    "Agilità" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agility"
+          }
+        }
+      }
+    },
+    "AGL" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AGI"
+          }
+        }
+      }
+    },
+    "Alta" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "High"
+          }
+        }
+      }
+    },
+    "Ancora nessun avvistamento. Fotografa la tua prima auto." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No sightings yet. Photograph your first car."
+          }
+        }
+      }
+    },
+    "Anno stimato %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estimated year %@"
+          }
+        }
+      }
+    },
+    "Annulla" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "Anteprima · dati di esempio" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preview · sample data"
+          }
+        }
+      }
+    },
+    "Apre le Impostazioni di iPhone" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens iPhone Settings"
+          }
+        }
+      }
+    },
+    "Apre profilo e impostazioni" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens profile and settings"
+          }
+        }
+      }
+    },
+    "Apri Impostazioni" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings"
+          }
+        }
+      }
+    },
+    "Apri Impostazioni per %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings for %@"
+          }
+        }
+      }
+    },
+    "Avanti" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        }
+      }
+    },
+    "Avvistamento" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sighting"
+          }
+        }
+      }
+    },
+    "Bassa" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Low"
+          }
+        }
+      }
+    },
+    "Benvenuto" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome"
+          }
+        }
+      }
+    },
+    "BENVENUTO SU CARSPOT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WELCOME TO CARSPOT"
+          }
+        }
+      }
+    },
+    "Buona caccia" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Happy hunting"
+          }
+        }
+      }
+    },
+    "Buona caccia, @%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Happy hunting, @%@"
+          }
+        }
+      }
+    },
+    "Cacciatore Livello %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hunter Level %lld"
+          }
+        }
+      }
+    },
+    "Cambia email" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change email"
+          }
+        }
+      }
+    },
+    "Cambia foto" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change photo"
+          }
+        }
+      }
+    },
+    "Cambia foto profilo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change profile photo"
+          }
+        }
+      }
+    },
+    "Cambia numero" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change number"
+          }
+        }
+      }
+    },
+    "CarSpot" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CarSpot"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "Carte" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cards"
+          }
+        }
+      }
+    },
+    "Cattura" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capture"
+          }
+        }
+      }
+    },
+    "Cattura 2 auto oggi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capture 2 cars today"
+          }
+        }
+      }
+    },
+    "Cattura un'altra" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capture another"
+          }
+        }
+      }
+    },
+    "Cattura un'auto Epica" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capture an Epic car"
+          }
+        }
+      }
+    },
+    "Cattura una Rara o superiore" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capture a Rare or higher"
+          }
+        }
+      }
+    },
+    "Centro Storico" : {
+      "comment" : "Quartiere di esempio.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Old Town"
+          }
+        }
+      }
+    },
+    "Chiudi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    },
+    "Ci aiuti a migliorare CarSpot?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Help us improve CarSpot?"
+          }
+        }
+      }
+    },
+    "Ci dicono come viene usata l'app e ci avvisano degli errori. Mai foto, targhe o posizione." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "They show us how the app is used and alert us to errors. Never photos, plates or location."
+          }
+        }
+      }
+    },
+    "Codice di verifica a 6 cifre" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6-digit verification code"
+          }
+        }
+      }
+    },
+    "Codice inviato a %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Code sent to %@."
+          }
+        }
+      }
+    },
+    "Codice non corretto" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Incorrect code"
+          }
+        }
+      }
+    },
+    "Codice scaduto, richiedine uno nuovo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Code expired, request a new one"
+          }
+        }
+      }
+    },
+    "Cognome" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last name"
+          }
+        }
+      }
+    },
+    "Colleziona" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Collect"
+          }
+        }
+      }
+    },
+    "Collezione" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Collection"
+          }
+        }
+      }
+    },
+    "Collina" : {
+      "comment" : "Quartiere di esempio.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hillside"
+          }
+        }
+      }
+    },
+    "Colore" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Color"
+          }
+        }
+      }
+    },
+    "Come ti chiami in strada?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What's your street name?"
+          }
+        }
+      }
+    },
+    "Come ti chiami?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What's your name?"
+          }
+        }
+      }
+    },
+    "Comune" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Common"
+          }
+        }
+      }
+    },
+    "Condividi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share"
+          }
+        }
+      }
+    },
+    "Confermi il match?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirm the match?"
+          }
+        }
+      }
+    },
+    "Conquista il quartiere" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conquer the neighborhood"
+          }
+        }
+      }
+    },
+    "Conquista la zona" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conquer your area"
+          }
+        }
+      }
+    },
+    "Consenti" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allow"
+          }
+        }
+      }
+    },
+    "Consenti %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allow %@"
+          }
+        }
+      }
+    },
+    "Consenti statistiche anonime" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allow anonymous stats"
+          }
+        }
+      }
+    },
+    "Consentito" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allowed"
+          }
+        }
+      }
+    },
+    "Continua" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        }
+      }
+    },
+    "Continua con Apple" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue with Apple"
+          }
+        }
+      }
+    },
+    "Continua con email" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue with email"
+          }
+        }
+      }
+    },
+    "Continua con Google" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue with Google"
+          }
+        }
+      }
+    },
+    "Continua con telefono" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue with phone"
+          }
+        }
+      }
+    },
+    "Continua più tardi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue later"
+          }
+        }
+      }
+    },
+    "Controlli %lld quartieri" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "You control %lld neighborhood"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "You control %lld neighborhoods"
+                }
+              }
+            }
+          }
+        },
+        "it" : {
+          "variations" : {
+            "plural" : {
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Controlli %lld quartieri"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Controlli %lld quartiere"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Controlli %lld quartieri"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Controllo disponibilità" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking availability"
+          }
+        }
+      }
+    },
+    "Controllo…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking…"
+          }
+        }
+      }
+    },
+    "Così gli altri spotter ti riconoscono in classifica. Puoi cambiarla quando vuoi dal profilo." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is how other spotters recognize you on the leaderboard. You can change it any time from your profile."
+          }
+        }
+      }
+    },
+    "Da chiedere" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not asked yet"
+          }
+        }
+      }
+    },
+    "Dati conservati in Europa" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data stored in Europe"
+          }
+        }
+      }
+    },
+    "Dati non sincronizzati" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unsynced data"
+          }
+        }
+      }
+    },
+    "Disponibile" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Available"
+          }
+        }
+      }
+    },
+    "Due permessi, spiegati bene" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Two permissions, clearly explained"
+          }
+        }
+      }
+    },
+    "Foto da ritagliare" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo to crop"
+          }
+        }
+      }
+    },
+    "Foto profilo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profile photo"
+          }
+        }
+      }
+    },
+    "La tua foto" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your photo"
+          }
+        }
+      }
+    },
+    "Nessuna foto profilo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No profile photo"
+          }
+        }
+      }
+    },
+    "Non riesco a salvare la foto. Controlla la connessione e riprova." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I can't save the photo. Check your connection and try again."
+          }
+        }
+      }
+    },
+    "Passo %lld di 5" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Step %lld of 5"
+          }
+        }
+      }
+    },
+    "PASSO 1 DI 5" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STEP 1 OF 5"
+          }
+        }
+      }
+    },
+    "PASSO 2 DI 5" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STEP 2 OF 5"
+          }
+        }
+      }
+    },
+    "PASSO 3 DI 5" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STEP 3 OF 5"
+          }
+        }
+      }
+    },
+    "PASSO 4 DI 5" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STEP 4 OF 5"
+          }
+        }
+      }
+    },
+    "PASSO 5 DI 5" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STEP 5 OF 5"
+          }
+        }
+      }
+    },
+    "Rimuovi foto" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove photo"
+          }
+        }
+      }
+    },
+    "Salta per ora" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skip for now"
+          }
+        }
+      }
+    },
+    "Scatta una foto" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Take a photo"
+          }
+        }
+      }
+    },
+    "Scegli dalla libreria" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose from library"
+          }
+        }
+      }
+    },
+    "Sposta e ridimensiona" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Move and scale"
+          }
+        }
+      }
+    },
+    "Trascina per spostare, pizzica per ingrandire" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drag to move, pinch to zoom"
+          }
+        }
+      }
+    },
+    "Usa foto" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use photo"
+          }
+        }
+      }
+    },
+    "È il nome che vedono gli altri spotter nelle classifiche." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It's the name other spotters see on the leaderboards."
+          }
+        }
+      }
+    },
+    "Elimina account" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete account"
+          }
+        }
+      }
+    },
+    "Eliminare l'account?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete your account?"
+          }
+        }
+      }
+    },
+    "Eliminazione non riuscita" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deletion failed"
+          }
+        }
+      }
+    },
+    "Email" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email"
+          }
+        }
+      }
+    },
+    "Email o numero non valido" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid email or number"
+          }
+        }
+      }
+    },
+    "Entra in CarSpot" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter CarSpot"
+          }
+        }
+      }
+    },
+    "Epica" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Epic"
+          }
+        }
+      }
+    },
+    "Errore di rete: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Network error: %@"
+          }
+        }
+      }
+    },
+    "Errore: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error: %@"
+          }
+        }
+      }
+    },
+    "Esci" : {
+      "comment" : "Sign out dell'account.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign out"
+          }
+        }
+      }
+    },
+    "Esci comunque" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign out anyway"
+          }
+        }
+      }
+    },
+    "Esclusività" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exclusivity"
+          }
+        }
+      }
+    },
+    "Firenze" : {
+      "comment" : "Segnaposto di esempio sulla mappa.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Florence"
+          }
+        }
+      }
+    },
+    "Formato non valido" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid format"
+          }
+        }
+      }
+    },
+    "Fotocamera" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Camera"
+          }
+        }
+      }
+    },
+    "Fotocamera non disponibile: scegli una foto" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Camera unavailable: choose a photo"
+          }
+        }
+      }
+    },
+    "Fotografa" : {
+      "comment" : "Verbo, titolo di una riga del benvenuto.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photograph"
+          }
+        }
+      }
+    },
+    "Fotografa la prima auto per salire di livello" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photograph your first car to level up"
+          }
+        }
+      }
+    },
+    "Fotografa le auto che incroci, scopri la loro rarità e costruisci la tua collezione." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photograph the cars you meet, discover their rarity and build your collection."
+          }
+        }
+      }
+    },
+    "Generali" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "General"
+          }
+        }
+      }
+    },
+    "Già preso" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Already taken"
+          }
+        }
+      }
+    },
+    "Già preso. Prova %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Already taken. Try %@"
+          }
+        }
+      }
+    },
+    "giorni" : {
+      "comment" : "Unità sotto il numero della serie (plurale); il numero è mostrato sopra.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "days"
+          }
+        }
+      }
+    },
+    "giorno" : {
+      "comment" : "Unità sotto il numero della serie (singolare); il numero è mostrato sopra.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "day"
+          }
+        }
+      }
+    },
+    "Hai %lld elementi non ancora salvati nel cloud. Se esci ora li perdi." : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "You have %lld item not yet saved to the cloud. If you sign out now you'll lose it."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "You have %lld items not yet saved to the cloud. If you sign out now you'll lose them."
+                }
+              }
+            }
+          }
+        },
+        "it" : {
+          "variations" : {
+            "plural" : {
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Hai %lld elementi non ancora salvati nel cloud. Se esci ora li perdi."
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Hai %lld elemento non ancora salvato nel cloud. Se esci ora lo perdi."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Hai %lld elementi non ancora salvati nel cloud. Se esci ora li perdi."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Ieri" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yesterday"
+          }
+        }
+      }
+    },
+    "Impostazioni" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        }
+      }
+    },
+    "In corso" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In progress"
+          }
+        }
+      }
+    },
+    "Inclina il telefono per vedere il foil" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tilt your phone to see the foil"
+          }
+        }
+      }
+    },
+    "Indietro" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back"
+          }
+        }
+      }
+    },
+    "Indirizzo email" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email address"
+          }
+        }
+      }
+    },
+    "Inizia la caccia" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start the hunt"
+          }
+        }
+      }
+    },
+    "Iniziamo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Let's go"
+          }
+        }
+      }
+    },
+    "Inquadra l'auto di 3/4" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frame the car from a 3/4 angle"
+          }
+        }
+      }
+    },
+    "Inquadra la prima auto che ti colpisce: diventerà la tua prima carta." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frame the first car that catches your eye: it will become your first card."
+          }
+        }
+      }
+    },
+    "Inquadra un'auto: la riconosciamo e sfochiamo targhe e volti sul telefono." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Point at a car: we recognize it and blur plates and faces on your phone."
+          }
+        }
+      }
+    },
+    "Inserisci il codice" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter the code"
+          }
+        }
+      }
+    },
+    "Invia codice" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send code"
+          }
+        }
+      }
+    },
+    "Invia di nuovo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resend"
+          }
+        }
+      }
+    },
+    "Invia di nuovo tra %lld s" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resend in %lld s"
+          }
+        }
+      }
+    },
+    "Invia di nuovo tra %lld secondi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resend in %lld seconds"
+          }
+        }
+      }
+    },
+    "Invia un codice di verifica" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sends a verification code"
+          }
+        }
+      }
+    },
+    "L'anno è una stima e può essere corretto in seguito." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The year is an estimate and can be corrected later."
+          }
+        }
+      }
+    },
+    "Le auto che incroci diventano carte" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The cars you meet become cards"
+          }
+        }
+      }
+    },
+    "Le carte già sincronizzate restano nel cloud: le ritrovi al prossimo accesso." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cards already synced stay in the cloud: you'll find them again next time you sign in."
+          }
+        }
+      }
+    },
+    "Le tue carte, le foto e i progressi vengono cancellati per sempre, dal telefono e dal cloud. Non si può annullare." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your cards, photos and progress will be permanently deleted from this phone and from the cloud. This can't be undone."
+          }
+        }
+      }
+    },
+    "Leggendaria" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legendary"
+          }
+        }
+      }
+    },
+    "Leggendarie" : {
+      "comment" : "Plurale: conteggio delle carte leggendarie.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legendaries"
+          }
+        }
+      }
+    },
+    "Lingua" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Language"
+          }
+        }
+      }
+    },
+    "Liquid Glass" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liquid Glass"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "Livello %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Level %lld"
+          }
+        }
+      }
+    },
+    "Lo controlli tu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You control it"
+          }
+        }
+      }
+    },
+    "Lungomare" : {
+      "comment" : "Quartiere di esempio.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seafront"
+          }
+        }
+      }
+    },
+    "Mai foto, targhe o posizione" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Never photos, plates or location"
+          }
+        }
+      }
+    },
+    "Mappa" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Map"
+          }
+        }
+      }
+    },
+    "Marche" : {
+      "comment" : "Marche automobilistiche (statistiche della collezione).",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Makes"
+          }
+        }
+      }
+    },
+    "Media" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medium"
+          }
+        }
+      }
+    },
+    "Milano" : {
+      "comment" : "Segnaposto di esempio sulla mappa.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Milan"
+          }
+        }
+      }
+    },
+    "Modifica profilo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit profile"
+          }
+        }
+      }
+    },
+    "Modificabile in ogni momento" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Changeable at any time"
+          }
+        }
+      }
+    },
+    "Mostra tutte" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show all"
+          }
+        }
+      }
+    },
+    "Negato" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denied"
+          }
+        }
+      }
+    },
+    "Nessun supervisore" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No supervisor"
+          }
+        }
+      }
+    },
+    "Nessuna auto riconosciuta. Inquadra l'auto di 3/4 e riprova." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No car recognized. Frame the car from a 3/4 angle and try again."
+          }
+        }
+      }
+    },
+    "Nessuna auto riconosciuta. Prova un'inquadratura frontale 3/4." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No car recognized. Try a front 3/4 angle."
+          }
+        }
+      }
+    },
+    "Nessuna carta %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No %@ cards"
+          }
+        }
+      }
+    },
+    "Nessuna carta ancora" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No cards yet"
+          }
+        }
+      }
+    },
+    "Nessuna di queste" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "None of these"
+          }
+        }
+      }
+    },
+    "Nome" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "First name"
+          }
+        }
+      }
+    },
+    "Nome da spotter" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spotter name"
+          }
+        }
+      }
+    },
+    "Nome disponibile" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name available"
+          }
+        }
+      }
+    },
+    "Nome e cognome" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Full name"
+          }
+        }
+      }
+    },
+    "Nome già preso" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name already taken"
+          }
+        }
+      }
+    },
+    "nome_spotter" : {
+      "comment" : "Segnaposto del campo nome da spotter (stile username).",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "spotter_name"
+          }
+        }
+      }
+    },
+    "Non consentire" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Don't allow"
+          }
+        }
+      }
+    },
+    "Non riesco a completare ora. Controlla la connessione e riprova." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't finish right now. Check your connection and try again."
+          }
+        }
+      }
+    },
+    "Non riesco a salvare il nome. Controlla la connessione e riprova." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't save the name. Check your connection and try again."
+          }
+        }
+      }
+    },
+    "Non riesco a salvare nome e cognome. Controlla la connessione e riprova." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't save your first and last name. Check your connection and try again."
+          }
+        }
+      }
+    },
+    "Non riesco a verificare il nome ora" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can't verify the name right now"
+          }
+        }
+      }
+    },
+    "Non riesco a verificarlo ora: lo controlliamo al salvataggio" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can't verify it right now: we'll check when you save"
+          }
+        }
+      }
+    },
+    "Non siamo sicuri" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We're not sure"
+          }
+        }
+      }
+    },
+    "Non siamo sicuri, scegli quella giusta." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We're not sure, pick the right one."
+          }
+        }
+      }
+    },
+    "Non sono riuscito a eliminare l'account. Riprova." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I couldn't delete your account. Please try again."
+          }
+        }
+      }
+    },
+    "Non sono riuscito a leggere la foto. Riprova." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't read the photo. Try again."
+          }
+        }
+      }
+    },
+    "Non sono riuscito a riconoscere l'auto. Riprova." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't recognize the car. Try again."
+          }
+        }
+      }
+    },
+    "Non sono riuscito a salvare la carta. Riprova." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't save the card. Try again."
+          }
+        }
+      }
+    },
+    "Non sono riuscito a uscire. Riprova." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't sign out. Try again."
+          }
+        }
+      }
+    },
+    "Numero di telefono" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Phone number"
+          }
+        }
+      }
+    },
+    "Obiettivi del giorno" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daily goals"
+          }
+        }
+      }
+    },
+    "Offusco targhe e volti · cerco il modello" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blurring plates and faces · finding the model"
+          }
+        }
+      }
+    },
+    "Oggi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today"
+          }
+        }
+      }
+    },
+    "Ogni auto diventa una carta con la sua rarità, da Comune a Leggendaria." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every car becomes a card with its own rarity, from Common to Legendary."
+          }
+        }
+      }
+    },
+    "Ogni auto è una carta da prendere" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every car is a card to catch"
+          }
+        }
+      }
+    },
+    "Ogni avvistamento è un pezzo della tua collezione. Ecco come funziona." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every sighting is a piece of your collection. Here's how it works."
+          }
+        }
+      }
+    },
+    "Ogni carta entra nella tua collezione. Le leggendarie brillano con il foil olografico." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every card joins your collection. Legendaries shine with holographic foil."
+          }
+        }
+      }
+    },
+    "Ogni scatto ha le sue statistiche" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every shot has its own stats"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "Pagina %lld di %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Page %1$lld of %2$lld"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagina %1$lld di %2$lld"
+          }
+        }
+      }
+    },
+    "Pannello" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Panel"
+          }
+        }
+      }
+    },
+    "PE" : {
+      "comment" : "Punti esperienza (abbreviazione).",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "XP"
+          }
+        }
+      }
+    },
+    "Per assegnare l'avvistamento al quartiere giusto. La posizione esatta non viene mai mostrata." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To place the sighting in the right neighborhood. Your exact location is never shown."
+          }
+        }
+      }
+    },
+    "Per fotografare le auto e trasformarle in carte. Volti e targhe vengono sfocati sul telefono, prima di qualsiasi invio." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To photograph cars and turn them into cards. Faces and plates are blurred on your phone before anything is sent."
+          }
+        }
+      }
+    },
+    "Per ora non possiamo mandare SMS a questo numero. Usa l'email o Google." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We can't send SMS to this number yet. Use email or Google."
+          }
+        }
+      }
+    },
+    "Permessi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permissions"
+          }
+        }
+      }
+    },
+    "Più %lld punti esperienza" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plus %lld experience points"
+          }
+        }
+      }
+    },
+    "Posizione" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location"
+          }
+        }
+      }
+    },
+    "Potenza" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Power"
+          }
+        }
+      }
+    },
+    "Potenza %lld, Agilità %lld, Presenza %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Power %1$lld, Agility %2$lld, Presence %3$lld"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Potenza %1$lld, Agilità %2$lld, Presenza %3$lld"
+          }
+        }
+      }
+    },
+    "Potenza, rarità ed esclusività vengono calcolate al volo da ogni avvistamento." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Power, rarity and exclusivity are calculated on the fly from every sighting."
+          }
+        }
+      }
+    },
+    "Prefisso internazionale" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Country code"
+          }
+        }
+      }
+    },
+    "Presenza" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Presence"
+          }
+        }
+      }
+    },
+    "Privacy" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy"
+          }
+        }
+      }
+    },
+    "Profilo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profile"
+          }
+        }
+      }
+    },
+    "Progresso" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Progress"
+          }
+        }
+      }
+    },
+    "PRS" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PRS"
+          }
+        }
+      }
+    },
+    "Punti esperienza" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Experience points"
+          }
+        }
+      }
+    },
+    "PWR" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PWR"
+          }
+        }
+      }
+    },
+    "Qualcosa è andato storto. Riprova." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Something went wrong. Try again."
+          }
+        }
+      }
+    },
+    "Quando" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When"
+          }
+        }
+      }
+    },
+    "Quartiere Nord" : {
+      "comment" : "Quartiere di esempio.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "North District"
+          }
+        }
+      }
+    },
+    "Quartieri" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neighborhoods"
+          }
+        }
+      }
+    },
+    "Raccogliamo statistiche anonime d'uso: quali schermate usi e quante carte raccogli per rarità. Puoi cambiare idea quando vuoi in Profilo." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We collect anonymous usage statistics: which screens you use and how many cards you collect per rarity. You can change your mind any time in Profile."
+          }
+        }
+      }
+    },
+    "Rara" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rare"
+          }
+        }
+      }
+    },
+    "Rarità" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rarity"
+          }
+        }
+      }
+    },
+    "Rarità %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rarity %@"
+          }
+        }
+      }
+    },
+    "Registrazione non completata: servono altri dati. Prova con Google o Apple." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign-up not completed: more details are needed. Try Google or Apple."
+          }
+        }
+      }
+    },
+    "Resta privato: non lo vedono gli altri spotter." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stays private: other spotters can't see it."
+          }
+        }
+      }
+    },
+    "Ricompensa %lld punti esperienza" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reward: %lld experience points"
+          }
+        }
+      }
+    },
+    "Riconoscimento" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recognition"
+          }
+        }
+      }
+    },
+    "Riconoscimento in corso" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recognition in progress"
+          }
+        }
+      }
+    },
+    "Riempi il tuo garage" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fill your garage"
+          }
+        }
+      }
+    },
+    "Riprova" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try again"
+          }
+        }
+      }
+    },
+    "Riscatta" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claim"
+          }
+        }
+      }
+    },
+    "Riscatta %@, %lld punti esperienza" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claim %1$@, %2$lld experience points"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riscatta %1$@, %2$lld punti esperienza"
+          }
+        }
+      }
+    },
+    "Riscattato" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claimed"
+          }
+        }
+      }
+    },
+    "Roma" : {
+      "comment" : "Segnaposto di esempio sulla mappa.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rome"
+          }
+        }
+      }
+    },
+    "Salta" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skip"
+          }
+        }
+      }
+    },
+    "Salva" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
+          }
+        }
+      }
+    },
+    "Scatta" : {
+      "comment" : "Etichetta VoiceOver del pulsante otturatore.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Take photo"
+          }
+        }
+      }
+    },
+    "Scatta e riconosce l'auto" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Takes a photo and recognizes the car"
+          }
+        }
+      }
+    },
+    "Scatto non riuscito. Riprova." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't take the photo. Try again."
+          }
+        }
+      }
+    },
+    "Scegli prima una corrispondenza" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a match first"
+          }
+        }
+      }
+    },
+    "Scegli una foto" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a photo"
+          }
+        }
+      }
+    },
+    "Scheda tecnica" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Specs"
+          }
+        }
+      }
+    },
+    "Sei offline. Controlla la connessione e riprova." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You're offline. Check your connection and try again."
+          }
+        }
+      }
+    },
+    "Sei pronto" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You're ready"
+          }
+        }
+      }
+    },
+    "Senza fotocamera non puoi catturare auto." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Without the camera you can't capture cars."
+          }
+        }
+      }
+    },
+    "Senza posizione le carte non mostrano la zona." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Without location, cards won't show the area."
+          }
+        }
+      }
+    },
+    "Serie di %lld giorni" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Streak of %lld day"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Streak of %lld days"
+                }
+              }
+            }
+          }
+        },
+        "it" : {
+          "variations" : {
+            "plural" : {
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Serie di %lld giorni"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Serie di %lld giorno"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Serie di %lld giorni"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Serve per inquadrare e riconoscere le auto: la foto resta sul telefono finché non è anonimizzata." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Needed to frame and recognize cars: the photo stays on your phone until it's anonymized."
+          }
+        }
+      }
+    },
+    "Servizio non disponibile al momento" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Service unavailable right now"
+          }
+        }
+      }
+    },
+    "Servono per giocare al meglio, ma puoi decidere anche più tardi." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "They help you play at your best, but you can decide later too."
+          }
+        }
+      }
+    },
+    "Sfide del giorno, punti esperienza e classifiche del tuo quartiere." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daily challenges, experience points and leaderboards for your neighborhood."
+          }
+        }
+      }
+    },
+    "Si cambiano nelle Impostazioni di iPhone. Della posizione usiamo solo il quartiere." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change them in iPhone Settings. We only use your neighbourhood, never your exact location."
+          }
+        }
+      }
+    },
+    "Spazi e simboli non sono ammessi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spaces and symbols are not allowed"
+          }
+        }
+      }
+    },
+    "Spotter" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spotter"
+          }
+        }
+      }
+    },
+    "Statistiche anonime" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anonymous stats"
+          }
+        }
+      }
+    },
+    "Stazione" : {
+      "comment" : "Quartiere di esempio.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Station"
+          }
+        }
+      }
+    },
+    "Supervisore: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supervisor: %@"
+          }
+        }
+      }
+    },
+    "Territorio" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Territory"
+          }
+        }
+      }
+    },
+    "Ti mandiamo un codice di 6 cifre. Niente password." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We'll send you a 6-digit code. No password."
+          }
+        }
+      }
+    },
+    "Tocca la fotocamera in basso a destra per catturare la tua prima auto." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap the camera at the bottom right to capture your first car."
+          }
+        }
+      }
+    },
+    "Torna al mirino" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back to the viewfinder"
+          }
+        }
+      }
+    },
+    "Troppi tentativi, riprova tra poco" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Too many attempts, try again shortly"
+          }
+        }
+      }
+    },
+    "Trova un'auto con 80+ di potenza" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Find a car with 80+ power"
+          }
+        }
+      }
+    },
+    "Trova un'auto prima del 1990" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Find a car from before 1990"
+          }
+        }
+      }
+    },
+    "Trovata una corrispondenza: %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Found one match: %@."
+          }
+        }
+      }
+    },
+    "Trovate %lld corrispondenze, la prima: %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Found %1$lld matches, the first is %2$@."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trovate %1$lld corrispondenze, la prima: %2$@."
+          }
+        }
+      }
+    },
+    "Tu" : {
+      "comment" : "Supervisore di esempio: l'utente stesso.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You"
+          }
+        }
+      }
+    },
+    "Tutte" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All"
+          }
+        }
+      }
+    },
+    "Ultimi avvistamenti" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latest sightings"
+          }
+        }
+      }
+    },
+    "uniche" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "unique"
+          }
+        }
+      }
+    },
+    "Usa una foto" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use a photo"
+          }
+        }
+      }
+    },
+    "Uscita non riuscita" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign-out failed"
+          }
+        }
+      }
+    },
+    "Va alla richiesta di consenso" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Goes to the consent request"
+          }
+        }
+      }
+    },
+    "Valuta" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Currency"
+          }
+        }
+      }
+    },
+    "Vedi dove sono stati fatti gli avvistamenti e sfida gli altri spotter sulla mappa." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See where sightings were made and challenge other spotters on the map."
+          }
+        }
+      }
+    },
+    "Verifica" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verify"
+          }
+        }
+      }
+    },
+    "Versione" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version"
+          }
+        }
+      }
+    },
+    "Verso il livello %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toward level %lld"
+          }
+        }
+      }
+    },
+    "Vuoi uscire?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign out?"
+          }
+        }
+      }
+    },
+    "Zona" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Area"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

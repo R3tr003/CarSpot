@@ -1,13 +1,42 @@
 import SwiftUI
 
-/// App shell: the native iOS 26 `TabView` (authentic Liquid Glass tab bar) with a
-/// single persistent map. La `MKMapView` è una sola (`MapHost`) e viene riagganciata
-/// al container della tab attiva: cambiando tab non si ricarica né sposta la camera.
+/// Guscio dell'app stile Flighty: UNA mappa a tutto schermo sotto e sopra un pannello
+/// di sistema (`.sheet`) che non si chiude mai, con dentro la `TabView` nativa di
+/// iOS 26 (tab bar Liquid Glass autentica, in fondo alla card).
+///
+/// Il pannello nativo dà gratis quello che il vecchio `SheetCard` rifaceva a mano:
+/// trascinamento da qualunque punto, passaggio scroll ↔ pannello, molle di sistema,
+/// card flottante con angoli concentrici da piccola/media e a tutta larghezza da alta.
 struct RootShellView: View {
     @State private var selection: Screen = Self.initialScreen
+    @State private var lastContentScreen: Screen = .today
     @State private var mapHost = MapHost()
     @State private var location = LocationManager()
-    @State private var showProfile = false
+    /// Pannello aperto dal menu dell'avatar.
+    @State private var accountSheet: AccountSheet?
+    @State private var showCapture = Self.startsOnCapture
+    @State private var detent: PresentationDetent = Self.mediumDetent
+
+    /// Piccola: solo titolo + tab bar (come Flighty). Media: metà mappa. Alta: sotto l'isola.
+    private static let smallDetent = PresentationDetent.height(200)
+    private static let mediumDetent = PresentationDetent.fraction(0.5)
+
+    enum AccountSheet: String, Identifiable {
+        case profile, settings
+        var id: String { rawValue }
+    }
+
+    /// Visita di schermata per le dashboard: nomi enumerati e statici.
+    private static func trackScreen(_ name: String) {
+        AppServices.errors.metric(count: "screen.view", attributes: ["screen": .string(name)])
+    }
+
+    /// Altezza del pannello per le dashboard: small | medium | large.
+    private static func detentName(_ detent: PresentationDetent) -> String {
+        if detent == smallDetent { return "small" }
+        if detent == mediumDetent { return "medium" }
+        return "large"
+    }
 
     enum Screen: Hashable {
         case today, collection, capture, territory
@@ -24,56 +53,97 @@ struct RootShellView: View {
     }
 
     var body: some View {
+        // La mappa sta alla radice: niente container UIKit della TabView sopra,
+        // quindi riceve tutti i tocchi fuori dal pannello.
+        MapSlot(host: mapHost, isActive: true)
+            .ignoresSafeArea()
+            .task { location.request() }
+            .sheet(isPresented: .constant(true)) { panel }
+    }
+
+    // MARK: - Pannello
+
+    private var panel: some View {
         TabView(selection: $selection) {
             Tab("Oggi", systemImage: "sun.max.fill", value: .today) {
-                mapTab(.today) { TodayView() }
+                TodayView()
             }
             Tab("Collezione", systemImage: "square.grid.2x2.fill", value: .collection) {
-                mapTab(.collection) { CollectionView() }
+                CollectionView()
             }
             Tab("Mappa", systemImage: "map.fill", value: .territory) {
-                mapTab(.territory) { TerritoryView() }
+                TerritoryView()
             }
+            // Il cerchio camera a destra apre la cattura a tutto schermo: la camera
+            // non sta in un pannello ridimensionabile.
             Tab("Cattura", systemImage: "camera.viewfinder", value: .capture, role: .search) {
-                CaptureView()
+                Color.clear
             }
         }
         .tabBarMinimizeBehavior(.onScrollDown)
         .tint(CSColor.accent)
-        .environment(\.openProfile) { showProfile = true }
-        .task { location.request() }
+        .environment(\.openProfile) { accountSheet = .profile }
+        .environment(\.openSettings) { accountSheet = .settings }
         .onChange(of: selection, initial: true) { _, screen in
             AppServices.analytics.track(.tabViewed(name: screen.analyticsName))
+            Self.trackScreen(screen.analyticsName)
+            if screen == .capture {
+                showCapture = true
+                selection = lastContentScreen
+            } else {
+                lastContentScreen = screen
+            }
         }
-        .sheet(isPresented: $showProfile) {
-            ZStack {
-                AsphaltBackground(tint: Rarity.leggendaria.primary)
-                ProfileView()
+        .presentationDetents([Self.smallDetent, Self.mediumDetent, .large], selection: $detent)
+        .onChange(of: detent) { _, new in
+            AppServices.errors.metric(count: "panel.detent", attributes: ["detent": .string(Self.detentName(new))])
+        }
+        // La mappa resta interattiva a ogni altezza; il pannello non si chiude mai.
+        .presentationBackgroundInteraction(.enabled)
+        .interactiveDismissDisabled()
+        // Trascinando sul contenuto il pannello prima si ridimensiona, poi scorre.
+        .presentationContentInteraction(.resizes)
+        .presentationBackground(CSColor.base)
+        .presentationDragIndicator(.visible)
+        .preferredColorScheme(.dark)
+        .onChange(of: accountSheet) { _, sheet in
+            if let sheet { Self.trackScreen(sheet.rawValue) }
+        }
+        .sheet(item: $accountSheet) { sheet in
+            Group {
+                switch sheet {
+                case .profile:
+                    ZStack {
+                        AsphaltBackground(tint: Rarity.leggendaria.primary)
+                        ProfileView()
+                    }
+                case .settings:
+                    SettingsView()
+                }
             }
             .presentationDragIndicator(.visible)
             .preferredColorScheme(.dark)
         }
-    }
-
-    /// Tab di contenuto: mappa condivisa sotto, pannello trascinabile sopra.
-    /// Lo spazio sopra la card non intercetta tocchi: li riceve la mappa.
-    private func mapTab<Content: View>(_ screen: Screen,
-                                       @ViewBuilder content: () -> Content) -> some View {
-        ZStack {
-            MapSlot(host: mapHost, isActive: selection == screen)
-                .ignoresSafeArea()
-            SheetCard { content() }
+        .fullScreenCover(isPresented: $showCapture) {
+            CaptureView()
+                .preferredColorScheme(.dark)
         }
     }
 
-    /// Debug: `-startTab` keeps working for screenshots.
+    // MARK: - Debug
+
+    /// `-startTab` continua a funzionare per gli screenshot.
     private static var initialScreen: Screen {
         switch UserDefaults.standard.string(forKey: "startTab") {
         case "collection": return .collection
-        case "capture": return .capture
         case "map", "territory": return .territory
         default: return .today
         }
+    }
+
+    /// `-startTab capture` apre subito la cattura a tutto schermo.
+    private static var startsOnCapture: Bool {
+        UserDefaults.standard.string(forKey: "startTab") == "capture"
     }
 }
 

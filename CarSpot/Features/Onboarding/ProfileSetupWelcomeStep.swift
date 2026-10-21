@@ -7,10 +7,10 @@ struct ProfileSetupWelcomeStep: View {
 
     private struct Item: Identifiable {
         let icon: String
-        let title: String
-        let caption: String
+        let title: LocalizedStringKey
+        let caption: LocalizedStringKey
         let rarity: Rarity
-        var id: String { title }
+        var id: String { icon }
     }
 
     private static let items: [Item] = [

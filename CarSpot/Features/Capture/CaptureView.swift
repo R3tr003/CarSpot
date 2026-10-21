@@ -11,7 +11,6 @@ private enum Viewfinder {
     static let lineWidth: CGFloat = 2
     static let topScrim: CGFloat = 140      // altezza del gradiente scuro sotto la barra in alto
     static let actionMaxWidth: CGFloat = 280 // larghezza dei bottoni secondari sopra la camera
-    static let tabBarClearance: CGFloat = 70 // spazio per non finire sotto la tab bar nativa
 }
 
 /// Capture screen. Live camera on device; photo-library fallback on the simulator
@@ -21,6 +20,7 @@ struct CaptureView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openURL) private var openURL
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dismiss) private var dismiss
     @State private var camera = CameraController()
     @State private var vm = CaptureViewModel()
     @State private var pickerItem: PhotosPickerItem?
@@ -49,7 +49,6 @@ struct CaptureView: View {
                 .animation(Self.phaseSpring, value: vm.errorMessage)
             }
             .padding(CSSpace.lg)
-            .padding(.bottom, Viewfinder.tabBarClearance)
 
             flashOverlay
         }
@@ -253,10 +252,21 @@ struct CaptureView: View {
             .glassEffect(.regular, in: .capsule)
     }
 
+    /// Titolo e chiusura: la cattura si apre a tutto schermo sopra il pannello.
     private var topBar: some View {
         HStack {
             Text("Cattura").eyebrow(CSColor.accent)
             Spacer()
+            Button { dismiss() } label: {
+                Image(systemName: "xmark")
+                    .font(CSFont.title(17))
+                    .foregroundStyle(CSColor.ink)
+                    .frame(width: CSSize.minTap, height: CSSize.minTap)
+                    .glassEffect(.regular.interactive(), in: .circle)
+                    .contentShape(.circle)
+            }
+            .buttonStyle(CSPressStyle())
+            .accessibilityLabel("Chiudi")
         }
     }
 
@@ -333,7 +343,7 @@ struct CaptureView: View {
                 EmptyView()
             }
 
-            GhostButton(title: camera.isAvailable ? "Usa una foto" : "Scegli una foto",
+            GhostButton(title: photoButtonTitle,
                         icon: "photo.on.rectangle.angled") { showPicker = true }
                 .frame(maxWidth: Viewfinder.actionMaxWidth)
         }
@@ -412,7 +422,7 @@ struct CaptureView: View {
 
             GlassPanel(cornerRadius: CSRadius.md) {
                 VStack(alignment: .leading, spacing: CSSpace.sm) {
-                    Text(vm.isLowConfidence ? "Non siamo sicuri" : "Confermi il match?")
+                    Text(matchTitle)
                         .eyebrow(CSColor.accent)
                         .accessibilityAddTraits(.isHeader)
                     ForEach(vm.candidates) { candidate in
@@ -438,10 +448,22 @@ struct CaptureView: View {
             }
             .disabled(vm.selected == nil)
             .opacity(vm.selected == nil ? 0.4 : 1)
-            .accessibilityHint(vm.selected == nil ? "Scegli prima una corrispondenza" : "")
+            .accessibilityHint(selectionHint)
 
             GhostButton(title: "Riprova", icon: "arrow.triangle.2.circlepath") { vm.reset() }
         }
+    }
+
+    private var matchTitle: LocalizedStringKey {
+        vm.isLowConfidence ? "Non siamo sicuri" : "Confermi il match?"
+    }
+
+    private var selectionHint: LocalizedStringKey {
+        vm.selected == nil ? "Scegli prima una corrispondenza" : ""
+    }
+
+    private var photoButtonTitle: LocalizedStringKey {
+        camera.isAvailable ? "Usa una foto" : "Scegli una foto"
     }
 
     private func candidateRow(_ candidate: VehicleCandidate) -> some View {

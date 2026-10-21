@@ -13,11 +13,12 @@ struct CSPressStyle: ButtonStyle {
     }
 }
 
-/// Primary call-to-action with a gradient fill, specular edge and press spring.
+/// Azione principale: capsula a colore pieno (il primo di `gradient`), senza
+/// gradiente né alone, con la molla di pressione condivisa.
 struct PrimaryButton: View {
-    var title: String
+    var title: LocalizedStringKey
     var icon: String? = nil
-    var gradient: [Color] = Rarity.rara.gradient
+    var gradient: [Color] = [CSColor.accent]
     /// `false` quando l'azione produce già il suo haptic (es. salvataggio con `.success`).
     var haptic: Bool = true
     var action: () -> Void
@@ -36,15 +37,7 @@ struct PrimaryButton: View {
             .foregroundStyle(CSColor.inkInverse)
             .frame(maxWidth: .infinity, minHeight: 52)
             .padding(.horizontal, CSSpace.md)
-            .background(
-                Capsule().fill(
-                    LinearGradient(colors: gradient, startPoint: .topLeading, endPoint: .bottomTrailing)
-                )
-            )
-            .overlay(
-                Capsule().strokeBorder(.white.opacity(0.4), lineWidth: 1).blendMode(.overlay)
-            )
-            .shadow(color: (gradient.first ?? CSColor.accent).opacity(0.5), radius: 18, y: 8)
+            .background(Capsule().fill(gradient.first ?? CSColor.accent))
             .contentShape(Capsule())
         }
         .buttonStyle(CSPressStyle())
@@ -54,7 +47,7 @@ struct PrimaryButton: View {
 
 /// Subtle glass secondary action.
 struct GhostButton: View {
-    var title: String
+    var title: LocalizedStringKey
     var icon: String? = nil
     var action: () -> Void
 

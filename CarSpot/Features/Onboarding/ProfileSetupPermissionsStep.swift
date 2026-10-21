@@ -2,7 +2,7 @@ import SwiftUI
 import AVFoundation
 import CoreLocation
 
-/// Passo 2 · permessi spiegati (facoltativi): fotocamera e posizione.
+/// Passo 3 · permessi spiegati (facoltativi): fotocamera e posizione.
 struct ProfileSetupPermissionsStep: View {
     var location: LocationManager
 
@@ -32,7 +32,7 @@ struct ProfileSetupPermissionsStep: View {
 
     var body: some View {
         ProfileSetupPage(
-            eyebrow: "PASSO 2 DI 3",
+            eyebrow: "PASSO 3 DI 5",
             title: "Due permessi, spiegati bene",
             subtitle: "Servono per giocare al meglio, ma puoi decidere anche più tardi."
         ) {
@@ -76,11 +76,11 @@ struct ProfileSetupPermissionsStep: View {
 
     private struct PermissionRow: View {
         var icon: String
-        var title: String
-        var detail: String
+        var title: LocalizedStringResource
+        var detail: LocalizedStringKey
         var access: Access
         /// Cosa si perde se il permesso non è concesso.
-        var lossNote: String
+        var lossNote: LocalizedStringResource
         var allow: () -> Void
         var openSettings: () -> Void
 
@@ -114,14 +114,14 @@ struct ProfileSetupPermissionsStep: View {
                     switch access {
                     case .undetermined:
                         actionButton("Consenti", action: allow)
-                            .accessibilityLabel("Consenti \(title.lowercased())")
+                            .accessibilityLabel("Consenti \(String(localized: title).lowercased())")
                     case .denied:
-                        note(lossNote)
+                        note(String(localized: lossNote))
                         actionButton("Apri Impostazioni", action: openSettings)
-                            .accessibilityLabel("Apri Impostazioni per \(title.lowercased())")
+                            .accessibilityLabel("Apri Impostazioni per \(String(localized: title).lowercased())")
                     case .restricted:
                         // Limitato da controlli del dispositivo: Impostazioni non può cambiarlo.
-                        note("\(lossNote) L'accesso è limitato dalle restrizioni di questo dispositivo.")
+                        note(String(localized: "\(String(localized: lossNote)) L'accesso è limitato dalle restrizioni di questo dispositivo."))
                     case .granted:
                         EmptyView()
                     }
@@ -131,14 +131,15 @@ struct ProfileSetupPermissionsStep: View {
             .sensoryFeedback(.success, trigger: access) { _, new in new == .granted }
         }
 
+        /// `text` è già localizzato (composto a runtime).
         private func note(_ text: String) -> some View {
-            Text(text)
+            Text(verbatim: text)
                 .font(CSFont.caption(13))
                 .foregroundStyle(CSColor.accentWarm)
                 .fixedSize(horizontal: false, vertical: true)
         }
 
-        private func actionButton(_ label: String, action: @escaping () -> Void) -> some View {
+        private func actionButton(_ label: LocalizedStringKey, action: @escaping () -> Void) -> some View {
             Button(action: action) {
                 Text(label)
                     .font(CSFont.title(15))

@@ -22,8 +22,8 @@ enum RecognitionError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .noMatch: return "Nessuna auto riconosciuta. Prova un'inquadratura frontale 3/4."
-        case .network(let m): return "Errore di rete: \(m)"
+        case .noMatch: return String(localized: "Nessuna auto riconosciuta. Prova un'inquadratura frontale 3/4.")
+        case .network(let m): return String(localized: "Errore di rete: \(m)")
         }
     }
 }

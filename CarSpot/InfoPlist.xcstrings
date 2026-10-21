@@ -1,0 +1,52 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "CFBundleName" : {
+      "comment" : "Bundle name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "CarSpot"
+          }
+        }
+      }
+    },
+    "NSCameraUsageDescription" : {
+      "comment" : "Permesso fotocamera (INFOPLIST_KEY_NSCameraUsageDescription).",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CarSpot uses the camera to recognize and collect the cars you come across."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CarSpot usa la fotocamera per riconoscere e collezionare le auto che incontri."
+          }
+        }
+      }
+    },
+    "NSLocationWhenInUseUsageDescription" : {
+      "comment" : "Permesso posizione (INFOPLIST_KEY_NSLocationWhenInUseUsageDescription).",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CarSpot uses your location to assign sightings to the right neighborhood, without ever showing your exact position."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CarSpot usa la posizione per assegnare gli avvistamenti al quartiere giusto, senza mai mostrare la posizione esatta."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

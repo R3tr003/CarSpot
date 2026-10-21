@@ -9,6 +9,8 @@ struct CameraPreview: UIViewRepresentable {
         let view = PreviewView()
         view.videoPreviewLayer.session = session
         view.videoPreviewLayer.videoGravity = .resizeAspectFill
+        // L'anteprima può inquadrare volti e targhe: mai nei replay di sessione.
+        AppServices.errors.maskInReplays(view)
         return view
     }
 

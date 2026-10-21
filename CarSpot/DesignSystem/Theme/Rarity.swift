@@ -10,6 +10,19 @@ enum Rarity: String, CaseIterable, Identifiable, Codable {
 
     var id: String { rawValue }
 
+    /// Nome mostrato all'utente. `rawValue` resta l'identificatore salvato (SwiftData, cloud).
+    var displayName: LocalizedStringResource {
+        switch self {
+        case .comune: "Comune"
+        case .rara: "Rara"
+        case .epica: "Epica"
+        case .leggendaria: "Leggendaria"
+        }
+    }
+
+    /// Come `displayName`, ma già risolto in `String` (VoiceOver, annunci).
+    var localizedName: String { String(localized: displayName) }
+
     /// Ordered gradient stops — cool steel → cyan → violet-magenta → gold.
     var gradient: [Color] {
         switch self {

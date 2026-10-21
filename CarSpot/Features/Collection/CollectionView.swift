@@ -88,7 +88,7 @@ struct CollectionView: View {
     private func noResults(for rarity: Rarity) -> some View {
         GlassPanel {
             VStack(spacing: CSSpace.md) {
-                Text("Nessuna carta \(rarity.rawValue)")
+                Text("Nessuna carta \(rarity.localizedName)")
                     .font(CSFont.title(20)).foregroundStyle(CSColor.ink)
                 GhostButton(title: "Mostra tutte") { filter = nil }
             }
@@ -110,8 +110,8 @@ struct CollectionView: View {
         }
     }
 
-    private func statTile(value: Int, label: String, tint: Color) -> some View {
-        let text = value > 999 ? value.formatted(.number.notation(.compactName)) : "\(value)"
+    private func statTile(value: Int, label: LocalizedStringKey, tint: Color) -> some View {
+        let text = value > 999 ? value.formatted(.number.notation(.compactName).locale(.app)) : "\(value)"
         return VStack(spacing: CSSpace.xxs) {
             Text(text)
                 .font(CSFont.numeric(26)).foregroundStyle(CSColor.ink)
@@ -133,7 +133,7 @@ struct CollectionView: View {
                 FilterChip(title: "Tutte", tint: CSColor.accent,
                            selected: filter == nil) { filter = nil }
                 ForEach(Rarity.allCases) { rarity in
-                    FilterChip(title: rarity.rawValue, tint: rarity.primary,
+                    FilterChip(title: rarity.displayName, tint: rarity.primary,
                                selected: filter == rarity) {
                         filter = (filter == rarity) ? nil : rarity
                     }
@@ -145,7 +145,7 @@ struct CollectionView: View {
 }
 
 struct FilterChip: View {
-    let title: String
+    let title: LocalizedStringResource
     let tint: Color
     let selected: Bool
     let action: () -> Void
