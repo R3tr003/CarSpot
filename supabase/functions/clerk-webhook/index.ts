@@ -1,7 +1,7 @@
 // CarSpot — Edge Function "clerk-webhook"
 // Riceve gli eventi utente di Clerk (via Svix) e tiene allineato Supabase:
 //   user.created → crea la riga in public.profiles (se l'app non l'ha già fatto)
-//   user.deleted → cancella foto (bucket spots/<id>/) e profilo; carte, riscatti,
+//   user.deleted → cancella foto (bucket spots/<id>/), avatar (avatars/<id>/) e profilo; carte, riscatti,
 //                  veicoli e avvistamenti seguono con ON DELETE CASCADE (GDPR).
 // Nessun dato personale (email, telefono, nome) viene salvato.
 //
@@ -81,19 +81,25 @@ async function ensureProfile(userId: string) {
 }
 
 async function deleteUserData(userId: string) {
-  // Foto: tutti gli oggetti sotto spots/<userId>/ (a pagine da 100).
+  // Foto delle carte (spots/<userId>/) e avatar (avatars/<userId>/avatar.jpg).
+  await removeFolder("spots", userId);
+  await removeFolder("avatars", userId);
+  const { error } = await admin.from("profiles").delete().eq("id", userId);
+  if (error) throw error;
+}
+
+/** Cancella tutti gli oggetti sotto <bucket>/<folder>/ (a pagine da 100). */
+async function removeFolder(bucket: string, folder: string) {
   for (;;) {
-    const { data: files, error } = await admin.storage.from("spots").list(userId, { limit: 100 });
+    const { data: files, error } = await admin.storage.from(bucket).list(folder, { limit: 100 });
     if (error) throw error;
     if (!files || files.length === 0) break;
     const { error: rmError } = await admin.storage
-      .from("spots")
-      .remove(files.map((f) => `${userId}/${f.name}`));
+      .from(bucket)
+      .remove(files.map((f) => `${folder}/${f.name}`));
     if (rmError) throw rmError;
     if (files.length < 100) break;
   }
-  const { error } = await admin.from("profiles").delete().eq("id", userId);
-  if (error) throw error;
 }
 
 function json(body: unknown, status: number) {
