@@ -6,17 +6,18 @@ struct RarityBadge: View {
     var compact: Bool = false
 
     var body: some View {
-        HStack(spacing: 5) {
+        HStack(spacing: CSSpace.xs) {
             Image(systemName: rarity.symbol)
-                .font(.system(size: compact ? 9 : 11, weight: .black))
+                .font(.system(.caption2, design: .rounded, weight: .heavy))
+                .imageScale(compact ? .medium : .small)
             if !compact {
                 Text(rarity.rawValue)
-                    .font(.system(size: 11, weight: .heavy, design: .rounded))
+                    .font(.system(.caption2, design: .rounded, weight: .heavy))
                     .tracking(0.6)
                     .textCase(.uppercase)
             }
         }
-        .foregroundStyle(.black.opacity(0.85))
+        .foregroundStyle(CSColor.inkInverse)
         .padding(.horizontal, compact ? 7 : 10)
         .padding(.vertical, compact ? 5 : 6)
         .background(
@@ -26,6 +27,8 @@ struct RarityBadge: View {
             Capsule().strokeBorder(.white.opacity(0.35), lineWidth: 0.5)
         )
         .shadow(color: rarity.primary.opacity(rarity.glowStrength), radius: 8, y: 2)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Rarità \(rarity.rawValue)")
     }
 }
 
@@ -34,6 +37,7 @@ struct RarityBadge: View {
         AsphaltBackground()
         VStack(spacing: 12) {
             ForEach(Rarity.allCases) { RarityBadge(rarity: $0) }
+            RarityBadge(rarity: .rara, compact: true)
         }
     }
 }

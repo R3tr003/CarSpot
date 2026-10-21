@@ -30,8 +30,8 @@ struct HolographicFoil: View {
             )
             .offset(x: roll * 120, y: pitch * 120)
             .blendMode(.overlay)
-            .blur(radius: 6)
         }
         .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 }

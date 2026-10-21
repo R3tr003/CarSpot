@@ -161,6 +161,14 @@ final class ProfileAccount {
         needsSetup = false
     }
 
+    /// Rete assente durante il setup: entra nell'app per questo avvio (come il
+    /// watchdog di `load`). `onboarded_at` resta null, quindi il setup ricompare al
+    /// prossimo avvio online.
+    func skipSetupForNow() {
+        Self.log.notice("Setup rimandato dall'utente (offline)")
+        needsSetup = false
+    }
+
     // MARK: - Cache locale degli utenti già a posto (solo id, nessun dato personale)
 
     private static func isCachedOnboarded(_ id: String) -> Bool {

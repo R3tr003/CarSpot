@@ -19,10 +19,9 @@ final class MotionManager {
             guard let self, let motion else { return }
             let r = max(-1, min(1, motion.attitude.roll / 0.9))
             let p = max(-1, min(1, motion.attitude.pitch / 0.9))
-            withAnimation(.interactiveSpring(response: 0.25, dampingFraction: 0.8)) {
-                self.roll = r
-                self.pitch = p
-            }
+            // Filtro passa-basso manuale al posto di un'animazione per campione.
+            self.roll += (r - self.roll) * 0.25
+            self.pitch += (p - self.pitch) * 0.25
         }
     }
 

@@ -5,57 +5,87 @@ import os
 struct ProfileView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(SyncService.self) private var sync: SyncService?
+    @Environment(ProfileAccount.self) private var account: ProfileAccount?
     @Query private var profiles: [PlayerProfile]
-    @Query private var cards: [StoredCard]
+    @Query(sort: \StoredCard.capturedAt, order: .reverse) private var cards: [StoredCard]
 
     @State private var consent = AppServices.analytics.consent
     @State private var isSigningOut = false
+    @State private var showSignOutDialog = false
     /// Elementi non ancora nel cloud trovati al logout (> 0 = chiede conferma).
     @State private var unsyncedCount = 0
     @State private var showUnsyncedAlert = false
+    @State private var showSignOutError = false
     private let auth = AppServices.auth
 
     private var profile: PlayerProfile? { profiles.first }
 
+    /// Nome mostrato: handle dello spotter, o un fallback se non ancora scelto.
+    private var displayName: String {
+        guard let name = account?.username, !name.isEmpty else { return "Spotter" }
+        return "@\(name)"
+    }
+
     var body: some View {
+        // Calcolato una volta per render: usato da intestazione e barra livello.
+        let progress = LevelSystem.progress(forXP: profile?.xp ?? 0)
         ScrollView {
             VStack(spacing: CSSpace.lg) {
                 header
-                profileHeader
+                profileHeader(progress)
                 statsRow
-                myCarCard
                 sightingsCard
                 privacyCard
                 if auth.state != .signedOut { signOutButton }
             }
             .padding(CSSpace.lg)
-            .padding(.bottom, 40)
+            .padding(.bottom, CSSpace.xl)
         }
         .scrollIndicators(.hidden)
+        .confirmationDialog("Vuoi uscire?", isPresented: $showSignOutDialog, titleVisibility: .visible) {
+            Button("Esci", role: .destructive) { startSignOut() }
+            Button("Annulla", role: .cancel) {}
+        } message: {
+            Text("Le carte già sincronizzate restano nel cloud: le ritrovi al prossimo accesso.")
+        }
         .alert("Dati non sincronizzati", isPresented: $showUnsyncedAlert) {
             Button("Esci comunque", role: .destructive) { signOut() }
             Button("Annulla", role: .cancel) {}
         } message: {
-            Text("Hai \(unsyncedCount) elementi non ancora salvati nel cloud. Se esci ora li perdi.")
+            Text(unsyncedCount == 1
+                 ? "Hai 1 elemento non ancora salvato nel cloud. Se esci ora lo perdi."
+                 : "Hai \(unsyncedCount) elementi non ancora salvati nel cloud. Se esci ora li perdi.")
+        }
+        .alert("Uscita non riuscita", isPresented: $showSignOutError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Non sono riuscito a uscire. Riprova.")
         }
     }
 
     private var statsRow: some View {
         HStack(spacing: CSSpace.md) {
-            statTile("\(cards.count)", "Carte", CSColor.accent)
-            statTile("\(profile?.xp ?? 0)", "PE", CSColor.accentWarm)
-            statTile("\(profile?.currency ?? 0)", "Valuta", Rarity.epica.primary)
+            statTile(cards.count, "Carte", CSColor.accent)
+            statTile(profile?.xp ?? 0, "PE", CSColor.accentWarm, spoken: "Punti esperienza")
+            statTile(profile?.currency ?? 0, "Valuta", Rarity.epica.primary)
         }
     }
 
-    private func statTile(_ value: String, _ label: String, _ tint: Color) -> some View {
-        VStack(spacing: 4) {
-            Text(value).font(CSFont.numeric(24)).foregroundStyle(CSColor.ink)
-            Text(label).eyebrow(tint)
+    private func statTile(_ value: Int, _ label: String, _ tint: Color, spoken: String? = nil) -> some View {
+        VStack(spacing: CSSpace.xxs) {
+            Text(value, format: .number)
+                .font(CSFont.numeric(24))
+                .foregroundStyle(CSColor.ink)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+            Text(label)
+                .eyebrow(tint)
+                .accessibilityLabel(spoken ?? label)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, CSSpace.md)
         .glassEffect(.regular, in: .rect(cornerRadius: CSRadius.md))
+        .accessibilityElement(children: .combine)
     }
 
     private var header: some View {
@@ -63,64 +93,72 @@ struct ProfileView: View {
             Text("Profilo")
                 .font(CSFont.display(34))
                 .foregroundStyle(CSColor.ink)
+                .accessibilityAddTraits(.isHeader)
             Spacer()
             Button { dismiss() } label: {
                 Image(systemName: "xmark")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(CSFont.title(16))
                     .foregroundStyle(CSColor.ink)
-                    .frame(width: 44, height: 44)
+                    .frame(width: CSSize.minTap, height: CSSize.minTap)
                     .glassEffect(.regular, in: .circle)
+                    .contentShape(.circle)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Chiudi")
         }
     }
 
-    private var profileHeader: some View {
+    private func profileHeader(_ progress: (level: Int, into: Int, needed: Int, fraction: Double)) -> some View {
         VStack(spacing: CSSpace.sm) {
-            UserAvatar(size: 88)
-            Text("Andrea").font(CSFont.display(26)).foregroundStyle(CSColor.ink)
-            Text("Cacciatore Livello \(LevelSystem.level(forXP: profile?.xp ?? 0))").eyebrow(CSColor.accent)
+            UserAvatar(size: 88, name: account?.username ?? "")
+                .accessibilityHidden(true)
+            Text(displayName)
+                .font(CSFont.display(26))
+                .foregroundStyle(CSColor.ink)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+            Text("Cacciatore Livello \(progress.level)").eyebrow(CSColor.accent)
+            levelProgress(progress)
         }
         .frame(maxWidth: .infinity)
         .padding(.top, CSSpace.xs)
     }
 
-    private var myCarCard: some View {
-        GlassPanel(tint: CSColor.accent) {
-            VStack(alignment: .leading, spacing: CSSpace.md) {
-                HStack {
-                    Text("La mia auto").eyebrow(CSColor.accent)
-                    Spacer()
-                    Image(systemName: "checkmark.seal.fill").foregroundStyle(CSColor.accent)
-                }
-                HStack(spacing: CSSpace.md) {
-                    Image(systemName: "car.side.fill").font(.system(size: 34))
-                        .foregroundStyle(Rarity.rara.linearGradient)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Volkswagen Golf GTI").font(CSFont.title(17)).foregroundStyle(CSColor.ink)
-                        Text("Avvistata 23 volte questo mese")
-                            .font(CSFont.caption(12)).foregroundStyle(CSColor.inkSecondary)
-                    }
-                    Spacer()
-                }
-                HStack {
-                    Label("+340 PE passivi", systemImage: "bolt.fill")
-                        .font(CSFont.caption()).foregroundStyle(CSColor.accentWarm)
-                    Spacer()
-                }
-            }
+    private func levelProgress(_ progress: (level: Int, into: Int, needed: Int, fraction: Double)) -> some View {
+        let hasXP = (profile?.xp ?? 0) > 0
+        return VStack(spacing: CSSpace.xs) {
+            StatBar(
+                label: "Livello \(progress.level)",
+                value: Int((progress.fraction * 100).rounded(.down)),
+                tint: CSColor.accent,
+                animate: false,
+                valueText: "\(progress.into) / \(progress.needed) PE"
+            )
+            Text(hasXP
+                 ? "\(progress.needed - progress.into) PE al livello \(progress.level + 1)"
+                 : "Fotografa la prima auto per salire di livello")
+                .font(CSFont.caption(12))
+                .foregroundStyle(CSColor.inkSecondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .padding(.top, CSSpace.xs)
     }
 
     private var sightingsCard: some View {
         GlassPanel(cornerRadius: CSRadius.md) {
             VStack(alignment: .leading, spacing: CSSpace.md) {
                 Text("Ultimi avvistamenti").eyebrow()
-                sightingRow("La tua auto è stata avvistata in Centro", "2 ore fa", "❤️")
-                Divider().overlay(CSColor.hairline)
-                sightingRow("Reazione ricevuta: \"Che fiamma!\"", "ieri", "🔥")
-                Divider().overlay(CSColor.hairline)
-                sightingRow("Avvistata al Lungomare", "2 giorni fa", "👀")
+                if cards.isEmpty {
+                    Text("Ancora nessun avvistamento. Fotografa la tua prima auto.")
+                        .font(CSFont.body(14))
+                        .foregroundStyle(CSColor.inkSecondary)
+                } else {
+                    let recent = Array(cards.prefix(3))
+                    ForEach(Array(recent.enumerated()), id: \.element.id) { index, card in
+                        if index > 0 { Divider().overlay(CSColor.hairline) }
+                        sightingRow(card)
+                    }
+                }
             }
         }
     }
@@ -151,30 +189,43 @@ struct ProfileView: View {
 
     private var signOutButton: some View {
         Button {
-            guard !isSigningOut else { return }
-            isSigningOut = true
-            let sync = sync
-            Task {
-                // Prima si prova a inviare ciò che è in attesa; se resta qualcosa si chiede conferma.
-                let left = await sync?.flushPending() ?? 0
-                if left > 0 {
-                    unsyncedCount = left
-                    showUnsyncedAlert = true
-                    isSigningOut = false
-                } else {
-                    signOut()
-                }
-            }
+            showSignOutDialog = true
         } label: {
-            Label("Esci", systemImage: "rectangle.portrait.and.arrow.right")
-                .font(CSFont.body(16))
-                .foregroundStyle(CSColor.accentWarm)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 15)
-                .glassEffect(.regular, in: .capsule)
+            HStack(spacing: CSSpace.xs) {
+                if isSigningOut {
+                    ProgressView().tint(CSColor.accentWarm)
+                } else {
+                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                }
+                Text("Esci")
+            }
+            .font(CSFont.body(16))
+            .foregroundStyle(CSColor.accentWarm)
+            .frame(maxWidth: .infinity, minHeight: CSSize.minTap)
+            .padding(.vertical, CSSpace.xs)
+            .glassEffect(.regular, in: .capsule)
+            .contentShape(.capsule)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(CSPressStyle())
         .disabled(isSigningOut)
+    }
+
+    /// Dopo la conferma: prima si prova a inviare ciò che è in attesa; se resta qualcosa
+    /// si chiede un'ulteriore conferma, altrimenti si esce.
+    private func startSignOut() {
+        guard !isSigningOut else { return }
+        isSigningOut = true
+        let sync = sync
+        Task {
+            let left = await sync?.flushPending() ?? 0
+            if left > 0 {
+                unsyncedCount = left
+                showUnsyncedAlert = true
+                isSigningOut = false
+            } else {
+                signOut()
+            }
+        }
     }
 
     /// Esce e toglie dal telefono carte e progressi (restano nel cloud).
@@ -191,19 +242,37 @@ struct ProfileView: View {
             } catch {
                 Logger(subsystem: "com.carspot.andrea.app", category: "profile")
                     .error("Uscita non riuscita: \(error.localizedDescription, privacy: .public)")
+                showSignOutError = true
             }
         }
     }
 
-    private func sightingRow(_ text: String, _ time: String, _ emoji: String) -> some View {
+    private func sightingRow(_ card: StoredCard) -> some View {
         HStack(spacing: CSSpace.md) {
-            Text(emoji).font(.system(size: 22))
-            VStack(alignment: .leading, spacing: 1) {
-                Text(text).font(CSFont.body(14)).foregroundStyle(CSColor.ink).lineLimit(1)
-                Text(time).font(CSFont.caption(11)).foregroundStyle(CSColor.inkTertiary)
+            Image(systemName: "car.side.fill")
+                .font(CSFont.title(18))
+                .foregroundStyle(card.rarity.linearGradient)
+                .frame(width: CSSpace.lg)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: CSSpace.xxs / 2) {
+                Text("\(card.make) \(card.model)")
+                    .font(CSFont.body(14))
+                    .foregroundStyle(CSColor.ink)
+                    .lineLimit(1)
+                Text(sightingCaption(card))
+                    .font(CSFont.caption(12))
+                    .foregroundStyle(CSColor.inkTertiary)
+                    .lineLimit(1)
             }
-            Spacer()
+            Spacer(minLength: 0)
         }
+        .accessibilityElement(children: .combine)
+    }
+
+    /// "Zona · data relativa"; la zona si nasconde se vuota.
+    private func sightingCaption(_ card: StoredCard) -> String {
+        let when = card.capturedAt.formatted(.relative(presentation: .named))
+        return card.spottedArea.isEmpty ? when : "\(card.spottedArea) · \(when)"
     }
 }
 

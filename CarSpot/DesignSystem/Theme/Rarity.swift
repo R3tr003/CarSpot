@@ -13,7 +13,7 @@ enum Rarity: String, CaseIterable, Identifiable, Codable {
     /// Ordered gradient stops — cool steel → cyan → violet-magenta → gold.
     var gradient: [Color] {
         switch self {
-        case .comune:      return [Color(hex: 0x8A93A6), Color(hex: 0x596275)]
+        case .comune:      return [Color(hex: 0xB4BCCB), Color(hex: 0x8A93A6)]
         case .rara:        return [Color(hex: 0x36E2FF), Color(hex: 0x2A7DF0)]
         case .epica:       return [Color(hex: 0xC04BFF), Color(hex: 0xFF4D9D)]
         case .leggendaria: return [Color(hex: 0xFFE176), Color(hex: 0xFFA62B), Color(hex: 0xFF5E7E)]

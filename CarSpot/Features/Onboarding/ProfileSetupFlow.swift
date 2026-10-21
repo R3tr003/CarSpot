@@ -27,12 +27,16 @@ struct ProfileSetupFlow: View {
     var body: some View {
         ZStack {
             CSColor.base.ignoresSafeArea()
-            DottedBackdrop(tint: rarity.primary).ignoresSafeArea()
-            RadialGradient(
-                colors: [rarity.primary.opacity(0.25), .clear],
-                center: .top, startRadius: 4, endRadius: 420
-            )
-            .ignoresSafeArea()
+            // Solo il colore cambia con il passo: dissolvenza morbida (niente con Reduce Motion).
+            Group {
+                DottedBackdrop(tint: rarity.primary).ignoresSafeArea()
+                RadialGradient(
+                    colors: [rarity.primary.opacity(0.25), .clear],
+                    center: .top, startRadius: 4, endRadius: 420
+                )
+                .ignoresSafeArea()
+            }
+            .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: step)
 
             VStack(spacing: 0) {
                 backBar
@@ -41,22 +45,30 @@ struct ProfileSetupFlow: View {
             }
         }
         .preferredColorScheme(.dark)
-        .animation(.easeInOut(duration: 0.4), value: step)
+        // Al passo nome la tastiera si apre a transizione finita.
+        .task(id: step) {
+            guard step == 1 else { return }
+            try? await Task.sleep(for: .milliseconds(350))
+            guard !Task.isCancelled else { return }
+            nameFocused = true
+        }
     }
 
     // MARK: - Struttura
 
-    /// Freccia indietro (dal nome in poi); sul benvenuto resta come spazio vuoto.
+    /// Freccia indietro (dal nome in poi) e avanzamento a 3 segmenti; sul benvenuto
+    /// restano come spazio vuoto.
     private var backBar: some View {
         HStack {
             Button {
                 go(to: step - 1)
             } label: {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 17, weight: .bold))
+                    .font(CSFont.title(17))
                     .foregroundStyle(CSColor.ink)
-                    .frame(width: 44, height: 44)
+                    .frame(width: CSSize.minTap, height: CSSize.minTap)
                     .glassEffect(.regular, in: .circle)
+                    .contentShape(.circle)
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Indietro")
@@ -64,9 +76,29 @@ struct ProfileSetupFlow: View {
             .disabled(step == 0 || working)
             .accessibilityHidden(step == 0)
             Spacer()
+            progressIndicator
+            Spacer()
+            // Stessa larghezza della freccia: l'indicatore resta centrato.
+            Color.clear.frame(width: CSSize.minTap, height: CSSize.minTap)
         }
         .padding(.horizontal, CSSpace.lg)
         .padding(.top, CSSpace.sm)
+    }
+
+    /// Tre segmenti: accent per i passi fatti e quello attuale (passi 1-3; il benvenuto è a zero).
+    private var progressIndicator: some View {
+        HStack(spacing: CSSpace.xs) {
+            ForEach(1...3, id: \.self) { index in
+                Capsule()
+                    .fill(index <= step ? CSColor.accent : CSColor.hairline)
+                    .frame(width: CSSpace.lg, height: CSSpace.xxs)
+            }
+        }
+        .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: step)
+        .opacity(step == 0 ? 0 : 1)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Passo \(max(step, 1)) di 3")
+        .accessibilityHidden(step == 0)
     }
 
     /// Le quattro pagine affiancate: scorrono in orizzontale con una molla senza rimbalzo
@@ -94,7 +126,13 @@ struct ProfileSetupFlow: View {
         case 0:
             ProfileSetupWelcomeStep()
         case 1:
-            ProfileSetupNameStep(account: account, checker: checker, focused: $nameFocused, errorMessage: step == 1 ? errorMessage : nil)
+            ProfileSetupNameStep(
+                account: account,
+                checker: checker,
+                focused: $nameFocused,
+                errorMessage: step == 1 ? errorMessage : nil,
+                onSubmit: { if canAdvance && !working { advance() } }
+            )
         case 2:
             ProfileSetupPermissionsStep(location: location)
         default:
@@ -103,21 +141,44 @@ struct ProfileSetupFlow: View {
     }
 
     private var bottomBar: some View {
-        PrimaryButton(title: ctaTitle, icon: ctaIcon, gradient: rarity.gradient) {
-            advance()
+        VStack(spacing: CSSpace.xs) {
+            // Durante il lavoro lo spinner prende il posto del titolo.
+            PrimaryButton(
+                title: working ? "" : ctaTitle,
+                icon: working ? nil : ctaIcon,
+                gradient: rarity.gradient
+            ) {
+                advance()
+            }
+            .disabled(!canAdvance || working)
+            .opacity(canAdvance && !working ? 1 : 0.4)
+            .overlay { if working { ProgressView().tint(CSColor.inkInverse) } }
+            .accessibilityLabel(ctaTitle)
+            .accessibilityValue(working ? "In corso" : "")
+
+            // Errore di rete: l'utente non resta mai bloccato.
+            if errorMessage != nil && !working {
+                Button {
+                    account.skipSetupForNow()
+                } label: {
+                    Text("Continua più tardi")
+                        .font(CSFont.body(15))
+                        .foregroundStyle(CSColor.inkSecondary)
+                        .frame(maxWidth: .infinity, minHeight: CSSize.minTap)
+                        .contentShape(.rect)
+                }
+                .buttonStyle(CSPressStyle())
+            }
         }
-        .disabled(!canAdvance || working)
-        .opacity(canAdvance && !working ? 1 : 0.4)
-        .overlay { if working { ProgressView().tint(.black) } }
         .padding(.horizontal, CSSpace.xl)
         .padding(.top, CSSpace.md)
-        .padding(.bottom, CSSpace.xxl)
+        .safeAreaPadding(.bottom, CSSpace.md)
     }
 
     private var ctaTitle: String {
         switch step {
         case 0: "Iniziamo"
-        case stepCount - 1: "Inizia"
+        case stepCount - 1: "Entra in CarSpot"
         default: "Continua"
         }
     }
@@ -191,6 +252,8 @@ struct ProfileSetupFlow: View {
 struct ProfileSetupPage<Content: View>: View {
     var eyebrow: String
     var title: String
+    /// Riga opzionale sotto il titolo (es. l'handle "@nome"), su una sola riga.
+    var handle: String? = nil
     var subtitle: String
     @ViewBuilder var content: Content
 
@@ -205,6 +268,13 @@ struct ProfileSetupPage<Content: View>: View {
                             .multilineTextAlignment(.center)
                             .foregroundStyle(CSColor.ink)
                             .accessibilityAddTraits(.isHeader)
+                        if let handle {
+                            Text(handle)
+                                .font(CSFont.display(26))
+                                .foregroundStyle(CSColor.accent)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.5)
+                        }
                         Text(subtitle)
                             .font(CSFont.body(15))
                             .multilineTextAlignment(.center)
@@ -231,7 +301,8 @@ private struct ProfileSetupReadyStep: View {
     var body: some View {
         ProfileSetupPage(
             eyebrow: "PASSO 3 DI 3",
-            title: "Sei pronto, @\(username)",
+            title: "Sei pronto",
+            handle: "@\(username)",
             subtitle: "Inquadra la prima auto che ti colpisce: diventerà la tua prima carta."
         ) {
             VStack(spacing: CSSpace.md) {

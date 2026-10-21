@@ -45,7 +45,7 @@ struct CodeSignInView: View {
                 topBar
 
                 VStack(alignment: .leading, spacing: CSSpace.sm) {
-                    Text(step == .identifier ? "ACCESSO" : "VERIFICA").eyebrow(Rarity.rara.primary)
+                    Text(step == .identifier ? "Accesso" : "Verifica").eyebrow(Rarity.rara.primary)
                     Text(title)
                         .font(CSFont.display(30))
                         .foregroundStyle(CSColor.ink)
@@ -62,13 +62,7 @@ struct CodeSignInView: View {
                     }
                 }
                 .disabled(working)
-
-                if let errorMessage {
-                    Text(errorMessage)
-                        .font(CSFont.caption(13))
-                        .foregroundStyle(CSColor.accentWarm)
-                        .accessibilityLabel("Errore: \(errorMessage)")
-                }
+                .animation(.easeOut(duration: 0.2), value: errorMessage)
 
                 Spacer(minLength: 0)
             }
@@ -78,6 +72,11 @@ struct CodeSignInView: View {
         .preferredColorScheme(.dark)
         .presentationDetents([.large])
         .interactiveDismissDisabled(working)
+        .sensoryFeedback(.error, trigger: errorMessage) { _, new in new != nil }
+        // Il focus si imposta solo a campo riabilitato (`working` torna false).
+        .onChange(of: working) { _, isWorking in
+            if !isWorking && step == .code { focus = .code }
+        }
         .task(id: countdownID) {
             while resendRemaining > 0 {
                 try? await Task.sleep(for: .seconds(1))
@@ -94,9 +93,9 @@ struct CodeSignInView: View {
             if step == .code {
                 Button(action: backToIdentifier) {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 17, weight: .bold))
+                        .font(CSFont.title(17))
                         .foregroundStyle(CSColor.ink)
-                        .frame(width: 44, height: 44)
+                        .frame(minWidth: CSSize.minTap, minHeight: CSSize.minTap)
                         .glassEffect(.regular, in: .circle)
                 }
                 .buttonStyle(.plain)
@@ -105,9 +104,9 @@ struct CodeSignInView: View {
             Spacer()
             Button { dismiss() } label: {
                 Image(systemName: "xmark")
-                    .font(.system(size: 15, weight: .bold))
+                    .font(CSFont.title(15))
                     .foregroundStyle(CSColor.ink)
-                    .frame(width: 44, height: 44)
+                    .frame(minWidth: CSSize.minTap, minHeight: CSSize.minTap)
                     .glassEffect(.regular, in: .circle)
             }
             .buttonStyle(.plain)
@@ -145,13 +144,14 @@ struct CodeSignInView: View {
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                         .focused($focus, equals: .identifier)
+                        .submitLabel(.send)
                         .accessibilityLabel("Indirizzo email")
                 case .phone:
                     HStack(spacing: CSSpace.sm) {
                         TextField("+39", text: $prefix)
                             .keyboardType(.phonePad)
                             .focused($focus, equals: .prefix)
-                            .frame(width: 64)
+                            .frame(minWidth: 64)
                             .accessibilityLabel("Prefisso internazionale")
                         Rectangle().fill(CSColor.hairline).frame(width: 1, height: 24)
                         TextField("Numero di telefono", text: $number)
@@ -165,7 +165,9 @@ struct CodeSignInView: View {
             .font(CSFont.body(17))
             .foregroundStyle(CSColor.ink)
             .tint(CSColor.accent)
-            .frame(minHeight: 44)
+            .frame(minHeight: CSSize.minTap)
+
+            errorText
 
             PrimaryButton(title: "Invia codice", icon: "paperplane.fill") { sendCode() }
                 .disabled(!identifierIsValid)
@@ -199,20 +201,35 @@ struct CodeSignInView: View {
                         if digits.count == Self.codeLength { verify() }
                     }
             }
-            .frame(minHeight: 44)
+            .frame(minHeight: CSSize.minTap)
+
+            errorText
 
             Button(action: resend) {
                 Text(resendRemaining > 0 ? "Invia di nuovo tra \(resendRemaining) s" : "Invia di nuovo")
                     .font(CSFont.body(16))
-                    .foregroundStyle(resendRemaining > 0 ? CSColor.inkTertiary : CSColor.accent)
-                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .foregroundStyle(resendRemaining > 0 ? CSColor.inkSecondary : CSColor.accent)
+                    .frame(maxWidth: .infinity, minHeight: CSSize.minTap)
             }
             .buttonStyle(.plain)
             .disabled(resendRemaining > 0)
+            .accessibilityLabel(resendRemaining > 0 ? "Invia di nuovo tra \(resendRemaining) secondi" : "Invia di nuovo")
 
             GhostButton(title: channel == .email ? "Cambia email" : "Cambia numero", action: backToIdentifier)
         }
         .onAppear { focus = .code }
+    }
+
+    /// Errore inline subito sotto il campo.
+    @ViewBuilder private var errorText: some View {
+        if let errorMessage {
+            Text(errorMessage)
+                .font(CSFont.caption(13))
+                .foregroundStyle(CSColor.accentWarm)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityLabel("Errore: \(errorMessage)")
+                .transition(.opacity)
+        }
     }
 
     // MARK: - Azioni
@@ -233,7 +250,6 @@ struct CodeSignInView: View {
                 try await AppServices.auth.verifyCode(code)
             } catch {
                 code = ""
-                focus = .code
                 throw error
             }
             if AppServices.auth.state != .signedOut {
@@ -248,7 +264,6 @@ struct CodeSignInView: View {
             try await AppServices.auth.resendCode()
             code = ""
             startCountdown()
-            focus = .code
         }
     }
 
@@ -272,12 +287,24 @@ struct CodeSignInView: View {
             defer { working = false }
             do {
                 try await action()
-            } catch let error as AuthCodeError {
-                errorMessage = error.errorDescription
             } catch {
-                errorMessage = "Qualcosa è andato storto. Riprova."
+                let message = Self.message(for: error)
+                errorMessage = message
+                AccessibilityNotification.Announcement(message).post()
             }
         }
+    }
+
+    /// Messaggio dell'auth se c'è, offline per gli errori di rete, altrimenti generico.
+    private static func message(for error: any Error) -> String {
+        if let authError = error as? AuthCodeError, let text = authError.errorDescription {
+            return text
+        }
+        if let urlError = error as? URLError,
+           [.notConnectedToInternet, .networkConnectionLost, .timedOut].contains(urlError.code) {
+            return "Sei offline. Controlla la connessione e riprova."
+        }
+        return "Qualcosa è andato storto. Riprova."
     }
 
     // MARK: - Identificatore

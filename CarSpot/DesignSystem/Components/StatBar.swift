@@ -6,18 +6,24 @@ struct StatBar: View {
     var value: Int
     var tint: Color
     var animate: Bool = true
+    /// Sostituisce il numero mostrato (es. "34%"); la barra usa sempre `value`.
+    var valueText: String? = nil
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var shown: CGFloat = 0
 
+    private var clamped: Int { min(max(value, 0), 100) }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: CSSpace.xs) {
             HStack {
                 Text(label).eyebrow()
                 Spacer()
-                Text("\(value)")
+                Text(valueText ?? "\(clamped)")
                     .font(CSFont.numeric(15))
                     .foregroundStyle(CSColor.ink)
                     .contentTransition(.numericText())
+                    .animation(.smooth, value: value)
             }
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
@@ -33,15 +39,19 @@ struct StatBar: View {
             }
             .frame(height: 8)
         }
-        .onAppear {
-            let target = CGFloat(value) / 100
-            if animate {
-                withAnimation(.spring(response: 0.8, dampingFraction: 0.85).delay(0.05)) {
-                    shown = target
-                }
-            } else {
-                shown = target
-            }
+        .onAppear { update(animated: animate) }
+        .onChange(of: value) { update(animated: animate) }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(label)
+        .accessibilityValue("\(clamped) su 100")
+    }
+
+    private func update(animated: Bool) {
+        let target = CGFloat(clamped) / 100
+        if animated && !reduceMotion {
+            withAnimation(.spring(duration: 0.6, bounce: 0)) { shown = target }
+        } else {
+            shown = target
         }
     }
 }
@@ -52,7 +62,7 @@ struct StatBar: View {
         VStack(spacing: 18) {
             StatBar(label: "Potenza", value: 88, tint: Rarity.leggendaria.primary)
             StatBar(label: "Agilità", value: 64, tint: Rarity.rara.primary)
-            StatBar(label: "Presenza", value: 96, tint: Rarity.epica.primary)
+            StatBar(label: "Presenza", value: 96, tint: Rarity.epica.primary, valueText: "96%")
         }.padding()
     }
 }

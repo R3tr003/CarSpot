@@ -2,6 +2,7 @@ import SwiftUI
 
 /// Spacing scale and corner radii — a single source of rhythm.
 enum CSSpace {
+    static let xxs: CGFloat = 4
     static let xs: CGFloat = 6
     static let sm: CGFloat = 10
     static let md: CGFloat = 16
@@ -16,4 +17,10 @@ enum CSRadius {
     static let lg: CGFloat = 30
     static let card: CGFloat = 28
     static let pill: CGFloat = 999
+}
+
+/// Dimensioni minime d'interazione.
+enum CSSize {
+    /// Area tattile minima (HIG).
+    static let minTap: CGFloat = 44
 }

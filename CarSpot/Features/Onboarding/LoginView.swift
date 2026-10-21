@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Login in stile Flighty: sfondo animato a puntini, titolo e i due pulsanti
-/// "Accedi con Apple" / "Accedi con Google" più email e telefono (codice monouso, sheet
+/// "Continua con Apple" / "Continua con Google" più email e telefono (codice monouso, sheet
 /// `CodeSignInView`). L'auth passa da `AppServices.auth`
 /// (Clerk, o login simulato senza chiavi); `RootGate` reagisce al cambio di stato,
 /// quindi qui non serve nessuna callback.
@@ -10,6 +10,8 @@ struct LoginView: View {
     @State private var errorMessage: String?
     /// Canale del codice monouso: se presente, mostra la sheet email/telefono.
     @State private var codeChannel: CodeChannel?
+    /// Cambia a ogni tocco su un metodo di accesso: fa partire l'haptic.
+    @State private var taps = 0
 
     var body: some View {
         ZStack {
@@ -23,75 +25,14 @@ struct LoginView: View {
             )
             .ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                Spacer()
-
-                // Marchio.
-                Image(systemName: "car.side.fill")
-                    .font(.system(size: 64, weight: .black))
-                    .foregroundStyle(Rarity.rara.linearGradient)
-                    .shadow(color: Rarity.rara.primary.opacity(0.6), radius: 24, y: 10)
-
-                VStack(spacing: CSSpace.sm) {
-                    Text("BENVENUTO").eyebrow(Rarity.rara.primary)
-                    Text("Inizia la caccia")
-                        .font(CSFont.display(36))
-                        .foregroundStyle(CSColor.ink)
-                    Text("Accedi per salvare la tua collezione e ritrovarla su ogni dispositivo.")
-                        .font(CSFont.body(15))
-                        .multilineTextAlignment(.center)
-                        .foregroundStyle(CSColor.inkSecondary)
-                        .padding(.horizontal, CSSpace.xl)
+            // Scrollabile per i Dynamic Type molto grandi; quando il contenuto ci sta
+            // il layout resta quello a tutta altezza (nessun rimbalzo).
+            GeometryReader { proxy in
+                ScrollView {
+                    content
+                        .frame(minHeight: proxy.size.height)
                 }
-                .padding(.top, CSSpace.lg)
-
-                Spacer()
-
-                VStack(spacing: CSSpace.sm) {
-                    if let errorMessage {
-                        Text(errorMessage)
-                            .font(CSFont.caption(13))
-                            .foregroundStyle(CSColor.accentWarm)
-                            .multilineTextAlignment(.center)
-                    }
-
-                    // Stesso aspetto del pulsante di sistema (bianco, capsula); Clerk apre
-                    // da solo il suo prompt Apple, quindi niente `SignInWithAppleButton`
-                    // (farebbe partire un secondo prompt).
-                    Button {
-                        signIn(method: "apple") { try await AppServices.auth.signInWithApple() }
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "apple.logo").font(.system(size: 18, weight: .semibold))
-                            Text("Accedi con Apple").font(CSFont.title(17))
-                        }
-                        .foregroundStyle(CSColor.base)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(Color.white, in: .capsule)
-                    }
-                    .buttonStyle(.plain)
-
-                    Button {
-                        signIn(method: "google") { try await AppServices.auth.signInWithGoogle() }
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "g.circle.fill").font(.system(size: 18, weight: .bold))
-                            Text("Accedi con Google").font(CSFont.title(17))
-                        }
-                        .foregroundStyle(CSColor.ink)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .glassEffect(.regular, in: .capsule)
-                    }
-                    .buttonStyle(.plain)
-
-                    codeButton("Continua con email", icon: "envelope.fill", channel: .email)
-                    codeButton("Continua con telefono", icon: "phone.fill", channel: .phone)
-                }
-                .disabled(working)
-                .padding(.horizontal, CSSpace.xl)
-                .padding(.bottom, CSSpace.xxl)
+                .scrollBounceBehavior(.basedOnSize)
             }
 
             if working {
@@ -101,30 +42,107 @@ struct LoginView: View {
         }
         .preferredColorScheme(.dark)
         .sheet(item: $codeChannel) { CodeSignInView(channel: $0) }
+        .sensoryFeedback(.impact(weight: .light), trigger: taps)
+        .sensoryFeedback(.error, trigger: errorMessage) { _, new in new != nil }
     }
 
-    /// Pulsante "Continua con…" per l'accesso con codice (stessa famiglia del tasto Google).
-    private func codeButton(_ title: String, icon: String, channel: CodeChannel) -> some View {
-        Button {
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            errorMessage = nil
-            codeChannel = channel
-        } label: {
-            HStack(spacing: 8) {
-                Image(systemName: icon).font(.system(size: 17, weight: .semibold))
+    private var content: some View {
+        VStack(spacing: 0) {
+            Spacer()
+
+            // Marchio.
+            Image(systemName: "car.side.fill")
+                .font(.system(size: 64, weight: .black))
+                .foregroundStyle(Rarity.rara.linearGradient)
+                .shadow(color: Rarity.rara.primary.opacity(0.6), radius: 24, y: 10)
+                .accessibilityHidden(true)
+
+            VStack(spacing: CSSpace.sm) {
+                Text("Benvenuto").eyebrow(Rarity.rara.primary)
+                Text("Inizia la caccia")
+                    .font(CSFont.display(36))
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(CSColor.ink)
+                Text("Accedi per salvare la tua collezione e ritrovarla su ogni dispositivo.")
+                    .font(CSFont.body(15))
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(CSColor.inkSecondary)
+                    .padding(.horizontal, CSSpace.xl)
+            }
+            .padding(.top, CSSpace.lg)
+
+            Spacer()
+
+            VStack(spacing: CSSpace.sm) {
+                if let errorMessage {
+                    Text(errorMessage)
+                        .font(CSFont.caption(13))
+                        .foregroundStyle(CSColor.accentWarm)
+                        .multilineTextAlignment(.center)
+                        .transition(.opacity)
+                }
+
+                // Solo con la capability attiva (vedi `AppConfig.isAppleSignInEnabled`).
+                // Stesso aspetto del pulsante di sistema (bianco, capsula); Clerk apre
+                // da solo il suo prompt Apple, quindi niente `SignInWithAppleButton`
+                // (farebbe partire un secondo prompt).
+                if AppConfig.isAppleSignInEnabled {
+                    Button {
+                        signIn(method: "apple") { try await AppServices.auth.signInWithApple() }
+                    } label: {
+                        HStack(spacing: CSSpace.xs) {
+                            Image(systemName: "apple.logo").font(CSFont.title(17))
+                            Text("Continua con Apple").font(CSFont.title(17))
+                        }
+                        .foregroundStyle(CSColor.inkInverse)
+                        .frame(maxWidth: .infinity, minHeight: 52)
+                        .background(CSColor.appleButton, in: .capsule)
+                        .contentShape(.capsule)
+                    }
+                    .buttonStyle(CSPressStyle())
+                }
+
+                GlassEffectContainer(spacing: CSSpace.sm) {
+                    VStack(spacing: CSSpace.sm) {
+                        glassButton("Continua con Google", icon: "g.circle.fill") {
+                            signIn(method: "google") { try await AppServices.auth.signInWithGoogle() }
+                        }
+                        glassButton("Continua con email", icon: "envelope.fill") { openCode(.email) }
+                        glassButton("Continua con telefono", icon: "phone.fill") { openCode(.phone) }
+                    }
+                }
+            }
+            .animation(.easeOut(duration: 0.2), value: errorMessage)
+            .disabled(working)
+            .padding(.horizontal, CSSpace.xl)
+            .padding(.bottom, CSSpace.xxl)
+        }
+    }
+
+    /// Pulsante in vetro nativo, stessa famiglia per Google, email e telefono.
+    private func glassButton(_ title: String, icon: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: CSSpace.xs) {
+                Image(systemName: icon).font(CSFont.title(17))
                 Text(title).font(CSFont.title(17))
             }
             .foregroundStyle(CSColor.ink)
-            .frame(maxWidth: .infinity)
-            .frame(height: 52)
-            .glassEffect(.regular, in: .capsule)
+            .frame(maxWidth: .infinity, minHeight: 52)
+            .glassEffect(.regular.interactive(), in: .capsule)
+            .contentShape(.capsule)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(CSPressStyle())
+    }
+
+    private func openCode(_ channel: CodeChannel) {
+        taps += 1
+        errorMessage = nil
+        codeChannel = channel
     }
 
     /// Esegue il login; l'annullamento dell'utente non lancia (il servizio lo assorbe).
     private func signIn(method: String, _ action: @escaping () async throws -> Void) {
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        taps += 1
         errorMessage = nil
         working = true
         Task {
@@ -135,9 +153,20 @@ struct LoginView: View {
                     AppServices.analytics.track(.signedIn(method: method))
                 }
             } catch {
-                errorMessage = "Accesso non riuscito. Riprova tra poco."
+                let message = Self.message(for: error)
+                errorMessage = message
+                AccessibilityNotification.Announcement(message).post()
             }
         }
+    }
+
+    /// Offline se l'errore è di rete, altrimenti messaggio generico.
+    private static func message(for error: any Error) -> String {
+        if let urlError = error as? URLError,
+           [.notConnectedToInternet, .networkConnectionLost, .timedOut].contains(urlError.code) {
+            return "Sei offline. Controlla la connessione e riprova."
+        }
+        return "Accesso non riuscito. Riprova."
     }
 }
 

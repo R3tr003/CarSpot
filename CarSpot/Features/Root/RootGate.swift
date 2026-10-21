@@ -58,6 +58,8 @@ struct RootGate: View {
             }
         }
         .animation(.easeInOut, value: phase)
+        // Nome da spotter e iniziale dell'avatar per header, Oggi e Profilo.
+        .environment(account)
         .task(id: auth.isReady) {
             guard auth.isReady else { return }
             await applyDebugFlags()

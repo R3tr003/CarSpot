@@ -2,7 +2,19 @@ import SwiftUI
 
 struct CardDetailView: View {
     let card: SpotCard
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var motion = MotionManager()
+
+    // Con Reduce Motion la carta resta ferma (niente foil reattivo né inclinazione).
+    private var roll: Double { reduceMotion ? 0 : motion.roll }
+    private var pitch: Double { reduceMotion ? 0 : motion.pitch }
+
+    private var infoRows: [(label: String, value: String, icon: String)] {
+        [("Zona", card.spottedArea, "mappin.and.ellipse"),
+         ("Quando", relativeDay(card.spottedDaysAgo), "clock"),
+         ("Colore", card.colorName, "paintpalette")]
+            .filter { !$0.1.trimmingCharacters(in: .whitespaces).isEmpty }
+    }
 
     var body: some View {
         ZStack {
@@ -10,15 +22,24 @@ struct CardDetailView: View {
 
             ScrollView {
                 VStack(spacing: CSSpace.xl) {
-                    SpotCardView(card: card, roll: motion.roll, pitch: motion.pitch)
+                    SpotCardView(card: card, roll: roll, pitch: pitch)
                         .frame(maxWidth: 280)
-                        .rotation3DEffect(.degrees(motion.roll * 6),
+                        .rotation3DEffect(.degrees(roll * 6),
                                           axis: (x: 0, y: 1, z: 0))
-                        .rotation3DEffect(.degrees(-motion.pitch * 6),
+                        .rotation3DEffect(.degrees(-pitch * 6),
                                           axis: (x: 1, y: 0, z: 0))
                         .padding(.top, CSSpace.lg)
 
-                    if card.rarity.isFoil {
+                    // Nome completo: nella carta può essere troncato.
+                    VStack(spacing: CSSpace.sm) {
+                        Text(card.title)
+                            .font(CSFont.title(22)).foregroundStyle(CSColor.ink)
+                            .multilineTextAlignment(.center)
+                        RarityBadge(rarity: card.rarity)
+                    }
+                    .frame(maxWidth: .infinity)
+
+                    if card.rarity.isFoil && !reduceMotion {
                         Label("Inclina il telefono per vedere il foil",
                               systemImage: "hand.draw.fill")
                             .font(CSFont.caption(12))
@@ -37,39 +58,62 @@ struct CardDetailView: View {
                     GlassPanel {
                         VStack(alignment: .leading, spacing: CSSpace.md) {
                             Text("Avvistamento").eyebrow(card.rarity.primary)
-                            infoRow("Zona", card.spottedArea, "mappin.and.ellipse")
-                            Divider().overlay(CSColor.hairline)
-                            infoRow("Quando", relativeDay(card.spottedDaysAgo), "clock")
-                            Divider().overlay(CSColor.hairline)
-                            infoRow("Colore", card.colorName, "paintpalette")
+                            let rows = infoRows
+                            ForEach(rows.indices, id: \.self) { i in
+                                if i > 0 { Divider().overlay(CSColor.hairline) }
+                                infoRow(rows[i].label, rows[i].value, rows[i].icon)
+                            }
                         }
                     }
                 }
                 .padding(CSSpace.lg)
-                .padding(.bottom, 60)
+                .padding(.bottom, CSSpace.xxl)
             }
             .scrollIndicators(.hidden)
         }
         .navigationTitle(card.title)
         .toolbarTitleDisplayMode(.inline)
-        .onAppear { motion.start() }
+        .onAppear { if !reduceMotion { motion.start() } }
         .onDisappear { motion.stop() }
     }
 
     private func infoRow(_ label: String, _ value: String, _ icon: String) -> some View {
-        HStack {
-            Label(label, systemImage: icon)
-                .font(CSFont.body(15)).foregroundStyle(CSColor.inkSecondary)
-            Spacer()
-            Text(value).font(CSFont.body(15)).foregroundStyle(CSColor.ink)
+        // Con Dynamic Type molto grande etichetta e valore vanno in colonna.
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .firstTextBaseline) {
+                infoLabel(label, icon)
+                Spacer(minLength: CSSpace.md)
+                infoValue(value, alignment: .trailing)
+            }
+            VStack(alignment: .leading, spacing: CSSpace.xxs) {
+                infoLabel(label, icon)
+                infoValue(value, alignment: .leading)
+            }
         }
+    }
+
+    private func infoLabel(_ label: String, _ icon: String) -> some View {
+        Label(label, systemImage: icon)
+            .font(CSFont.body(15)).foregroundStyle(CSColor.inkSecondary)
+    }
+
+    private func infoValue(_ value: String, alignment: TextAlignment) -> some View {
+        Text(value)
+            .font(CSFont.body(15)).foregroundStyle(CSColor.ink)
+            .multilineTextAlignment(alignment)
     }
 
     private func relativeDay(_ days: Int) -> String {
         switch days {
         case 0: return "Oggi"
         case 1: return "Ieri"
-        default: return "\(days) giorni fa"
+        default:
+            // "12 giorni fa", "2 mesi fa", "1 anno fa" in italiano.
+            let formatter = RelativeDateTimeFormatter()
+            formatter.locale = Locale(identifier: "it_IT")
+            formatter.unitsStyle = .full
+            let date = Calendar.current.date(byAdding: .day, value: -days, to: .now) ?? .now
+            return formatter.localizedString(for: date, relativeTo: .now)
         }
     }
 }

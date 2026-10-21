@@ -20,6 +20,10 @@ enum AppConfig {
         Secrets.clerkPublishableKey.hasPrefix("pk_")
     }
 
+    /// Sign in with Apple richiede l'Apple Developer Program a pagamento (il Personal Team
+    /// non lo supporta). Metterlo a `true` quando la capability è attiva.
+    static let isAppleSignInEnabled = false
+
     /// Mixpanel attivo solo con un token vero; parte comunque spento finché
     /// l'utente non dà il consenso (vedi `Analytics`).
     static var isMixpanelConfigured: Bool {

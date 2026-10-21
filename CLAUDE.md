@@ -138,9 +138,14 @@ incorporabile**: niente sfondo/NavigationStack proprio (tranne Collection, che s
 dettaglio), header via `SheetHeader` (titolo + share + avatar a destra), padding ~130.
 
 ### Design system — usalo, non reinventare
-Tutto in `CarSpot/DesignSystem/`. Mai colori/spaziature hardcoded nelle feature:
-- Colori → `CSColor` · Font → `CSFont` + modifier `.eyebrow()` · Spaziature → `CSSpace` /
-  `CSRadius` · Rarità (spina dorsale visiva) → `Rarity`.
+Tutto in `CarSpot/DesignSystem/`, documentato (regole, motion, do/don't) in
+[DESIGN.md](DESIGN.md). Mai colori/spaziature hardcoded nelle feature:
+- Colori → `CSColor` · Font → `CSFont` (mappa le size sugli stili di testo: Dynamic Type;
+  `CSFont.micro` = minimo 11 pt) + modifier `.eyebrow()` · Spaziature → `CSSpace` /
+  `CSRadius` / `CSSize.minTap` (44) · Rarità (spina dorsale visiva) → `Rarity`.
+- **Mai `.system(size:)` per il testo** (rompe Dynamic Type); solo per icone decorative.
+- Pressione dei pulsanti custom → `.buttonStyle(CSPressStyle())`, mai `DragGesture`.
+- I gradienti di rarità solo su carte/badge: avatar e UI generica usano `CSColor.accent`.
 - Materiali → `GlassPanel`, `.glassEffect(...)` (Liquid Glass nativo iOS 26).
 - Componenti → `SpotCardView`, `RarityBadge`, `StatBar`, `PrimaryButton`/`GhostButton`.
 - Atmosfera → `AsphaltBackground`, `GrainOverlay`, `HolographicFoil` + `MotionManager`.

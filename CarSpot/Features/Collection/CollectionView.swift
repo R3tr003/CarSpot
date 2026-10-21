@@ -3,6 +3,7 @@ import SwiftData
 
 struct CollectionView: View {
     @Environment(SyncService.self) private var sync: SyncService?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Query(sort: \StoredCard.capturedAt, order: .reverse) private var stored: [StoredCard]
     @State private var filter: Rarity? = nil
     @Namespace private var cardNamespace
@@ -10,11 +11,11 @@ struct CollectionView: View {
     private let columns = [GridItem(.flexible(), spacing: CSSpace.md),
                            GridItem(.flexible(), spacing: CSSpace.md)]
 
-    private var cards: [SpotCard] { stored.map(\.asSpotCard) }
-
-    private var visible: [SpotCard] {
-        guard let filter else { return cards }
-        return cards.filter { $0.rarity == filter }
+    /// Carte filtrate per rarità. Resta sui modelli: la conversione in `SpotCard`
+    /// (che legge la foto) avviene solo per le celle realmente create dalla griglia lazy.
+    private var visible: [StoredCard] {
+        guard let filter else { return stored }
+        return stored.filter { $0.rarity == filter }
     }
 
     var body: some View {
@@ -22,26 +23,21 @@ struct CollectionView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: CSSpace.lg) {
                     SheetHeader(title: "Collezione")
-                    statsHeader
-                    filterRow
-                    LazyVGrid(columns: columns, spacing: CSSpace.md) {
-                        ForEach(visible) { card in
-                            NavigationLink {
-                                CardDetailView(card: card)
-                                    .navigationTransition(.zoom(sourceID: card.id, in: cardNamespace))
-                            } label: {
-                                SpotCardView(card: card)
-                                    .matchedTransitionSource(id: card.id, in: cardNamespace)
-                                    // Foto ripristinata dal cloud: si scarica solo quando la carta appare.
-                                    .task(id: card.id) { await sync?.loadPhotoIfNeeded(cardId: card.id) }
-                            }
-                            .buttonStyle(.plain)
+                    if stored.isEmpty {
+                        emptyState
+                    } else {
+                        statsHeader
+                        filterRow
+                        let shown = visible
+                        if shown.isEmpty, let filter {
+                            noResults(for: filter)
+                        } else {
+                            grid(shown)
                         }
                     }
                 }
                 .padding(CSSpace.lg)
                 .padding(.bottom, 130)
-                .animation(.spring(response: 0.5, dampingFraction: 0.85), value: filter)
             }
             .scrollIndicators(.hidden)
             .toolbar(.hidden, for: .navigationBar)
@@ -51,23 +47,84 @@ struct CollectionView: View {
         }
     }
 
-    private var statsHeader: some View {
-        HStack(spacing: CSSpace.md) {
-            statTile(value: "\(cards.count)", label: "Carte", tint: CSColor.accent)
-            statTile(value: "\(cards.filter { $0.rarity == .leggendaria }.count)",
-                     label: "Leggendarie", tint: Rarity.leggendaria.primary)
-            statTile(value: "18", label: "Marche", tint: Rarity.epica.primary)
+    private func grid(_ items: [StoredCard]) -> some View {
+        LazyVGrid(columns: columns, spacing: CSSpace.md) {
+            ForEach(items, id: \.id) { item in
+                let card = item.asSpotCard
+                NavigationLink {
+                    CardDetailView(card: card)
+                        .navigationTransition(.zoom(sourceID: card.id, in: cardNamespace))
+                } label: {
+                    SpotCardView(card: card, compact: true)
+                        .matchedTransitionSource(id: card.id, in: cardNamespace)
+                        // Foto ripristinata dal cloud: si scarica solo quando la carta appare.
+                        .task(id: card.id) { await sync?.loadPhotoIfNeeded(cardId: card.id) }
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .animation(reduceMotion ? nil : .spring(duration: 0.35, bounce: 0), value: filter)
+    }
+
+    // MARK: - Stati vuoti
+
+    private var emptyState: some View {
+        GlassPanel {
+            VStack(spacing: CSSpace.md) {
+                Image(systemName: "camera.viewfinder")
+                    .font(CSFont.display(34))
+                    .foregroundStyle(CSColor.accent)
+                    .accessibilityHidden(true)
+                Text("Nessuna carta ancora")
+                    .font(CSFont.title(20)).foregroundStyle(CSColor.ink)
+                Text("Tocca la fotocamera in basso a destra per catturare la tua prima auto.")
+                    .font(CSFont.body(15)).foregroundStyle(CSColor.inkSecondary)
+            }
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
         }
     }
 
-    private func statTile(value: String, label: String, tint: Color) -> some View {
-        VStack(spacing: 4) {
-            Text(value).font(CSFont.numeric(26)).foregroundStyle(CSColor.ink)
+    private func noResults(for rarity: Rarity) -> some View {
+        GlassPanel {
+            VStack(spacing: CSSpace.md) {
+                Text("Nessuna carta \(rarity.rawValue)")
+                    .font(CSFont.title(20)).foregroundStyle(CSColor.ink)
+                GhostButton(title: "Mostra tutte") { filter = nil }
+            }
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
+        }
+    }
+
+    // MARK: - Statistiche e filtri
+
+    private var statsHeader: some View {
+        // Contatori sui modelli: niente conversione in SpotCard (non tocca le foto).
+        HStack(spacing: CSSpace.md) {
+            statTile(value: stored.count, label: "Carte", tint: CSColor.accent)
+            statTile(value: stored.filter { $0.rarity == .leggendaria }.count,
+                     label: "Leggendarie", tint: Rarity.leggendaria.primary)
+            statTile(value: Set(stored.map { $0.make.lowercased() }).count,
+                     label: "Marche", tint: Rarity.epica.primary)
+        }
+    }
+
+    private func statTile(value: Int, label: String, tint: Color) -> some View {
+        let text = value > 999 ? value.formatted(.number.notation(.compactName)) : "\(value)"
+        return VStack(spacing: CSSpace.xxs) {
+            Text(text)
+                .font(CSFont.numeric(26)).foregroundStyle(CSColor.ink)
+                .lineLimit(1).minimumScaleFactor(0.5)
+                .contentTransition(.numericText())
             Text(label).eyebrow(tint)
+                .lineLimit(1).minimumScaleFactor(0.6)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, CSSpace.md)
+        .padding(.horizontal, CSSpace.xs)
         .glassEffect(.regular, in: .rect(cornerRadius: CSRadius.md))
+        .accessibilityElement(children: .combine)
     }
 
     private var filterRow: some View {
@@ -97,8 +154,9 @@ struct FilterChip: View {
         Button(action: action) {
             Text(title)
                 .font(CSFont.caption(13))
-                .foregroundStyle(selected ? .black.opacity(0.85) : CSColor.inkSecondary)
-                .padding(.horizontal, 14).padding(.vertical, 9)
+                .foregroundStyle(selected ? CSColor.inkInverse : CSColor.inkSecondary)
+                .padding(.horizontal, CSSpace.md)
+                .frame(minHeight: CSSize.minTap)
                 .background {
                     if selected {
                         Capsule().fill(tint)
@@ -106,8 +164,11 @@ struct FilterChip: View {
                         Capsule().fill(.white.opacity(0.06))
                     }
                 }
+                .contentShape(Capsule())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(CSPressStyle())
+        .accessibilityAddTraits(selected ? .isSelected : [])
+        .sensoryFeedback(.selection, trigger: selected)
     }
 }
 

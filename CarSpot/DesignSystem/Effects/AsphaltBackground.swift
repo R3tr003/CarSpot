@@ -29,6 +29,7 @@ struct AsphaltBackground: View {
             GrainOverlay(opacity: 0.05)
         }
         .ignoresSafeArea()
+        .accessibilityHidden(true)
     }
 }
 
@@ -38,7 +39,8 @@ struct GrainOverlay: View {
 
     var body: some View {
         Canvas { context, size in
-            var generator = SystemRandomNumberGenerator()
+            // Seed fisso: il grano resta identico a ogni re-render.
+            var generator = SplitMix64(seed: 0xC0FFEE)
             let count = Int(size.width * size.height / 900)
             for _ in 0..<count {
                 let x = Double.random(in: 0...size.width, using: &generator)
@@ -51,6 +53,21 @@ struct GrainOverlay: View {
         .opacity(opacity)
         .blendMode(.overlay)
         .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+}
+
+/// Generatore deterministico (SplitMix64) per il grano.
+private struct SplitMix64: RandomNumberGenerator {
+    private var state: UInt64
+    init(seed: UInt64) { state = seed }
+
+    mutating func next() -> UInt64 {
+        state &+= 0x9E37_79B9_7F4A_7C15
+        var z = state
+        z = (z ^ (z >> 30)) &* 0xBF58_476D_1CE4_E5B9
+        z = (z ^ (z >> 27)) &* 0x94D0_49BB_1331_11EB
+        return z ^ (z >> 31)
     }
 }
 

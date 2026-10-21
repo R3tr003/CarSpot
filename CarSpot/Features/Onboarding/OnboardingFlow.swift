@@ -7,39 +7,49 @@ import SwiftUI
 struct OnboardingFlow: View {
     var onFinished: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var page = 0
     private let pageCount = 5
+    /// Cambio pagina: molla senza rimbalzo.
+    private var pageSpring: Animation {
+        reduceMotion ? .easeOut(duration: 0.2) : .spring(duration: 0.35, bounce: 0)
+    }
     private var consentPage: Int { pageCount - 1 }
 
     var body: some View {
         ZStack {
             // Sfondo: statico sulla prima pagina (la macchina), animato sulle altre.
-            if page == 0 {
-                AsphaltBackground(tint: Rarity.leggendaria.primary)
-            } else {
-                ZStack {
-                    CSColor.base.ignoresSafeArea()
-                    DottedBackdrop(tint: pageTint)
-                        .ignoresSafeArea()
-                        .transition(.opacity)
-                }
+            // Entrambi restano nella gerarchia e si scambiano con l'opacità.
+            AsphaltBackground(tint: Rarity.leggendaria.primary)
+                .opacity(page == 0 ? 1 : 0)
+            ZStack {
+                CSColor.base.ignoresSafeArea()
+                DottedBackdrop(tint: pageTint)
+                    .ignoresSafeArea()
             }
+            .opacity(page == 0 ? 0 : 1)
 
             VStack(spacing: 0) {
-                // Skip in alto a destra.
+                // Skip in alto a destra; sull'ultima pagina non c'è (la riga tiene l'altezza).
                 HStack {
                     Spacer()
-                    Button("Salta") {
-                        // Il consenso non si salta in silenzio: si va alla sua pagina.
-                        withAnimation(.easeInOut(duration: 0.4)) { page = consentPage }
+                    if page != consentPage {
+                        Button("Salta") {
+                            // Il consenso non si salta in silenzio: si va alla sua pagina.
+                            withAnimation(pageSpring) { page = consentPage }
+                        }
+                        .font(CSFont.caption(14))
+                        .foregroundStyle(CSColor.inkSecondary)
+                        .frame(minWidth: CSSize.minTap, minHeight: CSSize.minTap)
+                        .contentShape(.rect)
+                        .accessibilityHint("Va alla richiesta di consenso")
+                        .transition(.opacity)
                     }
-                    .font(CSFont.caption(14))
-                    .foregroundStyle(CSColor.inkSecondary)
-                    .padding(.trailing, CSSpace.lg)
-                    .padding(.top, CSSpace.sm)
-                    .opacity(page == consentPage ? 0 : 1)
-                    .disabled(page == consentPage)
                 }
+                .frame(minHeight: CSSize.minTap)
+                .padding(.trailing, CSSpace.lg)
+                .padding(.top, CSSpace.xs)
+                .animation(pageSpring, value: page)
 
                 TabView(selection: $page) {
                     IntroCarPage().tag(0)
@@ -49,7 +59,7 @@ struct OnboardingFlow: View {
                     ConsentPage().tag(4)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
-                .animation(.easeInOut(duration: 0.4), value: page)
+                .animation(pageSpring, value: page)
 
                 // Indicatore + CTA.
                 VStack(spacing: CSSpace.lg) {
@@ -57,15 +67,14 @@ struct OnboardingFlow: View {
 
                     if page == consentPage {
                         VStack(spacing: CSSpace.sm) {
-                            PrimaryButton(title: "Accetta", icon: "checkmark", gradient: pageGradient) {
-                                finish(with: .granted)
-                            }
-                            GhostButton(title: "No, grazie") { finish(with: .denied) }
+                            // Due scelte di pari peso: stesso componente.
+                            GhostButton(title: "Consenti statistiche anonime") { finish(with: .granted) }
+                            GhostButton(title: "Non consentire") { finish(with: .denied) }
                         }
                         .padding(.horizontal, CSSpace.xl)
                     } else {
                         PrimaryButton(title: "Avanti", icon: "arrow.right", gradient: pageGradient) {
-                            withAnimation(.easeInOut(duration: 0.4)) { page += 1 }
+                            withAnimation(pageSpring) { page += 1 }
                         }
                         .padding(.horizontal, CSSpace.xl)
                     }
@@ -106,10 +115,11 @@ private struct IntroCarPage: View {
                     .foregroundStyle(Rarity.leggendaria.linearGradient)
                     .shadow(color: Rarity.leggendaria.primary.opacity(0.5), radius: 30, y: 12)
             }
+            .accessibilityHidden(true)
 
             VStack(spacing: CSSpace.sm) {
-                Text("CARSPOT").eyebrow(Rarity.leggendaria.primary)
-                Text("Ogni auto è\nuna carta da prendere")
+                Text("CarSpot").eyebrow(Rarity.leggendaria.primary)
+                Text("Ogni auto è una carta da prendere")
                     .font(CSFont.display(34))
                     .multilineTextAlignment(.center)
                     .foregroundStyle(CSColor.ink)
@@ -130,19 +140,16 @@ private struct StatsPage: View {
     var active: Bool
     var body: some View {
         OnboardingScaffold(
-            eyebrow: "RICONOSCIMENTO",
-            title: "Ogni scatto\nha le sue stats",
+            eyebrow: "Riconoscimento",
+            title: "Ogni scatto ha le sue statistiche",
             subtitle: "Potenza, rarità ed esclusività vengono calcolate al volo da ogni avvistamento."
         ) {
             GlassPanel {
                 VStack(spacing: CSSpace.md) {
-                    if active {
-                        StatBar(label: "Potenza", value: 92, tint: Rarity.leggendaria.primary)
-                        StatBar(label: "Rarità", value: 78, tint: Rarity.epica.primary)
-                        StatBar(label: "Esclusività", value: 64, tint: Rarity.rara.primary)
-                    } else {
-                        Color.clear.frame(height: 92)
-                    }
+                    // Sempre presenti (il layout non salta): le barre si riempiono a pagina attiva.
+                    StatBar(label: "Potenza", value: active ? 92 : 0, tint: Rarity.leggendaria.primary)
+                    StatBar(label: "Rarità", value: active ? 78 : 0, tint: Rarity.epica.primary)
+                    StatBar(label: "Esclusività", value: active ? 64 : 0, tint: Rarity.rara.primary)
                 }
             }
             .padding(.horizontal, CSSpace.lg)
@@ -154,11 +161,12 @@ private struct StatsPage: View {
 
 private struct CollectionPage: View {
     var active: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var appear = false
     var body: some View {
         OnboardingScaffold(
-            eyebrow: "COLLEZIONE",
-            title: "Riempi\nil tuo garage",
+            eyebrow: "Collezione",
+            title: "Riempi il tuo garage",
             subtitle: "Ogni carta entra nella tua collezione. Le leggendarie brillano con il foil olografico."
         ) {
             HStack(spacing: CSSpace.sm) {
@@ -172,12 +180,18 @@ private struct CollectionPage: View {
                                 .foregroundStyle(.black.opacity(0.55))
                         )
                         .shadow(color: r.primary.opacity(0.5), radius: 12, y: 6)
-                        .rotationEffect(.degrees(appear ? Double(i - 2) * 5 : 0))
-                        .offset(y: appear ? 0 : 40)
+                        // Con Reduce Motion la posa è fissa e cambia solo l'opacità.
+                        .rotationEffect(.degrees(appear || reduceMotion ? Double(i - 2) * 5 : 0))
+                        .offset(y: appear || reduceMotion ? 0 : 40)
                         .opacity(appear ? 1 : 0)
-                        .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(Double(i) * 0.08), value: appear)
+                        .animation(
+                            reduceMotion ? .easeOut(duration: 0.3)
+                                : .spring(duration: 0.5, bounce: 0).delay(Double(i) * 0.04),
+                            value: appear
+                        )
                 }
             }
+            .accessibilityHidden(true)
         }
         .onChange(of: active, initial: true) { _, now in appear = now }
     }
@@ -187,11 +201,12 @@ private struct CollectionPage: View {
 
 private struct FriendsPage: View {
     var active: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var appear = false
     var body: some View {
         OnboardingScaffold(
-            eyebrow: "TERRITORIO",
-            title: "Conquista\nil quartiere",
+            eyebrow: "Territorio",
+            title: "Conquista il quartiere",
             subtitle: "Vedi dove sono stati fatti gli avvistamenti e sfida gli altri spotter sulla mappa."
         ) {
             ZStack {
@@ -201,9 +216,17 @@ private struct FriendsPage: View {
                         .fill(Rarity.allCases[i % 4].linearGradient)
                         .frame(width: 46, height: 46)
                         .overlay(Image(systemName: "car.fill").font(.system(size: 16, weight: .bold)).foregroundStyle(.black.opacity(0.5)))
-                        .offset(x: appear ? cos(angle) * 92 : 0, y: appear ? sin(angle) * 92 : 0)
+                        // Con Reduce Motion i cerchi stanno già in posizione: solo opacità.
+                        .offset(
+                            x: appear || reduceMotion ? cos(angle) * 92 : 0,
+                            y: appear || reduceMotion ? sin(angle) * 92 : 0
+                        )
                         .opacity(appear ? 1 : 0)
-                        .animation(.spring(response: 0.7, dampingFraction: 0.7).delay(Double(i) * 0.07), value: appear)
+                        .animation(
+                            reduceMotion ? .easeOut(duration: 0.3)
+                                : .spring(duration: 0.5, bounce: 0).delay(Double(i) * 0.04),
+                            value: appear
+                        )
                 }
                 Circle()
                     .fill(CSColor.accent.gradient)
@@ -212,6 +235,7 @@ private struct FriendsPage: View {
                     .shadow(color: CSColor.accent.opacity(0.6), radius: 16)
             }
             .frame(height: 240)
+            .accessibilityHidden(true)
         }
         .onChange(of: active, initial: true) { _, now in appear = now }
     }
@@ -222,8 +246,8 @@ private struct FriendsPage: View {
 private struct ConsentPage: View {
     var body: some View {
         OnboardingScaffold(
-            eyebrow: "PRIVACY",
-            title: "Ci aiuti a\nmigliorare CarSpot?",
+            eyebrow: "Privacy",
+            title: "Ci aiuti a migliorare CarSpot?",
             subtitle: "Raccogliamo statistiche anonime d'uso: quali schermate usi e quante carte raccogli per rarità. Puoi cambiare idea quando vuoi in Profilo."
         ) {
             GlassPanel {
@@ -240,9 +264,10 @@ private struct ConsentPage: View {
     private func row(_ icon: String, _ text: String) -> some View {
         HStack(spacing: CSSpace.md) {
             Image(systemName: icon)
-                .font(.system(size: 16, weight: .bold))
+                .font(CSFont.title(16))
                 .foregroundStyle(CSColor.accent)
-                .frame(width: 24)
+                .frame(minWidth: CSSpace.lg)
+                .accessibilityHidden(true)
             Text(text)
                 .font(CSFont.body(14))
                 .foregroundStyle(CSColor.ink)
@@ -286,15 +311,18 @@ private struct PageDots: View {
     var count: Int
     var index: Int
     var tint: Color
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: CSSpace.xs) {
             ForEach(0..<count, id: \.self) { i in
                 Capsule()
                     .fill(i == index ? tint : CSColor.inkTertiary.opacity(0.5))
                     .frame(width: i == index ? 22 : 7, height: 7)
-                    .animation(.spring(response: 0.4), value: index)
+                    .animation(reduceMotion ? nil : .spring(duration: 0.35, bounce: 0), value: index)
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Pagina \(index + 1) di \(count)")
     }
 }
 

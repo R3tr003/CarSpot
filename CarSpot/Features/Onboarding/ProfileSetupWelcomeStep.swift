@@ -36,7 +36,7 @@ struct ProfileSetupWelcomeStep: View {
                     ForEach(Array(Self.items.enumerated()), id: \.element.id) { index, item in
                         row(item)
                             .opacity(appeared ? 1 : 0)
-                            .offset(y: appeared || reduceMotion ? 0 : 12)
+                            .offset(y: appeared || reduceMotion ? 0 : CSSpace.md)
                             .animation(
                                 .easeOut(duration: 0.35).delay(Double(index) * 0.06),
                                 value: appeared
@@ -52,12 +52,12 @@ struct ProfileSetupWelcomeStep: View {
     private func row(_ item: Item) -> some View {
         HStack(alignment: .top, spacing: CSSpace.md) {
             Image(systemName: item.icon)
-                .font(.system(size: 18, weight: .bold))
+                .font(CSFont.title(18))
                 .foregroundStyle(item.rarity.primary)
-                .frame(width: 44, height: 44)
+                .frame(width: CSSize.minTap, height: CSSize.minTap)
                 .background(item.rarity.primary.opacity(0.16), in: .circle)
                 .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: CSSpace.xs / 2) {
+            VStack(alignment: .leading, spacing: CSSpace.xxs) {
                 Text(item.title)
                     .font(CSFont.title(18))
                     .foregroundStyle(CSColor.ink)
@@ -68,7 +68,7 @@ struct ProfileSetupWelcomeStep: View {
             }
             Spacer(minLength: 0)
         }
-        .frame(minHeight: 44)
+        .frame(minHeight: CSSize.minTap)
         .accessibilityElement(children: .combine)
     }
 }
