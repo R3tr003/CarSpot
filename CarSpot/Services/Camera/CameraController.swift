@@ -17,7 +17,7 @@ final class CameraController: NSObject {
 
     nonisolated(unsafe) let session = AVCaptureSession()
     nonisolated(unsafe) private let photoOutput = AVCapturePhotoOutput()
-    nonisolated(unsafe) private var captureContinuation: CheckedContinuation<UIImage, Error>?
+    private var captureContinuation: CheckedContinuation<UIImage, Error>?
     private let sessionQueue = DispatchQueue(label: "com.carspot.camera.session")
 
     var isAvailable: Bool { status == .ready }
@@ -80,7 +80,7 @@ final class CameraController: NSObject {
 
     func capturePhoto() async throws -> UIImage {
         nonisolated(unsafe) let photoOutput = self.photoOutput
-        nonisolated(unsafe) let delegate = self
+        let delegate = self
         nonisolated(unsafe) let settings = AVCapturePhotoSettings()
         return try await withCheckedThrowingContinuation { continuation in
             self.captureContinuation = continuation
@@ -95,14 +95,20 @@ extension CameraController: AVCapturePhotoCaptureDelegate {
     nonisolated func photoOutput(_ output: AVCapturePhotoOutput,
                                  didFinishProcessingPhoto photo: AVCapturePhoto,
                                  error: Error?) {
-        let continuation = captureContinuation
-        captureContinuation = nil
+        // Il delegate gira su una coda AVFoundation: estrae il risultato e
+        // riprende la continuation (stato main-actor) sul main actor.
+        let result: Result<UIImage, Error>
         if let error {
-            continuation?.resume(throwing: error)
+            result = .failure(error)
         } else if let data = photo.fileDataRepresentation(), let image = UIImage(data: data) {
-            continuation?.resume(returning: image)
+            result = .success(image)
         } else {
-            continuation?.resume(throwing: RecognitionError.noMatch)
+            result = .failure(RecognitionError.noMatch)
+        }
+        Task { @MainActor in
+            let continuation = captureContinuation
+            captureContinuation = nil
+            continuation?.resume(with: result)
         }
     }
 }

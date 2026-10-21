@@ -104,7 +104,9 @@ struct CaptureView: View {
     // MARK: Aiming
 
     private var aimingControls: some View {
-        VStack(spacing: CSSpace.lg) {
+        // Copia locale: la closure `label` di PhotosPicker non è main-actor.
+        let cameraAvailable = camera.isAvailable
+        return VStack(spacing: CSSpace.lg) {
             Text(camera.isAvailable
                  ? "Inquadra un'auto — frontale 3/4 per il match migliore"
                  : "Camera non disponibile sul simulatore — scegli una foto")
@@ -124,7 +126,7 @@ struct CaptureView: View {
             PhotosPicker(selection: $pickerItem, matching: .images) {
                 HStack(spacing: 8) {
                     Image(systemName: "photo.on.rectangle.angled")
-                    Text(camera.isAvailable ? "Usa una foto" : "Scegli una foto")
+                    Text(cameraAvailable ? "Usa una foto" : "Scegli una foto")
                 }
                 .font(CSFont.body(16)).foregroundStyle(CSColor.ink)
                 .padding(.vertical, 14).padding(.horizontal, 22)
