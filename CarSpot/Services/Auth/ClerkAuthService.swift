@@ -22,6 +22,8 @@ final class ClerkAuthService: AuthService {
         case signUp(SignUp, CodeChannel)
     }
     @ObservationIgnored private var codeAttempt: CodeAttempt?
+    /// Esito dell'ultimo accesso: registrazione (true) o accesso a un account esistente.
+    @ObservationIgnored private(set) var lastSignInIsNewUser: Bool?
 
     init() {
         UserDefaults.standard.removeObject(forKey: Self.legacyGuestKey)
@@ -115,6 +117,7 @@ final class ClerkAuthService: AuthService {
                 }
                 try await activate(sessionId: sessionId)
             }
+            if case .signUp = attempt { lastSignInIsNewUser = true } else { lastSignInIsNewUser = false }
             codeAttempt = nil
             setGuest(false)
             Self.trackSignIn(method: channel.analyticsMethod, success: true)
@@ -207,9 +210,10 @@ final class ClerkAuthService: AuthService {
     // MARK: - Privato
 
     /// Esegue il flusso di login; l'annullamento dell'utente esce in silenzio.
-    private func perform<T>(method: String, _ flow: () async throws -> T) async throws {
+    private func perform(method: String, _ flow: () async throws -> TransferFlowResult) async throws {
         do {
-            _ = try await flow()
+            let result = try await flow()
+            if case .signUp = result { lastSignInIsNewUser = true } else { lastSignInIsNewUser = false }
             setGuest(false)
             Self.trackSignIn(method: method, success: true)
         } catch where Self.isCancellation(error) {

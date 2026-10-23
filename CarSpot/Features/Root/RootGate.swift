@@ -78,7 +78,10 @@ struct RootGate: View {
         }
         .onChange(of: scenePhase) { _, phase in
             // Ritorno in primo piano: reinvio code + pull (con throttle).
-            if phase == .active { Task { await sync?.syncNow() } }
+            if phase == .active {
+                Task { await sync?.syncNow() }
+                AnalyticsProfileSync.refresh(in: context)
+            }
         }
     }
 
@@ -89,6 +92,7 @@ struct RootGate: View {
             guard identifiedUserId != id else { return }
             identifiedUserId = id
             AppServices.analytics.identify(userId: id)
+            AnalyticsProfileSync.refresh(in: context)
             // Al report errori solo l'id Clerk: mai email, telefono o nome.
             AppServices.errors.setUser(id: id)
             if let backend = SupabaseBackend.shared {
@@ -108,6 +112,8 @@ struct RootGate: View {
                         await account.load(userId: id)
                     }
                     await sync?.signedIn(userId: id)
+                    // Le carte ripristinate dal cloud cambiano i contatori del profilo.
+                    AnalyticsProfileSync.refresh(in: context)
                 }
             }
         case .signedOut:

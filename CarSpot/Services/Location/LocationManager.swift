@@ -8,6 +8,8 @@ import CoreLocation
 final class LocationManager: NSObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
     var status: CLAuthorizationStatus
+    /// Vero dopo aver mostrato il prompt di sistema: la prima risposta si traccia una volta.
+    private var awaitingAnswer = false
 
     override init() {
         status = manager.authorizationStatus
@@ -19,6 +21,7 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
     /// Ask once. Safe to call repeatedly — the system only prompts when needed.
     func request() {
         if manager.authorizationStatus == .notDetermined {
+            awaitingAnswer = true
             manager.requestWhenInUseAuthorization()
         }
     }
@@ -28,6 +31,13 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
         if new == .authorizedWhenInUse || new == .authorizedAlways {
             manager.startUpdatingLocation()
         }
-        Task { @MainActor in self.status = new }
+        Task { @MainActor in
+            self.status = new
+            if self.awaitingAnswer, new != .notDetermined {
+                self.awaitingAnswer = false
+                let granted = new == .authorizedWhenInUse || new == .authorizedAlways
+                AppServices.analytics.track(.permissionAnswered(permission: .location, granted: granted))
+            }
+        }
     }
 }

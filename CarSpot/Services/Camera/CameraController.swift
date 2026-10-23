@@ -61,6 +61,7 @@ final class CameraController: NSObject {
         case .notDetermined:
             status = .configuring
             let granted = await AVCaptureDevice.requestAccess(for: .video)
+            AppServices.analytics.track(.permissionAnswered(permission: .camera, granted: granted))
             if !granted { markUnavailable(.denied, reason: "denied"); return }
             // Il tempo passato davanti all'alert di sistema non conta come attesa.
             openedAt = .now

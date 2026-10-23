@@ -65,7 +65,8 @@ struct ProfileSetupPermissionsStep: View {
 
     private func requestCamera() {
         Task {
-            _ = await AVCaptureDevice.requestAccess(for: .video)
+            let granted = await AVCaptureDevice.requestAccess(for: .video)
+            AppServices.analytics.track(.permissionAnswered(permission: .camera, granted: granted))
             camera = AVCaptureDevice.authorizationStatus(for: .video)
         }
     }

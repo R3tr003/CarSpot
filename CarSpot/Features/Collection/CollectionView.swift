@@ -45,6 +45,10 @@ struct CollectionView: View {
             .containerBackground(.clear, for: .navigation)
             .scrollContentBackground(.hidden)
         }
+        // Filtro per rarità: nome del case ("comune"…) o "all", indipendente dalla lingua.
+        .onChange(of: filter) { _, new in
+            AppServices.analytics.track(.collectionFiltered(filter: new.map { String(describing: $0) } ?? "all"))
+        }
     }
 
     private func grid(_ items: [StoredCard]) -> some View {

@@ -252,7 +252,12 @@ struct CodeSignInView: View {
 
     private func sendCode() {
         run {
-            try await AppServices.auth.startCodeSignIn(channel, identifier: identifier)
+            do {
+                try await AppServices.auth.startCodeSignIn(channel, identifier: identifier)
+            } catch {
+                trackFailure(error)
+                throw error
+            }
             step = .code
             code = ""
             startCountdown()
@@ -266,13 +271,21 @@ struct CodeSignInView: View {
                 try await AppServices.auth.verifyCode(code)
             } catch {
                 code = ""
+                trackFailure(error)
                 throw error
             }
             if AppServices.auth.state != .signedOut {
-                AppServices.analytics.track(.signedIn(method: channel.analyticsMethod))
+                AppServices.analytics.track(.signedIn(
+                    method: channel.analyticsMethod, isNewUser: AppServices.auth.lastSignInIsNewUser))
             }
             dismiss()
         }
+    }
+
+    /// Solo il motivo enumerato, mai il messaggio né l'identificatore.
+    private func trackFailure(_ error: any Error) {
+        AppServices.analytics.track(.signInFailed(
+            method: channel.analyticsMethod, reason: AnalyticsSignInFailure(error: error)))
     }
 
     private func resend() {

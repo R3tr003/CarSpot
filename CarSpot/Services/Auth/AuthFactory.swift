@@ -16,6 +16,8 @@ final class LocalAuthService: AuthService {
 
     private(set) var state: AuthState
     let isReady = true
+    /// L'auth simulata non distingue registrazione e accesso.
+    var lastSignInIsNewUser: Bool? { nil }
     private(set) var personName: PersonName?
 
     init() {

@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 /// Primo setup del profilo, mostrato una sola volta dopo il primo accesso:
 /// benvenuto → nome e cognome → nome da spotter → permessi → foto → pronto. Non si salta; solo il passo permessi è
@@ -7,6 +8,7 @@ struct ProfileSetupFlow: View {
     let account: ProfileAccount
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.modelContext) private var context
     @State private var step = 0
     @State private var checker: UsernameChecker
     @State private var location = LocationManager()
@@ -241,13 +243,19 @@ struct ProfileSetupFlow: View {
     private func advance() {
         errorMessage = nil
         switch step {
-        case 0: go(to: 1)
+        case 0: completed(.welcome); go(to: 1)
         case 1: saveRealName()
         case 2: saveName()
-        case 3: go(to: 4)
-        case 4: go(to: 5)
+        case 3: completed(.permissions); go(to: 4)
+        case 4: completed(.photo); go(to: 5)
         default: finish()
         }
+    }
+
+    /// Passo del setup finito (per il funnel). Il passo foto conta anche se saltato:
+    /// chi la imposta lo dice `avatar_updated`.
+    private func completed(_ step: AnalyticsSetupStep) {
+        AppServices.analytics.track(.setupStepCompleted(step: step))
     }
 
     /// Nome e cognome vanno solo in Clerk. Se non cambiano rispetto a Clerk non c'è rete;
@@ -257,6 +265,7 @@ struct ProfileSetupFlow: View {
         let first = firstName.trimmingCharacters(in: .whitespacesAndNewlines)
         let last = lastName.trimmingCharacters(in: .whitespacesAndNewlines)
         if AppServices.auth.personName == PersonName(first: first, last: last) {
+            completed(.realName)
             go(to: 2)
             return
         }
@@ -266,6 +275,9 @@ struct ProfileSetupFlow: View {
             do {
                 try await AppServices.auth.updatePersonName(first: first, last: last)
                 AppServices.errors.metric(count: "profile.edit", attributes: ["field": "name", "origin": "setup"])
+                AppServices.analytics.track(.realNameUpdated(origin: "setup"))
+                AnalyticsProfileSync.refresh(in: context)
+                completed(.realName)
                 go(to: 2)
             } catch {
                 errorMessage = AppError.shown(for: error, fallback: .saveRealNameFailed)
@@ -276,6 +288,7 @@ struct ProfileSetupFlow: View {
     private func saveName() {
         guard checker.canContinue else { return }
         if checker.status == .unchanged {
+            completed(.username)
             go(to: 3)
             return
         }
@@ -287,6 +300,7 @@ struct ProfileSetupFlow: View {
                 try await account.saveUsername(value)
                 AppServices.errors.metric(count: "profile.edit", attributes: ["field": "username", "origin": "setup"])
                 checker.markSaved()
+                completed(.username)
                 go(to: 3)
             } catch ProfileAccountError.usernameTaken {
                 checker.markTaken()

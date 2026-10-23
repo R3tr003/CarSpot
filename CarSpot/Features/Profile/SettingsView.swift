@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 import AVFoundation
 import CoreLocation
 import os
@@ -136,9 +137,15 @@ struct SettingsView: View {
                     let value: AnalyticsConsent = on ? .granted : .denied
                     // Spegnere le statistiche chiude Sentry: l'evento va prima. Accendendole
                     // Sentry parte solo dopo, quindi l'evento va dopo.
-                    if !on { Self.trackAnalyticsToggle(on: false) }
+                    if !on {
+                        AppServices.analytics.track(.analyticsDisabled)
+                        Self.trackAnalyticsToggle(on: false)
+                    }
                     AppServices.analytics.setConsent(value)
-                    if on { Self.trackAnalyticsToggle(on: true) }
+                    if on {
+                        AppServices.analytics.track(.consentGiven(granted: true, origin: "settings"))
+                        Self.trackAnalyticsToggle(on: true)
+                    }
                     consent = value
                 }
             ))
@@ -286,6 +293,9 @@ struct SettingsView: View {
         Task {
             defer { isDeleting = false }
             do {
+                // Prima della cancellazione: dopo, la sessione e il consenso di questo
+                // utente non ci sono più. Il reset analytics lo fa RootGate al logout.
+                AppServices.analytics.track(.accountDeleted)
                 try await auth.deleteAccount()
                 sync?.signedOutExplicitly()
             } catch {
@@ -300,6 +310,7 @@ struct SettingsView: View {
 /// Modifica di nome e cognome (privati, salvati solo in Clerk).
 struct PersonNameEditor: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var context
     @State private var first = AppServices.auth.personName?.first ?? ""
     @State private var last = AppServices.auth.personName?.last ?? ""
     @State private var saving = false
@@ -349,6 +360,8 @@ struct PersonNameEditor: View {
             do {
                 try await AppServices.auth.updatePersonName(first: trimmedFirst, last: trimmedLast)
                 AppServices.errors.metric(count: "profile.edit", attributes: ["field": "name", "origin": "settings"])
+                AppServices.analytics.track(.realNameUpdated(origin: "settings"))
+                AnalyticsProfileSync.refresh(in: context)
                 dismiss()
             } catch {
                 errorMessage = AppError.shown(for: error, fallback: .saveRealNameFailed)

@@ -207,6 +207,11 @@ final class CaptureViewModel {
             spottedArea: areas.randomElement() ?? "Centro",
             photo: photo
         )
+        // Prima carta e prima marca, contate prima dell'inserimento.
+        let makeName = candidate.make
+        let isFirstCard = ((try? context.fetchCount(FetchDescriptor<StoredCard>())) ?? 0) == 0
+        let isNewMake = ((try? context.fetchCount(FetchDescriptor<StoredCard>(
+            predicate: #Predicate { $0.make == makeName }))) ?? 0) == 0
         context.insert(card)
         do {
             try context.save()
@@ -224,7 +229,9 @@ final class CaptureViewModel {
         // Invio al cloud in background (no-op se sync spento o utente non loggato).
         if let sync = SyncService.shared { Task { await sync.didSave(card) } }
         // Nome del case (es. "leggendaria"), stabile e indipendente dalla lingua.
-        AppServices.analytics.track(.cardSaved(rarity: String(describing: a.rarity)))
+        AppServices.analytics.track(.cardSaved(
+            rarity: String(describing: a.rarity), make: makeName,
+            isFirstCard: isFirstCard, isNewMake: isNewMake, xpGained: a.rarity.xpReward))
         AppServices.errors.metric(count: "card.saved", attributes: ["rarity": .string(String(describing: a.rarity))])
         errorMessage = nil
         savedCard = card.asSpotCard
@@ -254,6 +261,12 @@ final class CaptureViewModel {
             "outcome": .string(outcome.rawValue), "source": .string(metricSource),
         ]
         AppServices.errors.metric(count: "capture.outcome", attributes: attributes)
+        // L'annullamento non è un esito di prodotto: non si traccia.
+        if let analyticsOutcome = AnalyticsCaptureOutcome(rawValue: outcome.rawValue) {
+            AppServices.analytics.track(.captureCompleted(
+                outcome: analyticsOutcome, source: metricSource,
+                durationMs: Int(ms.rounded()), candidates: candidates))
+        }
         AppServices.errors.metric(distribution: "capture.duration", value: ms, unit: .millisecond,
                                   attributes: ["outcome": .string(outcome.rawValue)])
         AppServices.errors.log("capture finished", level: outcome == .error ? .error : .info, attributes: [

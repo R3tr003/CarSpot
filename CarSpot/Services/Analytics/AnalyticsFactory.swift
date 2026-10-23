@@ -32,4 +32,5 @@ final class NoopAnalytics: AnalyticsService {
     func identify(userId: String) {}
     func reset() {}
     func track(_ event: AnalyticsEvent) {}
+    func updateProfile(_ snapshot: AnalyticsProfile) {}
 }

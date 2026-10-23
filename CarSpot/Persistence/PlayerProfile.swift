@@ -95,10 +95,18 @@ enum PlayerStore {
 
     static func award(xp: Int, currency: Int, in context: ModelContext) {
         let p = profile(context)
+        let levelBefore = p.level
         p.xp += xp
         p.currency += currency
         try? context.save()
+        trackLevelUp(from: levelBefore, to: p.level)
         reportProgress(context)
+    }
+
+    /// Un solo evento per salita, anche se un premio fa saltare più livelli.
+    private static func trackLevelUp(from before: Int, to after: Int) {
+        guard after > before else { return }
+        AppServices.analytics.track(.levelUp(level: after))
     }
 
     /// Gauge di progressione per le dashboard: livello, PE e sfide completate oggi.
@@ -112,6 +120,8 @@ enum PlayerStore {
         errors.metric(gauge: "player.level", value: Double(p.level))
         errors.metric(gauge: "player.xp", value: Double(p.xp))
         errors.metric(gauge: "challenge.progress", value: Double(completed))
+        // Profilo utente Mixpanel: stessi punti di aggiornamento (cattura, riscatto, avvio).
+        AnalyticsProfileSync.refresh(in: context)
     }
 
     /// Claims a completed daily challenge once, awarding its reward.
@@ -121,10 +131,12 @@ enum PlayerStore {
         let p = profile(context)
         let key = "\(PlayerProfile.dayKey())|\(challenge.id)"
         guard !p.claimedChallenges.contains(key) else { return false }
+        let levelBefore = p.level
         p.claimedChallenges.append(key)
         p.xp += challenge.reward
         p.currency += challenge.reward / 4
         try? context.save()
+        trackLevelUp(from: levelBefore, to: p.level)
         AppServices.errors.metric(count: "challenge.claimed")
         reportProgress(context)
         return true

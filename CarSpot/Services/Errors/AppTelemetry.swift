@@ -57,9 +57,11 @@ final class AppTelemetry {
         sessionStart = .now
 
         // "cold": prima attivazione del processo · "warm": ritorno dal background.
-        let kind = hasLaunched ? "warm" : "cold"
+        let kind: AnalyticsOpenKind = hasLaunched ? .warm : .cold
         hasLaunched = true
-        errors.metric(count: "app.launch", attributes: ["kind": .string(kind)])
+        errors.metric(count: "app.launch", attributes: ["kind": .string(kind.rawValue)])
+        // Stesso punto per la retention di prodotto (parte solo con consenso).
+        AppServices.analytics.track(.appOpened(kind: kind))
         errors.metric(count: "app.foreground", attributes: ["network": .string(networkType)])
         reportPermissions()
         reportDeviceState()

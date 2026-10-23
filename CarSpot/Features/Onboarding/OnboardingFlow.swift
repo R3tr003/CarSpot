@@ -83,6 +83,10 @@ struct OnboardingFlow: View {
             }
         }
         .preferredColorScheme(.dark)
+        // Il consenso arriva all'ultima pagina: di norma l'evento viene scartato (resta per completezza).
+        .onChange(of: page, initial: true) { _, new in
+            AppServices.analytics.track(.onboardingStepViewed(step: new))
+        }
     }
 
     private static let pageRarities: [Rarity] = [.leggendaria, .rara, .epica, .rara, .epica]
@@ -92,6 +96,8 @@ struct OnboardingFlow: View {
     /// Salva la scelta (solo ora può partire qualcosa verso Mixpanel) e chiude l'onboarding.
     private func finish(with consent: AnalyticsConsent) {
         AppServices.analytics.setConsent(consent)
+        // Primo evento tracciato: solo se concesso (altrimenti non parte nulla).
+        if consent == .granted { AppServices.analytics.track(.consentGiven(granted: true, origin: "onboarding")) }
         AppServices.analytics.track(.onboardingCompleted)
         onFinished()
     }

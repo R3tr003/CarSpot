@@ -274,6 +274,7 @@ final class ProfileAccount {
         isAvatarBusy = true
         defer { isAvatarBusy = false }
         try await uploadAvatar(jpeg)
+        AppServices.analytics.track(.avatarUpdated(action: "set"))
     }
 
     /// Toglie la foto. La data resta valorizzata: l'import automatico non la rimette.
@@ -296,6 +297,7 @@ final class ProfileAccount {
             avatarPath = nil
             avatarUpdatedAt = version
             AvatarCache.shared.removeAll(userId: userId)
+            AppServices.analytics.track(.avatarUpdated(action: "removed"))
         } catch {
             AppServices.errors.record(error, area: .profile, step: "avatar_remove")
             throw error

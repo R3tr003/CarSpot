@@ -39,6 +39,16 @@ enum AuthCodeError: LocalizedError, Sendable, Equatable {
     case unsupportedCountry
     case generic(String)
 
+    /// Motivo enumerato per le statistiche: mai il messaggio.
+    var analyticsReason: AnalyticsSignInFailure {
+        switch self {
+        case .wrongCode: .wrongCode
+        case .expired: .expired
+        case .unsupportedCountry: .unsupportedCountry
+        case .invalidIdentifier, .tooManyAttempts, .generic: .other
+        }
+    }
+
     var errorDescription: String? {
         switch self {
         case .wrongCode:         String(localized: "Codice non corretto")
@@ -48,6 +58,13 @@ enum AuthCodeError: LocalizedError, Sendable, Equatable {
         case .unsupportedCountry: String(localized: "Per ora non possiamo mandare SMS a questo numero. Usa l'email o Google.")
         case .generic(let msg):  msg
         }
+    }
+}
+
+extension AnalyticsSignInFailure {
+    /// Motivo di un accesso fallito dall'errore, senza leggerne il testo.
+    init(error: any Error) {
+        self = (error as? AuthCodeError)?.analyticsReason ?? .other
     }
 }
 
@@ -83,6 +100,10 @@ protocol AuthService: AnyObject {
     /// `false` finché la sessione salvata non è stata caricata (evita di mostrare il
     /// login per un attimo a chi è già loggato).
     var isReady: Bool { get }
+
+    /// L'ultimo accesso ha creato un account nuovo? `nil` se il provider non lo distingue
+    /// (auth locale) o se non c'è stato nessun accesso. Per `AnalyticsEvent.signedIn`.
+    var lastSignInIsNewUser: Bool? { get }
 
     func signInWithApple() async throws
     func signInWithGoogle() async throws

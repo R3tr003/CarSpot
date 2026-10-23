@@ -42,7 +42,7 @@ struct TodayView: View {
 
     private func claim(_ challenge: DailyChallengeVM) {
         if PlayerStore.claim(challenge, in: context) {
-            AppServices.analytics.track(.challengeClaimed(id: challenge.id))
+            AppServices.analytics.track(.challengeClaimed(id: challenge.id, reward: challenge.reward))
             let key = "\(PlayerProfile.dayKey())|\(challenge.id)"
             Task { await sync?.didClaim(key: key) }
         }

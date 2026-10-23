@@ -137,6 +137,7 @@ struct LoginView: View {
     private func openCode(_ channel: CodeChannel) {
         taps += 1
         errorMessage = nil
+        AppServices.analytics.track(.signInStarted(method: channel.analyticsMethod))
         codeChannel = channel
     }
 
@@ -145,14 +146,20 @@ struct LoginView: View {
         taps += 1
         errorMessage = nil
         working = true
+        AppServices.analytics.track(.signInStarted(method: method))
         Task {
             defer { working = false }
             do {
                 try await action()
                 if AppServices.auth.state != .signedOut {
-                    AppServices.analytics.track(.signedIn(method: method))
+                    AppServices.analytics.track(.signedIn(
+                        method: method, isNewUser: AppServices.auth.lastSignInIsNewUser))
+                } else {
+                    // Il servizio assorbe l'annullamento dell'utente: nessuna sessione = annullato.
+                    AppServices.analytics.track(.signInFailed(method: method, reason: .cancelled))
                 }
             } catch {
+                AppServices.analytics.track(.signInFailed(method: method, reason: AnalyticsSignInFailure(error: error)))
                 // Il servizio ha già registrato l'errore inatteso (`ErrorReporting`).
                 let message = AppError.shown(for: error, fallback: .signInFailed)
                 errorMessage = message

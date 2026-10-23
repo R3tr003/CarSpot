@@ -97,6 +97,7 @@ struct RootShellView: View {
         .presentationDetents([Self.smallDetent, Self.mediumDetent, .large], selection: $detent)
         .onChange(of: detent) { _, new in
             AppServices.errors.metric(count: "panel.detent", attributes: ["detent": .string(Self.detentName(new))])
+            AppServices.analytics.track(.panelDetentChanged(detent: Self.detentName(new)))
         }
         // La mappa resta interattiva a ogni altezza; il pannello non si chiude mai.
         .presentationBackgroundInteraction(.enabled)
@@ -107,7 +108,12 @@ struct RootShellView: View {
         .presentationDragIndicator(.visible)
         .preferredColorScheme(.dark)
         .onChange(of: accountSheet) { _, sheet in
-            if let sheet { Self.trackScreen(sheet.rawValue) }
+            guard let sheet else { return }
+            Self.trackScreen(sheet.rawValue)
+            switch sheet {
+            case .profile: AppServices.analytics.track(.profileOpened)
+            case .settings: AppServices.analytics.track(.settingsOpened)
+            }
         }
         .sheet(item: $accountSheet) { sheet in
             Group {

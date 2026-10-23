@@ -77,6 +77,7 @@ struct CardDetailView: View {
             if !reduceMotion { motion.start() }
             // Nome del case (es. "epica"), stabile e indipendente dalla lingua.
             AppServices.errors.metric(count: "card.view", attributes: ["rarity": .string(String(describing: card.rarity))])
+            AppServices.analytics.track(.cardViewed(rarity: String(describing: card.rarity)))
         }
         .onDisappear { motion.stop() }
     }
