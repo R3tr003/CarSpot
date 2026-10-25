@@ -1,25 +1,60 @@
 # CarSpot — Backend Supabase
 
 Backend per riconoscimento, persistenza cloud, avvistamenti e territorio.
-Finché `AppConfig.recognitionMode == .mock`, l'app gira senza questo backend.
+Finché `AppConfig.useRemoteRecognition == false` (default) il riconoscimento usa il mock e
+l'app gira senza la Edge Function `recognize`. Auth utente = **Clerk** (third-party auth).
 
 ## Setup
 
-1. Crea un progetto su [supabase.com](https://supabase.com) e prendi `Project URL` e
-   `anon key` (Settings → API).
-2. Inseriscili in `CarSpot/Services/AppConfig.swift` e imposta `recognitionMode = .remote`.
-3. Applica lo schema (progetto remoto: `rdezjqbxqekteextolvh`, già allineato):
+1. Progetto remoto: `rdezjqbxqekteextolvh`. `Project URL` e publishable key
+   (`sb_publishable_…`) stanno in `CarSpot/Services/Secrets.swift` (gitignored, letto da
+   `AppConfig`); niente anon key.
+2. Applica lo schema (le migration sono già allineate alla cronologia remota; la CLI non è
+   installata, in questo progetto si applicano via MCP Supabase):
    ```bash
-   supabase link --project-ref <ref>
+   supabase link --project-ref rdezjqbxqekteextolvh
    supabase db push          # esegue migrations/<versione>_*.sql
    ```
-4. Configura il provider di riconoscimento e fai il deploy della Edge Function:
+3. Configura i secret e fai il deploy della Edge Function `recognize`:
    ```bash
    supabase secrets set RECOGNITION_API_URL=https://api.carnet.ai/... \
-                        RECOGNITION_API_KEY=*****
+                        RECOGNITION_API_KEY=***** \
+                        CLERK_DOMAIN=<dominio Frontend API Clerk>
    supabase functions deploy recognize
    ```
+   `CLERK_DOMAIN` è lo stesso di `[auth.third_party.clerk] domain` in `config.toml`; se manca
+   la function usa il dominio dell'istanza di sviluppo, quindi **in produzione va impostato**.
+   `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` sono già nell'env delle Edge Functions.
+4. Attiva il riconoscimento reale: `AppConfig.useRemoteRecognition = true`.
 5. Crea un bucket Storage privato `spots` per le foto anonimizzate.
+
+## Sicurezza di `recognize`
+
+`verify_jwt = false` in `config.toml` (la publishable key non è un JWT), ma la function
+non è aperta: verifica da sé l'identità.
+
+1. Solo `POST`.
+2. `Authorization: Bearer <token Clerk>`: firma RS256 via JWKS di
+   `https://<CLERK_DOMAIN>/.well-known/jwks.json`, `iss` ed `exp` controllati; l'utente è il
+   `sub`. Assente o non valido → **401**. L'app chiede il token a ogni richiesta
+   (`sessionToken()`, dura ~1 minuto) e invia anche `apikey` con la publishable key.
+3. Corpo oltre 3 MB → **413**; JSON non valido o `imageBase64` mancante → **400**.
+4. Rate limit per utente: `DAILY_LIMIT` (30/giorno UTC, costante in cima a `index.ts`),
+   contatore atomico in `private.recognition_usage` tramite
+   `public.consume_recognition_quota(user, limite)` (`security definer`, eseguibile solo dalla
+   service role). Oltre il limite → **429**. Se il contatore è in errore la richiesta è
+   rifiutata (fail closed). La quota si consuma anche se il provider poi fallisce.
+5. Gli errori 500 sono generici verso il client; il dettaglio va in `console.error`
+   (log della function).
+
+Da provare dopo il deploy (sostituisci `<jwt>` con un token di sessione Clerk valido):
+```bash
+URL=https://rdezjqbxqekteextolvh.supabase.co/functions/v1/recognize
+curl -s -o /dev/null -w "%{http_code}\n" -X POST $URL -d '{}'                                   # 401
+curl -s -o /dev/null -w "%{http_code}\n" -X POST $URL -H "Authorization: Bearer x.y.z" -d '{}'   # 401
+curl -s -o /dev/null -w "%{http_code}\n" -X POST $URL -H "Authorization: Bearer <jwt>" -d '{}'   # 400
+curl -s -o /dev/null -w "%{http_code}\n" -X GET  $URL -H "Authorization: Bearer <jwt>"           # 405
+```
 
 ## Contenuto
 
@@ -32,6 +67,9 @@ Finché `AppConfig.recognitionMode == .mock`, l'app gira senza questo backend.
 - `migrations/…_0003_rls_initplan_form.sql` — policy nella forma `(select auth.jwt())`.
 - `legacy/0001_init.sql` — schema originale (uuid + Supabase Auth), superato dalla 0002:
   non è nella cronologia remota, non va applicato.
+- `migrations/…_0007_recognition_rate_limit.sql` (+ `0008`, policy deny-all) — contatore
+  giornaliero per utente (`private.recognition_usage`) e `public.consume_recognition_quota`,
+  usati da `recognize`.
 - `functions/recognize/` — Edge Function che fa da proxy al provider di
   riconoscimento (la chiave API resta server-side) e normalizza la risposta nei
   `VehicleCandidate` attesi dall'app.

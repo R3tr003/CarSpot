@@ -1059,6 +1059,16 @@
         }
       }
     },
+    "Hai raggiunto il limite di riconoscimenti di oggi. Riprova domani." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You've reached today's recognition limit. Try again tomorrow."
+          }
+        }
+      }
+    },
     "La tua foto" : {
       "localizations" : {
         "en" : {
@@ -1185,6 +1195,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Choose from library"
+          }
+        }
+      }
+    },
+    "Sessione scaduta. Accedi di nuovo per riconoscere le auto." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session expired. Sign in again to recognize cars."
           }
         }
       }

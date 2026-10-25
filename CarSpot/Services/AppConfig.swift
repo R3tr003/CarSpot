@@ -61,7 +61,9 @@ enum AppConfig {
     /// Publishable key (`sb_publishable_…`) — letto da `Secrets.swift` (gitignored).
     static let supabaseKey = Secrets.supabaseKey
 
-    /// Edge Function that anonymizes-checks and calls the recognition provider.
+    /// Edge Function `recognize`: verifica il JWT Clerk dell'utente (header `Authorization`,
+    /// non la publishable key), applica il rate limit giornaliero e chiama il provider.
+    /// L'anonimizzazione di volti/targhe avviene prima, on-device.
     static var recognitionEndpoint: URL {
         supabaseURL.appendingPathComponent("functions/v1/recognize")
     }

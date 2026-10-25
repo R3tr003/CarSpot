@@ -19,11 +19,17 @@ struct VehicleCandidate: Identifiable, Hashable, Sendable, Codable {
 enum RecognitionError: LocalizedError {
     case noMatch
     case network(String)
+    /// Nessuna sessione valida (token assente o rifiutato, HTTP 401).
+    case unauthorized
+    /// Limite giornaliero di riconoscimenti raggiunto (HTTP 429).
+    case rateLimited
 
     var errorDescription: String? {
         switch self {
         case .noMatch: return String(localized: "Nessuna auto riconosciuta. Prova un'inquadratura frontale 3/4.")
         case .network(let m): return String(localized: "Errore di rete: \(m)")
+        case .unauthorized: return String(localized: "Sessione scaduta. Accedi di nuovo per riconoscere le auto.")
+        case .rateLimited: return String(localized: "Hai raggiunto il limite di riconoscimenti di oggi. Riprova domani.")
         }
     }
 }
