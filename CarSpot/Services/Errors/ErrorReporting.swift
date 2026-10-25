@@ -140,6 +140,8 @@ struct ErrorSummary: Sendable, Equatable {
             switch e {
             case .noMatch: code = "noMatch"
             case .network: code = "network"
+            case .unauthorized: code = "unauthorized"
+            case .rateLimited: code = "rateLimited"
             }
         case let e as ProfileAccountError:
             type = "ProfileAccountError"; code = String(describing: e)

@@ -283,7 +283,7 @@ final class CaptureViewModel {
         if let recognition = error as? RecognitionError {
             switch recognition {
             case .noMatch: return .noVehicle
-            case .network: return .recognitionFailed
+            case .network, .unauthorized, .rateLimited: return .recognitionFailed
             }
         }
         return .error

@@ -9,6 +9,8 @@ enum AppError: LocalizedError, Equatable, Sendable {
     case captureFailed
     case noVehicleFound
     case recognitionFailed
+    case recognitionSessionExpired
+    case recognitionLimitReached
     case saveCardFailed
     case saveNameFailed
     case saveRealNameFailed
@@ -73,6 +75,8 @@ enum AppError: LocalizedError, Equatable, Sendable {
         case .captureFailed: "captureFailed"
         case .noVehicleFound: "noVehicleFound"
         case .recognitionFailed: "recognitionFailed"
+        case .recognitionSessionExpired: "recognitionSessionExpired"
+        case .recognitionLimitReached: "recognitionLimitReached"
         case .saveCardFailed: "saveCardFailed"
         case .saveNameFailed: "saveNameFailed"
         case .saveRealNameFailed: "saveRealNameFailed"
@@ -91,6 +95,8 @@ enum AppError: LocalizedError, Equatable, Sendable {
         case .captureFailed: String(localized: "Scatto non riuscito. Riprova.")
         case .noVehicleFound: String(localized: "Nessuna auto riconosciuta. Inquadra l'auto di 3/4 e riprova.")
         case .recognitionFailed: String(localized: "Non sono riuscito a riconoscere l'auto. Riprova.")
+        case .recognitionSessionExpired: String(localized: "Sessione scaduta. Accedi di nuovo per riconoscere le auto.")
+        case .recognitionLimitReached: String(localized: "Hai raggiunto il limite di riconoscimenti di oggi. Riprova domani.")
         case .saveCardFailed: String(localized: "Non sono riuscito a salvare la carta. Riprova.")
         case .saveNameFailed: String(localized: "Non riesco a salvare il nome. Controlla la connessione e riprova.")
         case .saveRealNameFailed: String(localized: "Non riesco a salvare nome e cognome. Controlla la connessione e riprova.")
@@ -116,6 +122,8 @@ private extension RecognitionError {
         switch self {
         case .noMatch: .noVehicleFound
         case .network: .recognitionFailed
+        case .unauthorized: .recognitionSessionExpired
+        case .rateLimited: .recognitionLimitReached
         }
     }
 }

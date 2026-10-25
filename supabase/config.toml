@@ -32,8 +32,9 @@ domain = "quiet-oarfish-3994.clerk.accounts.dev"   # Frontend API Clerk (istanza
 enabled = true
 
 # Edge Function di riconoscimento (proxy verso il provider, tiene la chiave server-side).
-# verify_jwt = false perché l'app chiama con la publishable key (sb_publishable_...),
-# che non è un JWT. La function è comunque gated dalla apikey.
+# verify_jwt = false perché l'app chiama con la publishable key (sb_publishable_...), che non
+# è un JWT. La verifica dell'utente è nel codice: JWT Clerk (RS256 via JWKS, env CLERK_DOMAIN),
+# più rate limit giornaliero per utente (public.consume_recognition_quota).
 [functions.recognize]
 enabled = true
 verify_jwt = false
