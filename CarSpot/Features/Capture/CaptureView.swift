@@ -34,6 +34,16 @@ struct CaptureView: View {
         ZStack {
             backdrop
 
+            // Il reveal occupa tutto lo schermo; la barra in alto resta sopra.
+            ZStack {
+                if vm.phase == .saved, let card = vm.savedCard, let info = vm.revealInfo {
+                    CardRevealView(card: card, photo: vm.anonymizedImage, info: info,
+                                   onAnother: { vm.reset() }, onDone: { dismiss() })
+                        .transition(.opacity)
+                }
+            }
+            .animation(.easeOut(duration: 0.2), value: vm.phase == .saved)
+
             VStack(spacing: CSSpace.md) {
                 topBar
                 if showHint, camera.isAvailable, vm.phase == .aiming {
@@ -89,7 +99,7 @@ struct CaptureView: View {
             if UserDefaults.standard.bool(forKey: "autoCapture"), vm.phase == .aiming {
                 await vm.process(image: Self.debugImage(), source: "auto")
                 if UserDefaults.standard.bool(forKey: "autoSave"), vm.phase == .result {
-                    vm.save(into: context)
+                    await vm.save(into: context)
                 }
             }
         }
@@ -127,22 +137,19 @@ struct CaptureView: View {
             case .aiming: aimingControls.transition(phaseTransition)
             case .processing: processingHUD.transition(phaseTransition)
             case .result: resultPanel.transition(phaseTransition)
-            case .saved: savedPanel.transition(phaseTransition)
+            case .saved: EmptyView()   // lo schermo intero è CardRevealView
             }
         }
         .animation(Self.phaseSpring, value: vm.phase)
     }
 
-    /// Haptic al cambio di fase: avviso se poco sicuri, peso in base alla rarità al salvataggio.
+    /// Haptic al cambio di fase: avviso se poco sicuri, selezione quando arrivano i risultati.
     private func phaseFeedback(_ phase: CaptureViewModel.Phase) -> SensoryFeedback? {
         switch phase {
         case .result:
             return vm.isLowConfidence ? .warning : .selection
         case .saved:
-            switch vm.savedCard?.rarity {
-            case .epica, .leggendaria: return .impact(weight: .heavy, intensity: 1)
-            default: return .success
-            }
+            return nil   // l'unica vibrazione del reveal è all'atterraggio (CardRevealView)
         case .aiming, .processing:
             return nil
         }
@@ -190,21 +197,25 @@ struct CaptureView: View {
         .ignoresSafeArea()
     }
 
+    /// La foto già anonimizzata a schermo intero, scurita e appena sfocata: resta fino al reveal,
+    /// dove vola dentro la carta. Prima dell'anonimizzazione solo lo sfondo scuro (mai l'originale).
     private var frozenBackdrop: some View {
         ZStack {
             dimBackdrop
-            if let thumb = vm.previewImage {
+            if let photo = vm.anonymizedImage {
                 Color.clear
                     .overlay {
-                        Image(uiImage: thumb)
+                        Image(uiImage: photo)
                             .resizable().scaledToFill()
-                            .blur(radius: 28, opaque: true)
-                            .overlay(Color.black.opacity(0.4))
+                            .blur(radius: PhotoBackdrop.blur, opaque: true)
+                            .overlay(Color.black.opacity(PhotoBackdrop.dim))
                     }
                     .clipped()
                     .ignoresSafeArea()
+                    .transition(.opacity)
             }
         }
+        .animation(.easeOut(duration: 0.2), value: vm.anonymizedImage != nil)
         .accessibilityHidden(true)
     }
 
@@ -411,16 +422,8 @@ struct CaptureView: View {
 
     private var resultContent: some View {
         VStack(spacing: CSSpace.md) {
-            if let img = vm.anonymizedImage {
-                Image(uiImage: img)
-                    .resizable().scaledToFill()
-                    .frame(height: 150).frame(maxWidth: .infinity)
-                    .clipShape(RoundedRectangle(cornerRadius: CSRadius.md, style: .continuous))
-                    .overlay(RoundedRectangle(cornerRadius: CSRadius.md).strokeBorder(CSColor.hairline))
-                    .accessibilityHidden(true)
-            }
-
-            GlassPanel(cornerRadius: CSRadius.md) {
+            // La foto è già lo sfondo a schermo intero: qui solo la scelta del modello.
+            Surface(.group) {
                 VStack(alignment: .leading, spacing: CSSpace.sm) {
                     Text(matchTitle)
                         .eyebrow(CSColor.accent)
@@ -429,7 +432,7 @@ struct CaptureView: View {
                         candidateRow(candidate)
                     }
                     if vm.isLowConfidence {
-                        Divider().overlay(CSColor.hairline)
+                        SurfaceDivider()
                         noneOfThemRow
                     }
                     Text("L'anno è una stima e può essere corretto in seguito.")
@@ -439,15 +442,11 @@ struct CaptureView: View {
             }
 
             PrimaryButton(title: "Aggiungi alla collezione", icon: "checkmark",
-                          gradient: (vm.selected.map {
-                              RarityEngine.assess(make: $0.make, model: $0.model,
-                                                  year: $0.yearEstimate).rarity.gradient
-                          } ?? Rarity.rara.gradient),
-                          haptic: false) {   // il salvataggio ha già il suo haptic
-                vm.save(into: context)
+                          haptic: false) {   // il reveal ha già la sua vibrazione
+                Task { await vm.save(into: context) }
             }
-            .disabled(vm.selected == nil)
-            .opacity(vm.selected == nil ? 0.4 : 1)
+            .disabled(vm.selected == nil || vm.isSaving)
+            .opacity(vm.selected == nil || vm.isSaving ? 0.4 : 1)
             .accessibilityHint(selectionHint)
 
             GhostButton(title: "Riprova", icon: "arrow.triangle.2.circlepath") { vm.reset() }
@@ -515,32 +514,6 @@ struct CaptureView: View {
         }
         .buttonStyle(.plain)
         .accessibilityHint("Torna al mirino")
-    }
-
-    // MARK: Saved
-
-    private var savedPanel: some View {
-        FitScroll {
-            GlassPanel {
-                VStack(spacing: CSSpace.md) {
-                    Text("Aggiunta alla collezione")
-                        .font(CSFont.title(18)).foregroundStyle(CSColor.ink)
-                        .accessibilityAddTraits(.isHeader)
-                    if let card = vm.savedCard {
-                        CardReveal(card: card)
-                    }
-                    HStack(spacing: CSSpace.xs) {
-                        Image(systemName: "bolt.fill").accessibilityHidden(true)
-                        Text("+\(vm.lastReward) PE").font(CSFont.numeric(15))
-                    }
-                    .foregroundStyle(CSColor.accentWarm)
-                    .accessibilityElement(children: .combine)
-                    .accessibilityLabel("Più \(vm.lastReward) punti esperienza")
-                    PrimaryButton(title: "Cattura un'altra", icon: "camera.fill") { vm.reset() }
-                }
-                .frame(maxWidth: .infinity)
-            }
-        }
     }
 }
 
@@ -620,71 +593,6 @@ private struct ShutterButtonStyle: ButtonStyle {
         configuration.label
             .scaleEffect(configuration.isPressed ? 0.94 : 1)
             .animation(.spring(duration: 0.2, bounce: 0), value: configuration.isPressed)
-    }
-}
-
-// MARK: - Reveal della carta
-
-/// Entrata della carta appena salvata, proporzionale alla rarità:
-/// Comune solo opacità; Rara + scala e alone; Epica/Leggendaria + una passata di foil.
-/// Reduce Motion: solo opacità. Un tap salta alla fine.
-private struct CardReveal: View {
-    let card: SpotCard
-
-    /// Larghezza della carta nel pannello "salvata".
-    private static let width: CGFloat = 200
-    /// Raggio dell'alone (l'intensità segue `glowStrength`).
-    private static let glowRadius: CGFloat = 28
-
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var shown = false
-    @State private var scaled = false
-    @State private var glow = 0.0
-    @State private var roll: Double
-    @State private var skipped = false
-
-    init(card: SpotCard) {
-        self.card = card
-        // Il foil parte da -1 mentre la carta è ancora invisibile.
-        _roll = State(initialValue: card.rarity.isFoil ? -1 : 0)
-    }
-
-    private var scalesIn: Bool { !reduceMotion && card.rarity != .comune }
-
-    var body: some View {
-        SpotCardView(card: card, roll: roll)
-            .frame(width: Self.width)
-            .shadow(color: card.rarity.primary.opacity(glow), radius: Self.glowRadius)
-            .scaleEffect(scaled || !scalesIn ? 1 : 0.95)
-            .opacity(shown ? 1 : 0)
-            .onTapGesture { skipped = true }
-            .task(id: skipped) { await play() }
-    }
-
-    private func play() async {
-        let rarity = card.rarity
-        if skipped {
-            withAnimation(.easeOut(duration: 0.15)) {
-                shown = true; scaled = true; glow = rarity.glowStrength; roll = 0
-            }
-            return
-        }
-        guard scalesIn else {
-            // Comune o Reduce Motion: solo dissolvenza (alone incluso, già a regime).
-            withAnimation(.easeOut(duration: 0.2)) { shown = true; glow = rarity.glowStrength }
-            roll = 0
-            return
-        }
-        withAnimation(.easeOut(duration: 0.25)) { shown = true }
-        withAnimation(.spring(duration: 0.4, bounce: 0.15)) { scaled = true }
-        withAnimation(.easeOut(duration: 0.4)) { glow = rarity.glowStrength }
-        if rarity.isFoil {
-            // Una sola passata -1 → 1, poi assestamento a 0.
-            withAnimation(.easeInOut(duration: 0.9)) { roll = 1 }
-            try? await Task.sleep(for: .milliseconds(900))
-            guard !Task.isCancelled else { return }
-            withAnimation(.easeOut(duration: 0.25)) { roll = 0 }
-        }
     }
 }
 

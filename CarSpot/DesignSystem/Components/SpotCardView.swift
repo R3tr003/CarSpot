@@ -1,9 +1,10 @@
 import SwiftUI
 import ImageIO
 
-/// The collectible card. Renders the vehicle, rarity framing and — for foil
-/// rarities — the motion-reactive holographic sheen.
-/// `compact` = versione per la griglia della collezione: niente foil né glow.
+/// The collectible card. La rarità si legge dal materiale (opaca, bordo metallico,
+/// bordo foil, foil intero) e dal suo colore unico, mai da un alone. Il riflesso
+/// speculare e il foil seguono l'inclinazione.
+/// `compact` = versione per la griglia della collezione: solo bordo, niente foil né riflessi.
 struct SpotCardView: View {
     let card: SpotCard
     var roll: Double = 0
@@ -15,26 +16,27 @@ struct SpotCardView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
+    private var shape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: CSRadius.card, style: .continuous)
+    }
+    private var color: Color { card.rarity.color }
+    private var finish: RarityFinish { card.rarity.finish }
+    /// Inclinazione effettiva: ferma con Riduci movimento e nella versione compatta.
+    private var tiltRoll: Double { reduceMotion || compact ? 0 : roll }
+    private var tiltPitch: Double { reduceMotion || compact ? 0 : pitch }
+
     var body: some View {
         ZStack {
-            // Rarity-tinted base with a vignette so the subject pops.
-            RoundedRectangle(cornerRadius: CSRadius.card, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: [CSColor.elevated, CSColor.surface],
-                        startPoint: .top, endPoint: .bottom
-                    )
-                )
-
-            RoundedRectangle(cornerRadius: CSRadius.card, style: .continuous)
-                .fill(card.rarity.linearGradient)
-                .opacity(0.16)
+            shape.fill(
+                LinearGradient(colors: [CSColor.hero, CSColor.group],
+                               startPoint: .top, endPoint: .bottom)
+            )
 
             // Subject.
             VStack(spacing: CSSpace.sm) {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: CSSpace.xxs) {
-                        Text(card.make.uppercased()).eyebrow(card.rarity.primary)
+                        Text(card.make.uppercased()).eyebrow(color)
                             .lineLimit(1).minimumScaleFactor(0.6)
                         Text(card.model)
                             .font(CSFont.title(19))
@@ -42,27 +44,35 @@ struct SpotCardView: View {
                             .lineLimit(2).minimumScaleFactor(0.8)
                     }
                     Spacer(minLength: CSSpace.xs)
-                    RarityBadge(rarity: card.rarity, compact: true)
+                    if copies > 1 { copiesPill }
                 }
 
                 Spacer(minLength: 0)
 
                 // Parallasse: disattivato con Reduce Motion.
-                CardPhoto(imageData: card.imageData, symbol: card.symbol, rarity: card.rarity)
-                    .offset(x: reduceMotion ? 0 : roll * 8, y: reduceMotion ? 0 : pitch * 6)
+                CardPhoto(imageData: card.imageData, symbol: card.symbol, color: color)
+                    .offset(x: tiltRoll * 8, y: tiltPitch * 6)
 
                 Spacer(minLength: 0)
 
-                HStack {
-                    if card.year > 0 {
-                        Label(String(card.year), systemImage: "calendar")
-                        Spacer(minLength: CSSpace.xs)
+                VStack(spacing: CSSpace.xs) {
+                    HStack {
+                        if card.year > 0 {
+                            Label(String(card.year), systemImage: "calendar")
+                            Spacer(minLength: CSSpace.xs)
+                        }
+                        Label(card.colorName, systemImage: "paintpalette.fill")
+                            .lineLimit(1).minimumScaleFactor(0.8)
                     }
-                    Label(card.colorName, systemImage: "paintpalette.fill")
-                        .lineLimit(1).minimumScaleFactor(0.8)
+                    .font(CSFont.caption(12))
+                    .foregroundStyle(CSColor.inkSecondary)
+
+                    SurfaceDivider()
+                    HStack {
+                        RarityBadge(rarity: card.rarity, compact: true)
+                        Spacer(minLength: 0)
+                    }
                 }
-                .font(CSFont.caption(12))
-                .foregroundStyle(CSColor.inkSecondary)
 
                 if showStats {
                     HStack(spacing: CSSpace.xs) {
@@ -77,24 +87,95 @@ struct SpotCardView: View {
         .aspectRatio(0.7, contentMode: .fit)
         // Layout a proporzione fissa: il Dynamic Type è limitato.
         .dynamicTypeSize(...DynamicTypeSize.xLarge)
-        .overlay {
-            if card.rarity.isFoil && !compact {
-                HolographicFoil(roll: roll, pitch: pitch, strength: card.rarity.glowStrength)
-                    .clipShape(RoundedRectangle(cornerRadius: CSRadius.card, style: .continuous))
-            }
-        }
-        .overlay {
-            RoundedRectangle(cornerRadius: CSRadius.card, style: .continuous)
-                .strokeBorder(card.rarity.linearGradient, lineWidth: 1.5)
-                .opacity(0.8)
-        }
+        .overlay { foilLayer }
+        .overlay { specularLayer }
+        .overlay { borderLayer }
         .shadow(color: .black.opacity(compact ? 0.3 : 0.5),
                 radius: compact ? 10 : 20, y: compact ? 6 : 14)
-        .shadow(color: card.rarity.primary.opacity(compact ? 0 : card.rarity.glowStrength * 0.5),
-                radius: compact ? 0 : 24, y: 0)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabelText)
         .accessibilityValue(statsSpoken)
+    }
+
+    // MARK: Materiali
+
+    /// Foil monocromo: sul bordo (Epica) o su tutta la carta (Leggendaria). Mai in compact.
+    @ViewBuilder private var foilLayer: some View {
+        if !compact {
+            switch finish {
+            case .fullFoil:
+                HolographicFoil(color: color, roll: tiltRoll, pitch: tiltPitch, strength: 1, wash: 0.09)
+                    .clipShape(shape)
+            case .foilEdge:
+                HolographicFoil(color: color, roll: tiltRoll, pitch: tiltPitch, strength: 1.6)
+                    .mask { shape.strokeBorder(lineWidth: 5) }
+            case .matte, .metalEdge:
+                EmptyView()
+            }
+        }
+    }
+
+    /// Riflesso speculare radiale tinto del colore della rarità, che segue l'inclinazione.
+    @ViewBuilder private var specularLayer: some View {
+        if !compact {
+            GeometryReader { geo in
+                let base: Double = switch finish {
+                case .matte: 0.10
+                case .metalEdge: 0.20
+                case .foilEdge: 0.24
+                case .fullFoil: 0.30
+                }
+                let level = base * (0.4 + min(1, (abs(tiltRoll) + abs(tiltPitch)) / 0.8))
+                RadialGradient(
+                    colors: [color.opacity(level), .clear],
+                    center: UnitPoint(x: 0.5 + tiltRoll * 0.35, y: 0.2 - tiltPitch * 0.25),
+                    startRadius: 0,
+                    endRadius: max(geo.size.width, geo.size.height) * 0.55
+                )
+            }
+            .clipShape(shape)
+            .allowsHitTesting(false)
+        }
+    }
+
+    /// Bordo: 1 pt tenue (opaca), 2 pt metallico con luce legata a `roll` (Rara, Leggendaria),
+    /// 2 pt pieno sotto il foil (Epica).
+    @ViewBuilder private var borderLayer: some View {
+        switch finish {
+        case .matte:
+            shape.strokeBorder(color.opacity(0.35), lineWidth: 1)
+        case .foilEdge:
+            shape.strokeBorder(color, lineWidth: 2)
+        case .metalEdge, .fullFoil:
+            if compact {
+                shape.strokeBorder(color, lineWidth: 2)
+            } else {
+                let highlight = min(0.9, max(0.1, 0.5 + tiltRoll * 0.4))
+                shape.strokeBorder(
+                    LinearGradient(
+                        stops: [
+                            .init(color: color.mix(with: .black, by: 0.18), location: 0),
+                            .init(color: color.mix(with: .white, by: 0.5), location: highlight),
+                            .init(color: color.mix(with: .black, by: 0.18), location: 1)
+                        ],
+                        startPoint: .topLeading, endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 2
+                )
+            }
+        }
+    }
+
+    /// "×N" in alto a destra.
+    private var copiesPill: some View {
+        Text("×\(copies)")
+            .font(CSFont.micro)
+            .monospacedDigit()
+            .foregroundStyle(CSColor.ink)
+            .padding(.horizontal, 7)
+            .padding(.vertical, 3)
+            .background(Capsule().fill(CSColor.nested))
+            .accessibilityHidden(true)
     }
 
     /// Statistiche lette a voce (vuote se la carta non le mostra).
@@ -108,6 +189,7 @@ struct SpotCardView: View {
         if card.year > 0 { parts.append(String(card.year)) }
         parts.append(card.rarity.localizedName)
         parts.append(card.colorName)
+        if copies > 1 { parts.append(String(localized: "\(copies) copie")) }
         return parts.joined(separator: ", ")
     }
 
@@ -119,7 +201,7 @@ struct SpotCardView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, CSSpace.xs)
-        .background(RoundedRectangle(cornerRadius: CSRadius.sm, style: .continuous).fill(.white.opacity(0.06)))
+        .background(RoundedRectangle(cornerRadius: CSRadius.sm, style: .continuous).fill(CSColor.nested))
     }
 }
 
@@ -146,7 +228,7 @@ private func decodeThumbnail(_ data: Data) async -> DecodedThumbnail? {
 private struct CardPhoto: View {
     let imageData: Data?
     let symbol: String
-    let rarity: Rarity
+    let color: Color
 
     @State private var thumbnail: DecodedThumbnail?
 
@@ -163,11 +245,7 @@ private struct CardPhoto: View {
                     Image(systemName: symbol)
                         .font(.system(size: 56, weight: .regular))
                         .minimumScaleFactor(0.5)
-                        .foregroundStyle(
-                            LinearGradient(colors: rarity.gradient,
-                                           startPoint: .leading, endPoint: .trailing)
-                        )
-                        .shadow(color: rarity.primary.opacity(rarity.glowStrength), radius: 16)
+                        .foregroundStyle(color)
                 }
             }
             .clipShape(RoundedRectangle(cornerRadius: CSRadius.sm, style: .continuous))
@@ -180,8 +258,8 @@ private struct CardPhoto: View {
 
 #Preview {
     ZStack {
-        AsphaltBackground()
-        SpotCardView(card: SpotCard.sample[0], showStats: true)
+        CSColor.panel.ignoresSafeArea()
+        SpotCardView(card: SpotCard.sample[0], roll: 0.4, showStats: true, copies: 3)
             .frame(width: 240)
     }
 }

@@ -4,7 +4,9 @@ import SwiftData
 struct CollectionView: View {
     @Environment(SyncService.self) private var sync: SyncService?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Query(sort: \StoredCard.capturedAt, order: .reverse) private var stored: [StoredCard]
+    // Le ripetizioni (stessa auto già catturata) restano in cronologia, non in collezione.
+    @Query(filter: #Predicate<StoredCard> { $0.isRepeat == false },
+           sort: \StoredCard.capturedAt, order: .reverse) private var stored: [StoredCard]
     @State private var filter: Rarity? = nil
     @Namespace private var cardNamespace
 
@@ -32,7 +34,7 @@ struct CollectionView: View {
                         if shown.isEmpty, let filter {
                             noResults(for: filter)
                         } else {
-                            grid(shown)
+                            grid(shown, copies: copyCounts)
                         }
                     }
                 }
@@ -51,7 +53,12 @@ struct CollectionView: View {
         }
     }
 
-    private func grid(_ items: [StoredCard]) -> some View {
+    /// Copie per modello, calcolate una volta per render (non per cella).
+    private var copyCounts: [String: Int] {
+        stored.reduce(into: [:]) { $0[CardCopies.key(make: $1.make, model: $1.model), default: 0] += 1 }
+    }
+
+    private func grid(_ items: [StoredCard], copies: [String: Int]) -> some View {
         LazyVGrid(columns: columns, spacing: CSSpace.md) {
             ForEach(items, id: \.id) { item in
                 let card = item.asSpotCard
@@ -59,7 +66,8 @@ struct CollectionView: View {
                     CardDetailView(card: card)
                         .navigationTransition(.zoom(sourceID: card.id, in: cardNamespace))
                 } label: {
-                    SpotCardView(card: card, compact: true)
+                    SpotCardView(card: card, compact: true,
+                                 copies: copies[CardCopies.key(make: item.make, model: item.model)] ?? 1)
                         .matchedTransitionSource(id: card.id, in: cardNamespace)
                         // Foto ripristinata dal cloud: si scarica solo quando la carta appare.
                         .task(id: card.id) { await sync?.loadPhotoIfNeeded(cardId: card.id) }
@@ -73,7 +81,7 @@ struct CollectionView: View {
     // MARK: - Stati vuoti
 
     private var emptyState: some View {
-        GlassPanel {
+        Surface(.hero) {
             VStack(spacing: CSSpace.md) {
                 Image(systemName: "camera.viewfinder")
                     .font(CSFont.display(34))
@@ -90,7 +98,7 @@ struct CollectionView: View {
     }
 
     private func noResults(for rarity: Rarity) -> some View {
-        GlassPanel {
+        Surface(.group) {
             VStack(spacing: CSSpace.md) {
                 Text("Nessuna carta \(rarity.localizedName)")
                     .font(CSFont.title(20)).foregroundStyle(CSColor.ink)
@@ -105,30 +113,15 @@ struct CollectionView: View {
 
     private var statsHeader: some View {
         // Contatori sui modelli: niente conversione in SpotCard (non tocca le foto).
-        HStack(spacing: CSSpace.md) {
-            statTile(value: stored.count, label: "Carte", tint: CSColor.accent)
-            statTile(value: stored.filter { $0.rarity == .leggendaria }.count,
-                     label: "Leggendarie", tint: Rarity.leggendaria.primary)
-            statTile(value: Set(stored.map { $0.make.lowercased() }).count,
-                     label: "Marche", tint: Rarity.epica.primary)
-        }
+        KPIStrip([
+            .init("Carte", value: compact(stored.count)),
+            .init("Leggendarie", value: compact(stored.filter { $0.rarity == .leggendaria }.count)),
+            .init("Marche", value: compact(Set(stored.map { $0.make.lowercased() }).count))
+        ])
     }
 
-    private func statTile(value: Int, label: LocalizedStringKey, tint: Color) -> some View {
-        let text = value > 999 ? value.formatted(.number.notation(.compactName).locale(.app)) : "\(value)"
-        return VStack(spacing: CSSpace.xxs) {
-            Text(text)
-                .font(CSFont.numeric(26)).foregroundStyle(CSColor.ink)
-                .lineLimit(1).minimumScaleFactor(0.5)
-                .contentTransition(.numericText())
-            Text(label).eyebrow(tint)
-                .lineLimit(1).minimumScaleFactor(0.6)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, CSSpace.md)
-        .padding(.horizontal, CSSpace.xs)
-        .glassEffect(.regular, in: .rect(cornerRadius: CSRadius.md))
-        .accessibilityElement(children: .combine)
+    private func compact(_ value: Int) -> String {
+        value > 999 ? value.formatted(.number.notation(.compactName).locale(.app)) : "\(value)"
     }
 
     private var filterRow: some View {
@@ -165,7 +158,7 @@ struct FilterChip: View {
                     if selected {
                         Capsule().fill(tint)
                     } else {
-                        Capsule().fill(.white.opacity(0.06))
+                        Capsule().fill(CSColor.nested)
                     }
                 }
                 .contentShape(Capsule())

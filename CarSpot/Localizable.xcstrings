@@ -3203,6 +3203,279 @@
           }
         }
       }
+    },
+    "%lld copie" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copies"
+          }
+        }
+      }
+    },
+    "%lldª" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "#%lld"
+          }
+        }
+      }
+    },
+    "Aggiunta alla pila · %lld copie" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Added to the stack · %lld copies"
+          }
+        }
+      }
+    },
+    "Carta %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card %lld"
+          }
+        }
+      }
+    },
+    "Carta %lld · prima %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card %1$lld · first %2$@"
+          }
+        }
+      }
+    },
+    "Copia numero %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy number %lld"
+          }
+        }
+      }
+    },
+    "Fatto" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        }
+      }
+    },
+    "Già vista qui" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seen here before"
+          }
+        }
+      }
+    },
+    "Già vista qui: %@, nessun punto" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seen here before: %@, no points"
+          }
+        }
+      }
+    },
+    "Già vista · nessun punto" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seen before · no points"
+          }
+        }
+      }
+    },
+    "La tua %lldª %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your %2$@ #%1$lld"
+          }
+        }
+      }
+    },
+    "Livello" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Level"
+          }
+        }
+      }
+    },
+    "Livello %lld · %lld / %lld PE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Level %1$lld · %2$lld / %3$lld XP"
+          }
+        }
+      }
+    },
+    "Livello %lld, %lld su %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Level %1$lld, %2$lld of %3$lld"
+          }
+        }
+      }
+    },
+    "Modelli" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Models"
+          }
+        }
+      }
+    },
+    "Nessun punto per questa copia" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No points for this copy"
+          }
+        }
+      }
+    },
+    "Nessuna cattura" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No captures yet"
+          }
+        }
+      }
+    },
+    "Nuova" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New"
+          }
+        }
+      }
+    },
+    "Nuova nella collezione" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New in your collection"
+          }
+        }
+      }
+    },
+    "Obiettivi del giorno · %lld di %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daily goals · %1$lld of %2$lld"
+          }
+        }
+      }
+    },
+    "Ogni auto che fotografi compare qui, dalla più recente." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every car you photograph shows up here, newest first."
+          }
+        }
+      }
+    },
+    "Questa auto l'hai già catturata: nessun punto" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You've already captured this car: no points"
+          }
+        }
+      }
+    },
+    "Scansiona un colore insolito" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spot an unusual color"
+          }
+        }
+      }
+    },
+    "Trova 2 auto elettriche" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Find 2 electric cars"
+          }
+        }
+      }
+    },
+    "Un'auto immatricolata prima del 1990" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A car registered before 1990"
+          }
+        }
+      }
+    },
+    "^[%lld carta](inflect: true) · ^[%lld modello](inflect: true) · ultima cattura %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "^[%1$lld card](inflect: true) · ^[%2$lld model](inflect: true) · last capture %3$@"
+          }
+        }
+      }
+    },
+    "^[%lld cattura](inflect: true)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "^[%lld capture](inflect: true)"
+          }
+        }
+      }
+    },
+    "×%lld" : {
+      "shouldTranslate" : false
     }
   },
   "version" : "1.0"

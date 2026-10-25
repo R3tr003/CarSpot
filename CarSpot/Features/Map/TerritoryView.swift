@@ -29,7 +29,14 @@ struct TerritoryView: View {
                     .padding(.horizontal, CSSpace.xxs)
                 summaryCard
                 Text("Quartieri").eyebrow().padding(.horizontal, CSSpace.xxs)
-                ForEach(zones) { zone in zoneRow(zone) }
+                Surface(.group, padding: nil) {
+                    VStack(spacing: 0) {
+                        ForEach(Array(zones.enumerated()), id: \.element.id) { index, zone in
+                            if index > 0 { SurfaceDivider(inset: CSSpace.md) }
+                            zoneRow(zone)
+                        }
+                    }
+                }
             }
             .padding(CSSpace.lg)
             .padding(.bottom, 130)
@@ -38,7 +45,7 @@ struct TerritoryView: View {
     }
 
     private var summaryCard: some View {
-        GlassPanel(tint: CSColor.accent) {
+        Surface(.hero) {
             HStack {
                 VStack(alignment: .leading, spacing: CSSpace.xxs) {
                     Text("Controlli \(heldCount) quartieri").font(CSFont.title(18)).foregroundStyle(CSColor.ink)
@@ -52,27 +59,26 @@ struct TerritoryView: View {
     }
 
     private func zoneRow(_ zone: Neighborhood) -> some View {
-        GlassPanel(cornerRadius: CSRadius.md, padding: CSSpace.md) {
-            HStack(spacing: CSSpace.md) {
-                ZStack {
-                    Circle().fill(zone.youHold ? CSColor.accent.opacity(0.2) : .white.opacity(0.06))
-                        .frame(width: 44, height: 44)
-                    Image(systemName: zone.youHold ? "crown.fill" : "flag.fill")
-                        .foregroundStyle(zone.youHold ? CSColor.accent : CSColor.inkSecondary)
-                }
-                .accessibilityHidden(true)
-                VStack(alignment: .leading, spacing: CSSpace.xxs) {
-                    Text(zone.name).font(CSFont.body(16)).foregroundStyle(CSColor.ink)
-                    Text(zone.supervisor.map { String(localized: "Supervisore: \($0)") } ?? String(localized: "Nessun supervisore"))
-                        .font(CSFont.caption(12)).foregroundStyle(CSColor.inkSecondary)
-                }
-                Spacer()
-                VStack(spacing: 0) {
-                    Text("\(zone.uniqueSpots)").font(CSFont.numeric(18)).foregroundStyle(CSColor.ink)
-                    Text("uniche").font(CSFont.micro).foregroundStyle(CSColor.inkTertiary)
-                }
+        HStack(spacing: CSSpace.md) {
+            ZStack {
+                Circle().fill(CSColor.nested)
+                    .frame(width: 44, height: 44)
+                Image(systemName: zone.youHold ? "crown.fill" : "flag.fill")
+                    .foregroundStyle(zone.youHold ? CSColor.accent : CSColor.inkSecondary)
+            }
+            .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: CSSpace.xxs) {
+                Text(zone.name).font(CSFont.body(16)).foregroundStyle(CSColor.ink)
+                Text(zone.supervisor.map { String(localized: "Supervisore: \($0)") } ?? String(localized: "Nessun supervisore"))
+                    .font(CSFont.caption(12)).foregroundStyle(CSColor.inkSecondary)
+            }
+            Spacer()
+            VStack(spacing: 0) {
+                Text("\(zone.uniqueSpots)").font(CSFont.numeric(18)).foregroundStyle(CSColor.ink)
+                Text("uniche").font(CSFont.micro).foregroundStyle(CSColor.inkTertiary)
             }
         }
+        .padding(CSSpace.md)
         .accessibilityElement(children: .combine)
         .accessibilityValue(zone.youHold ? Text("Lo controlli tu") : Text(verbatim: ""))
     }

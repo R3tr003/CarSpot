@@ -111,7 +111,7 @@ tutto il resto si tiene sobrio perché le carte possano brillare.
 
 **Key Characteristics:**
 - Dark-first, mai nero puro: l'asfalto è `#0B0C0F`, non `#000`.
-- La rarità è la spina dorsale visiva: gradiente, bordo, glow e foil di ogni carta derivano da `Rarity`.
+- La rarità è la spina dorsale visiva: un colore unico (`Rarity.color`) e un materiale (`Rarity.finish`) per ogni rarità. Niente arcobaleno, niente aloni.
 - Vetro solo nativo (`.glassEffect`), mai blur fatto a mano.
 - Tipografia SF Pro (Rounded solo sui numeri di gioco), che scala con Dynamic Type.
 - Motion fisica e breve, senza rimbalzi sulle interazioni frequenti; il "momento wow" è riservato al reveal di una carta rara.
@@ -127,11 +127,12 @@ per le ricompense. I colori saturi appartengono alle rarità.
 ### Secondary
 - **Ember Amber** (`#FFB23E`, `CSColor.accentWarm`): ricompense (PE, valuta, streak) ed errori non bloccanti. Mai per azioni distruttive (quelle usano `role: .destructive` di sistema).
 
-### Rarità (`Rarity.gradient`)
-- **Comune — Acciaio freddo** (`#B4BCCB → #8A93A6`): nessun glow.
-- **Rara — Ciano elettrico** (`#36E2FF → #2A7DF0`): glow 0,25.
-- **Epica — Viola-magenta** (`#C04BFF → #FF4D9D`): glow 0,45, foil olografico.
-- **Leggendaria — Oro al tramonto** (`#FFE176 → #FFA62B → #FF5E7E`): glow 0,7, foil olografico.
+### Rarità (`Rarity.color` + `Rarity.finish`) — aggiornato 2026-10-25
+- **Comune** `#B4BCCB` — opaca, bordo 1 pt al 35%.
+- **Rara** `#36E2FF` — bordo metallico 2 pt che si schiarisce con l'inclinazione.
+- **Epica** `#C04BFF` — bordo foil monocromo viola.
+- **Leggendaria** `#FFC14D` — foil oro monocromo su tutta la carta + bordo oro.
+Il riflesso speculare segue l'inclinazione ed è tinto del colore della rarità. `Rarity.gradient` esiste solo per compatibilità e vale `[color]`.
 
 ### Neutral
 - **Asfalto** (`#0B0C0F`, `CSColor.base`): sfondo più profondo.
@@ -143,7 +144,7 @@ per le ricompense. I colori saturi appartengono alle rarità.
 - **Hairline / specular** (bianco 8% / 35%): bordi di vetro e divisori.
 
 ### Named Rules
-**The Rarity Owns Color Rule.** I gradienti di rarità compaiono solo su carte, badge e pulsanti legati a una rarità. Avatar, header e UI generica usano l'accent o i neutri: se tutto brilla, la Leggendaria non vale niente.
+**The Rarity Owns Color Rule.** Il colore di rarità compare solo su carte, badge, pallini e testi legati a una rarità. Avatar, header e UI generica usano l'accent o i neutri: se tutto brilla, la Leggendaria non vale niente.
 
 **The No Pure Black Rule.** Nessun `#000` né `.black` come superficie. Ombre e scrim scuri sono ammessi.
 
@@ -174,10 +175,10 @@ Scala di spaziatura `CSSpace`: 4 · 6 · 10 · 16 · 24 · 36 · 56. Il margine 
 
 ## Elevation & Depth
 
-La profondità viene dal vetro, non dalle ombre. Le superfici in Liquid Glass nativo (`GlassPanel`, `.glassEffect`) stanno sopra la mappa e l'asfalto, e il bordo speculare è quello del materiale di sistema. `GlassPanel` è sempre neutro: niente tint colorato (il parametro `tint` è ignorato). Ombre e glow solo sulle carte e su ciò che fluttua davvero (il pannello di sistema); niente aloni su avatar, barre o pulsanti.
+**Superfici a gradini (2026-10-25).** I blocchi di contenuto delle tab sono `Surface` opache: fondo pannello `panel #0E1014`, gruppi `group #15181E`, blocco eroe `hero #1A1D24`, elementi annidati `nested #232731`. Più chiaro = più in alto; un filo di luce sul bordo superiore (bianco 9% eroe, 6% gruppi); ombra (nero 35%, r 24, y 10) solo sull'eroe e sulle carte. Un solo eroe per schermata; il resto in gruppi con righe e `SurfaceDivider`, statistiche in `KPIStrip` (niente riquadro per numero). Il Liquid Glass nativo resta sui controlli (tab bar, pulsanti flottanti, X, pillole dell'header) e su foto/mappa (`GlassPanel` in onboarding): è il livello di navigazione, non il contenuto. Niente aloni colorati da nessuna parte.
 
 ### Shadow Vocabulary
-- **Carta** (nero 50%, r 20, y 14 + glow `rarity.primary × glowStrength × 0,5`, r 24): dettaglio e reveal.
+- **Carta** (nero neutro, nessun glow colorato): dettaglio e reveal.
 - **Carta compatta** (nero 30%, r 10, y 6, nessun glow): griglia della collezione.
 
 ## Shapes
@@ -187,7 +188,7 @@ Forme continue (`style: .continuous`) ovunque. Raggi: 14 per elementi interni (f
 ## Components
 
 ### Buttons
-- **Primary** (`PrimaryButton`): capsula a colore pieno (primo colore di `gradient`, default accent), senza alone, testo `inkInverse`, altezza minima 52, haptic medium (disattivabile con `haptic: false` quando l'azione ha già il suo feedback).
+- **Primary** (`PrimaryButton`): capsula a colore pieno (default accent; mai colorata per rarità prima del reveal), senza alone, testo `inkInverse`, altezza minima 52, haptic medium (disattivabile con `haptic: false` quando l'azione ha già il suo feedback).
 - **Ghost** (`GhostButton`): capsula in vetro interattivo, testo `ink`. Le scelte di pari peso (es. il consenso statistiche) usano due Ghost.
 - **Pressione** (`CSPressStyle`): scala 0,97 con `.spring(duration: 0.2, bounce: 0)`; con Reduce Motion solo attenuazione. Ogni pulsante custom lo usa: mai `DragGesture` per il press.
 
@@ -195,16 +196,16 @@ Forme continue (`style: .continuous`) ovunque. Raggi: 14 per elementi interni (f
 `FilterChip`: capsula; selezionato = riempimento col colore della rarità e testo `inkInverse`, altrimenti bianco 6% e `inkSecondary`. Altezza minima 44, trait `.isSelected`, haptic `.selection`.
 
 ### Cards / Containers
-`GlassPanel`: vetro nativo, raggio 28, padding 24, tint opzionale al 50%.
+`Surface(.hero | .group, padding:)`: superfici opache a gradini, raggio 20 (vedi Elevation). `GlassPanel` (vetro nativo, raggio 28) solo sopra foto/mappa.
 
 ### Navigation
 `TabView` nativa di iOS 26 (Liquid Glass autentico, mai sostituita): Oggi, Collezione, Mappa + Cattura come `role: .search`. `SheetHeader`: titolo display + avatar (apre il Profilo) + Condividi solo se c'è un'azione.
 
 ### Spot Card (signature)
-`SpotCardView`: proporzione 0,7; base `elevated → surface` con velo di rarità al 16%; marca come eyebrow nel colore della rarità, modello su massimo 2 righe; foto come miniatura decodificata una volta (ImageIO, ~600 px); bordo gradiente 1,5 pt; foil olografico reattivo al giroscopio per Epica e Leggendaria (fermo con Reduce Motion). VoiceOver la legge come un solo elemento: "Marca Modello, anno, rarità, colore".
+`SpotCardView`: proporzione 0,7; base `elevated → surface` con velo di rarità al 16%; marca come eyebrow nel colore della rarità, modello su massimo 2 righe; foto come miniatura decodificata una volta (ImageIO, ~600 px); materiale per rarità (tabella Rarità), reattivo a dito/giroscopio, fermo con Reduce Motion; "×N" in alto a destra quando il modello ha più copie. VoiceOver la legge come un solo elemento: "Marca Modello, anno, rarità, colore".
 
 ### Reveal della carta (Cattura)
-Proporzionale alla rarità: Comune solo dissolvenza ≤ 0,25 s; Rara scala 0,95 → 1 con alone; Epica/Leggendaria più una passata di foil, ≤ 1,2 s in tutto, saltabile con un tap. Haptic `.success` per Comune/Rara, impatto pesante per Epica/Leggendaria. Con Reduce Motion solo dissolvenza.
+Unico momento "rumoroso" dell'app (`CardRevealView`). La foto scattata (già anonimizzata) vola nella finestra della carta con molla senza rimbalzo; una sola vibrazione all'atterraggio, intensità per rarità; da Rara in su la carta si inclina da sola una volta per mostrare il materiale; testi con sfasamento 70 ms; nota nuova / doppione (pila di 2 carte dietro) / "Già vista qui" (stessa auto: 0 punti); "+N PE" statico e barra del livello che avanza una volta. Carta inclinabile col dito e col giroscopio. Tap = stato finale. Con Reduce Motion solo dissolvenze, vibrazione presente. Mai: retro che si gira, aloni, arcobaleno, numeri che rotolano.
 
 ### Motion
 Molle `.spring(duration:bounce:)` con bounce 0 per tutto ciò che è frequente (pagine, filtri, stati, barre: 0,2–0,6 s). Il rimbalzo (bounce ≤ 0,15) è riservato al reveal. Ogni animazione legge `accessibilityReduceMotion`. Le animazioni continue (sfondo a puntini) girano a 30 fps e si fermano in background o con Reduce Motion.
@@ -220,7 +221,8 @@ Molle `.spring(duration:bounce:)` con bounce 0 per tutto ciò che è frequente (
 
 ### Don't:
 - **Don't** mostrare dati finti come reali: se una funzione non esiste ancora, va nascosta o etichettata "Anteprima".
-- **Don't** usare i gradienti di rarità fuori dalle carte (avatar, header, decorazioni).
+- **Don't** usare il colore di rarità fuori da carte, badge e dati di rarità (avatar, header, decorazioni).
+- **Don't** glow/aloni colorati, gradienti arcobaleno, bordi al neon, numeri che rotolano, rimbalzi su UI, fade-in di intere schermate, card identiche in fila (usa un gruppo con divisori).
 - **Don't** usare `.system(size:)` per il testo: rompe Dynamic Type.
 - **Don't** sostituire la tab bar nativa o imitare il vetro con blur e opacità.
 - **Don't** mettere testo sotto gli 11 pt, né `inkTertiary` su testo che serve leggere per agire.

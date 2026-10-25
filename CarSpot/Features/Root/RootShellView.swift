@@ -73,10 +73,10 @@ struct RootShellView: View {
             Tab("Mappa", systemImage: "map.fill", value: .territory) {
                 TerritoryView()
             }
-            // Il cerchio camera a destra apre la cattura a tutto schermo: la camera
-            // non sta in un pannello ridimensionabile.
+            // Il cerchio camera a destra è una tab vera (la cronologia degli scatti); toccarla
+            // apre anche la fotocamera a tutto schermo, che non sta in un pannello ridimensionabile.
             Tab("Cattura", systemImage: "camera.viewfinder", value: .capture, role: .search) {
-                Color.clear
+                CaptureHistoryView(onShoot: { showCapture = true }, isCameraPresented: showCapture)
             }
         }
         .tabBarMinimizeBehavior(.onScrollDown)
@@ -96,7 +96,7 @@ struct RootShellView: View {
         .interactiveDismissDisabled()
         // Trascinando sul contenuto il pannello prima si ridimensiona, poi scorre.
         .presentationContentInteraction(.resizes)
-        .presentationBackground(CSColor.base)
+        .presentationBackground(CSColor.panel)
         .presentationDragIndicator(.visible)
         .preferredColorScheme(.dark)
         .onChange(of: accountSheet) { _, sheet in
@@ -128,19 +128,15 @@ struct RootShellView: View {
         }
     }
 
-    /// La tab Cattura non viene mai selezionata: apre la camera e la selezione resta
-    /// sulla tab di contenuto. Così la tab bar (anche ridotta a due cerchi, a pannello
-    /// alto) mostra sempre la tab su cui sei, con la camera a destra.
+    /// Anche la tab Cattura viene selezionata davvero (la TabView UIKit ci resta comunque):
+    /// mostra la cronologia, e il tocco apre in più la fotocamera. Chiudendola si resta lì.
+    /// Il setter scatta anche se si tocca la tab già selezionata, così la camera si riapre.
     private var tabSelection: Binding<Screen> {
         Binding {
             selection
         } set: { screen in
-            if screen == .capture {
-                Self.trackTab(.capture)
-                showCapture = true
-            } else {
-                selection = screen
-            }
+            selection = screen
+            if screen == .capture { showCapture = true }
         }
     }
 
@@ -156,11 +152,12 @@ struct RootShellView: View {
         switch UserDefaults.standard.string(forKey: "startTab") {
         case "collection": return .collection
         case "map", "territory": return .territory
+        case "capture": return .capture
         default: return .today
         }
     }
 
-    /// `-startTab capture` apre subito la cattura a tutto schermo.
+    /// `-startTab capture` apre subito la cattura a tutto schermo (sulla tab Cattura).
     private static var startsOnCapture: Bool {
         UserDefaults.standard.string(forKey: "startTab") == "capture"
     }

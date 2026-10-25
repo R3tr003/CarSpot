@@ -1,37 +1,52 @@
 import SwiftUI
 
-/// Reactive holographic foil. An angular rainbow sweep plus a moving specular
-/// band that track device tilt — the memorable moment for legendary cards.
+/// Foil monocromo reattivo: una banda di luce diagonale del colore della rarità (più un
+/// filo di bianco al centro) che scorre sulla carta quando la inclini. Niente arcobaleno.
+/// `wash` aggiunge un velo uniforme del colore (foil su tutta la carta); `roll`/`pitch`
+/// sono l'inclinazione normalizzata -1...1.
 struct HolographicFoil: View {
+    var color: Color
     var roll: Double
     var pitch: Double
     var strength: Double = 1
+    var wash: Double = 0
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        ZStack {
-            // Angular spectral sheen, rotated by tilt.
-            AngularGradient(
-                colors: [
-                    Color(hex: 0xFF5E7E), Color(hex: 0xFFE176),
-                    Color(hex: 0x36E2FF), Color(hex: 0xC04BFF),
-                    Color(hex: 0x5CFFC8), Color(hex: 0xFF5E7E)
-                ],
-                center: .center,
-                angle: .degrees(roll * 90)
-            )
-            .blendMode(.colorDodge)
-            .opacity(0.35 * strength)
+        // Riduci movimento: foil fermo, nessuna reazione all'inclinazione.
+        let r = reduceMotion ? 0 : roll
+        let p = reduceMotion ? 0 : pitch
+        // Spostamento della banda lungo la diagonale.
+        let shift = r * 0.5 + p * 0.25
 
-            // Diagonal glare band that slides across as you tilt.
+        ZStack {
+            if wash > 0 {
+                color.opacity(wash * strength)
+            }
             LinearGradient(
-                colors: [.clear, .white.opacity(0.55 * strength), .clear],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
+                stops: [
+                    .init(color: .clear, location: 0.25),
+                    .init(color: color.opacity(0.14 * strength), location: 0.40),
+                    .init(color: .white.opacity(0.30 * strength), location: 0.50),
+                    .init(color: color.opacity(0.22 * strength), location: 0.58),
+                    .init(color: .clear, location: 0.75)
+                ],
+                startPoint: UnitPoint(x: shift, y: shift),
+                endPoint: UnitPoint(x: 1 + shift, y: 1 + shift)
             )
-            .offset(x: roll * 120, y: pitch * 120)
-            .blendMode(.overlay)
         }
+        .blendMode(.screen)
         .allowsHitTesting(false)
         .accessibilityHidden(true)
+    }
+}
+
+#Preview {
+    ZStack {
+        CSColor.base
+        HolographicFoil(color: Rarity.leggendaria.color, roll: 0.3, pitch: 0, strength: 1, wash: 0.1)
+            .frame(width: 240, height: 340)
+            .background(CSColor.hero)
     }
 }

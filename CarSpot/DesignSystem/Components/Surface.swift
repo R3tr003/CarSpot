@@ -62,10 +62,13 @@ struct KPIStrip: View {
         let id = UUID()
         let label: LocalizedStringKey
         let value: String
+        /// Etichetta per VoiceOver quando `label` è un'abbreviazione (es. "PE").
+        let spoken: LocalizedStringKey?
 
-        init(_ label: LocalizedStringKey, value: String) {
+        init(_ label: LocalizedStringKey, value: String, spoken: LocalizedStringKey? = nil) {
             self.label = label
             self.value = value
+            self.spoken = spoken
         }
     }
 
@@ -87,11 +90,15 @@ struct KPIStrip: View {
                             .font(CSFont.numeric(22))
                             .monospacedDigit()
                             .foregroundStyle(CSColor.ink)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.5)
                             .contentTransition(.numericText())
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(CSSpace.md)
-                    .accessibilityElement(children: .combine)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(item.spoken ?? item.label)
+                    .accessibilityValue(item.value)
                 }
             }
             .fixedSize(horizontal: false, vertical: true)

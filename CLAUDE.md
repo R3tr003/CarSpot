@@ -263,5 +263,12 @@ Regole:
   (`CarSpot/AppIcon.icon`, light + dark) — 2026-10-21.
 - ✅ Login email/telefono (OTP Clerk), setup profilo post-registrazione (migration 0005),
   webhook Clerk → Supabase — 2026-10-21, da provare su device.
-- ⏭️ Prossima: Edge Function `recognize` da deployare (verifica JWT Clerk via JWKS),
-  rarità da specs reali, Live Activity.
+- ✅ 2026-10-25: `recognize` con verifica JWT Clerk + rate limit (migration 0007/0008, non
+  ancora deployata), anonimizzazione fail-closed, quartiere reale (`AreaResolver`), target
+  `CarSpotTests`. Superfici a gradini (`Surface`, `KPIStrip`), colore unico + materiale per
+  rarità, reveal v3 (`CardRevealView`: la foto diventa la carta), cronologia nella tab
+  Cattura (`CaptureHistoryView`), doppioni con XP decrescente e "stessa auto" = 0 punti
+  (`CardCopies`, `PhotoSimilarity`, `StoredCard.isRepeat`, migration 0009). Da provare su iPhone.
+- ⏭️ Prossima: provider di riconoscimento (prova Claude Haiku vs Sonnet) + deploy di
+  `recognize`; catalogo modelli con immagine standard (prova con immagini da internet) e
+  Collezione "album"; marker reali sulla mappa (decisione privacy); rarità da specs reali.

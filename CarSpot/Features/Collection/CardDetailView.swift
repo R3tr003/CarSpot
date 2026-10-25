@@ -1,13 +1,21 @@
 import SwiftUI
+import SwiftData
 
 struct CardDetailView: View {
     let card: SpotCard
+    /// Per contare le copie del modello (le ripetizioni non contano).
+    @Query private var stored: [StoredCard]
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var motion = MotionManager()
 
     // Con Reduce Motion la carta resta ferma (niente foil reattivo né inclinazione).
     private var roll: Double { reduceMotion ? 0 : motion.roll }
     private var pitch: Double { reduceMotion ? 0 : motion.pitch }
+
+    private var copies: Int {
+        CardCopies.count(make: card.make, model: card.model,
+                         among: stored.filter { !$0.isRepeat }.map { (make: $0.make, model: $0.model) })
+    }
 
     private var infoRows: [(label: LocalizedStringKey, value: String, icon: String)] {
         [("Zona", card.spottedArea, "mappin.and.ellipse"),
@@ -18,16 +26,16 @@ struct CardDetailView: View {
 
     var body: some View {
         ZStack {
-            AsphaltBackground(tint: card.rarity.primary, intensity: 1.4)
+            CSColor.panel.ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: CSSpace.xl) {
-                    SpotCardView(card: card, roll: roll, pitch: pitch)
+                    SpotCardView(card: card, roll: roll, pitch: pitch, copies: copies)
                         .frame(maxWidth: 280)
-                        .rotation3DEffect(.degrees(roll * 6),
-                                          axis: (x: 0, y: 1, z: 0))
-                        .rotation3DEffect(.degrees(-pitch * 6),
-                                          axis: (x: 1, y: 0, z: 0))
+                        .rotation3DEffect(.degrees(roll * 8),
+                                          axis: (x: 0, y: 1, z: 0), perspective: 0.6)
+                        .rotation3DEffect(.degrees(-pitch * 8),
+                                          axis: (x: 1, y: 0, z: 0), perspective: 0.6)
                         .padding(.top, CSSpace.lg)
 
                     // Nome completo: nella carta può essere troncato.
@@ -39,28 +47,28 @@ struct CardDetailView: View {
                     }
                     .frame(maxWidth: .infinity)
 
-                    if card.rarity.isFoil && !reduceMotion {
+                    if card.rarity.finish != .matte && !reduceMotion {
                         Label("Inclina il telefono per vedere il foil",
                               systemImage: "hand.draw.fill")
                             .font(CSFont.caption(12))
                             .foregroundStyle(CSColor.inkSecondary)
                     }
 
-                    GlassPanel {
+                    Surface(.hero) {
                         VStack(alignment: .leading, spacing: CSSpace.lg) {
-                            Text("Scheda tecnica").eyebrow(card.rarity.primary)
-                            StatBar(label: "Potenza", value: card.power, tint: card.rarity.primary)
-                            StatBar(label: "Agilità", value: card.agility, tint: card.rarity.primary)
-                            StatBar(label: "Presenza", value: card.presence, tint: card.rarity.primary)
+                            Text("Scheda tecnica").eyebrow()
+                            StatBar(label: "Potenza", value: card.power, tint: card.rarity.color)
+                            StatBar(label: "Agilità", value: card.agility, tint: card.rarity.color)
+                            StatBar(label: "Presenza", value: card.presence, tint: card.rarity.color)
                         }
                     }
 
-                    GlassPanel {
+                    Surface(.group) {
                         VStack(alignment: .leading, spacing: CSSpace.md) {
-                            Text("Avvistamento").eyebrow(card.rarity.primary)
+                            Text("Avvistamento").eyebrow()
                             let rows = infoRows
                             ForEach(rows.indices, id: \.self) { i in
-                                if i > 0 { Divider().overlay(CSColor.hairline) }
+                                if i > 0 { SurfaceDivider() }
                                 infoRow(rows[i].label, rows[i].value, rows[i].icon)
                             }
                         }
@@ -127,5 +135,6 @@ struct CardDetailView: View {
     NavigationStack {
         CardDetailView(card: SpotCard.sample[0])
     }
+    .modelContainer(for: StoredCard.self, inMemory: true)
     .preferredColorScheme(.dark)
 }

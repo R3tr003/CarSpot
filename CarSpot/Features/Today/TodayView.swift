@@ -7,7 +7,6 @@ struct TodayView: View {
     @Query private var cards: [StoredCard]
     @Query private var profiles: [PlayerProfile]
     @Environment(ProfileAccount.self) private var account: ProfileAccount?
-    @State private var appeared = false
 
     private var profile: PlayerProfile? { profiles.first }
 
@@ -24,20 +23,31 @@ struct TodayView: View {
 
                 levelCard
 
-                VStack(alignment: .leading, spacing: CSSpace.md) {
-                    Text("Obiettivi del giorno").eyebrow().padding(.horizontal, CSSpace.xxs)
-                    ForEach(challenges) { challenge in
+                goalsSection
+            }
+            .padding(CSSpace.lg)
+            .padding(.bottom, 130)
+        }
+        .scrollIndicators(.hidden)
+    }
+
+    /// I tre obiettivi sono un solo gruppo di righe, non tre card separate.
+    private var goalsSection: some View {
+        let list = challenges
+        let doneCount = list.filter(\.done).count
+        return VStack(alignment: .leading, spacing: CSSpace.sm) {
+            Text("Obiettivi del giorno · \(doneCount) di \(list.count)")
+                .eyebrow()
+                .padding(.horizontal, CSSpace.xxs)
+            Surface(.group, padding: nil) {
+                VStack(spacing: 0) {
+                    ForEach(Array(list.enumerated()), id: \.element.id) { index, challenge in
+                        if index > 0 { SurfaceDivider(inset: CSSpace.md) }
                         ChallengeRow(challenge: challenge) { claim(challenge) }
                     }
                 }
             }
-            .padding(CSSpace.lg)
-            .padding(.bottom, 130)
-            .opacity(appeared ? 1 : 0)
-            .animation(.easeOut(duration: 0.35), value: appeared)
         }
-        .scrollIndicators(.hidden)
-        .onAppear { appeared = true }
     }
 
     private func claim(_ challenge: DailyChallengeVM) {
@@ -70,55 +80,65 @@ struct TodayView: View {
                     .font(CSFont.title(22))
                     .foregroundStyle(CSColor.ink)
             }
-            Spacer()
-            streakPill
+            Spacer(minLength: 0)
         }
     }
 
     private var dayUnitSingular: LocalizedStringKey { "giorno" }
     private var dayUnitPlural: LocalizedStringKey { "giorni" }
 
-    private var streakPill: some View {
-        let streak = profile?.streak ?? 0
-        return HStack(spacing: CSSpace.xs) {
-            Image(systemName: "flame.fill")
-                .font(CSFont.body(18))
-                .foregroundStyle(CSColor.accentWarm)
-                .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: -2) {
-                Text("\(streak)").font(CSFont.numeric(18)).foregroundStyle(CSColor.ink)
-                // Solo l'unità (il numero è sopra): due chiavi, il plurale del catalogo
-                // richiede il numero nella stringa.
-                Text(streak == 1 ? dayUnitSingular : dayUnitPlural)
-                    .font(CSFont.micro).foregroundStyle(CSColor.inkTertiary)
-            }
-        }
-        .padding(.horizontal, CSSpace.md).padding(.vertical, CSSpace.sm)
-        .glassEffect(.regular, in: .rect(cornerRadius: CSRadius.sm))
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Serie di \(streak) giorni")
-    }
-
+    /// Blocco eroe: livello, progresso verso il prossimo, serie e carte.
     private var levelCard: some View {
         let xp = profile?.xp ?? 0
         let p = LevelSystem.progress(forXP: xp)
         let percent = Int(p.fraction * 100)
-        return GlassPanel(tint: CSColor.accent) {
+        let streak = profile?.streak ?? 0
+        // Le ripetizioni non sono in collezione: non contano nel totale.
+        let cardCount = cards.filter { !$0.isRepeat }.count
+        return Surface(.hero) {
             VStack(alignment: .leading, spacing: CSSpace.md) {
-                HStack(alignment: .firstTextBaseline) {
-                    Text("Livello \(p.level)").font(CSFont.display(24)).foregroundStyle(CSColor.ink)
-                    Spacer()
-                    HStack(spacing: CSSpace.xxs) {
-                        Image(systemName: "bolt.fill").font(CSFont.numeric(12))
-                        Text("\(xp)").font(CSFont.numeric(16)).contentTransition(.numericText())
+                HStack(alignment: .lastTextBaseline) {
+                    VStack(alignment: .leading, spacing: CSSpace.xxs) {
+                        Text("Livello").eyebrow()
+                        Text("\(p.level)")
+                            .font(CSFont.display(34)).monospacedDigit()
+                            .foregroundStyle(CSColor.ink)
                     }
-                    .foregroundStyle(CSColor.accentWarm)
+                    Spacer(minLength: CSSpace.md)
+                    Text("\(p.into) / \(p.needed) PE")
+                        .font(CSFont.numeric(17)).monospacedDigit()
+                        .foregroundStyle(CSColor.accentWarm)
+                        .contentTransition(.numericText())
                 }
+                .accessibilityElement(children: .combine)
+
                 StatBar(label: "Verso il livello \(p.level + 1)",
-                        value: percent, tint: CSColor.accent, animate: false,
+                        value: percent, tint: CSColor.accent,
                         valueText: "\(percent)%")
-                Text("\(max(0, p.needed - p.into)) PE al prossimo livello")
-                    .font(CSFont.caption()).foregroundStyle(CSColor.inkSecondary)
+
+                HStack {
+                    HStack(spacing: CSSpace.xs) {
+                        Image(systemName: "flame.fill")
+                            .font(CSFont.caption(13))
+                            .foregroundStyle(CSColor.accentWarm)
+                            .accessibilityHidden(true)
+                        Text("\(streak)").font(CSFont.numeric(15)).monospacedDigit()
+                            .foregroundStyle(CSColor.ink)
+                        // Solo l'unità (il numero è accanto): due chiavi, il plurale del catalogo
+                        // richiede il numero nella stringa.
+                        Text(streak == 1 ? dayUnitSingular : dayUnitPlural)
+                            .font(CSFont.caption(13)).foregroundStyle(CSColor.inkSecondary)
+                    }
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("Serie di \(streak) giorni")
+                    Spacer(minLength: CSSpace.md)
+                    HStack(spacing: CSSpace.xs) {
+                        Text("\(cardCount)").font(CSFont.numeric(15)).monospacedDigit()
+                            .foregroundStyle(CSColor.ink)
+                        Text("Carte").font(CSFont.caption(13)).foregroundStyle(CSColor.inkSecondary)
+                    }
+                    .accessibilityElement(children: .combine)
+                }
             }
         }
     }
@@ -131,25 +151,29 @@ struct ChallengeRow: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    var body: some View {
-        GlassPanel(cornerRadius: CSRadius.md, padding: CSSpace.md) {
-            HStack(spacing: CSSpace.md) {
-                ZStack {
-                    Circle().fill(.white.opacity(0.06)).frame(width: 46, height: 46)
-                    Image(systemName: challenge.icon)
-                        .font(CSFont.title(18))
-                        .foregroundStyle(challenge.done ? CSColor.accent : CSColor.ink)
-                }
-                .accessibilityHidden(true)
+    private var tint: Color { challenge.done ? CSColor.success : CSColor.accent }
 
-                VStack(alignment: .leading, spacing: CSSpace.xs) {
-                    Text(challenge.title)
-                        .font(CSFont.body(15)).foregroundStyle(CSColor.ink)
-                        .lineLimit(2)
+    var body: some View {
+        HStack(spacing: CSSpace.md) {
+            ZStack {
+                Circle().fill(CSColor.nested).frame(width: 40, height: 40)
+                Image(systemName: challenge.done ? "checkmark" : challenge.icon)
+                    .font(CSFont.title(16))
+                    .foregroundStyle(challenge.done ? CSColor.success : CSColor.inkSecondary)
+            }
+            .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: CSSpace.xs) {
+                Text(challenge.title)
+                    .font(CSFont.body(15))
+                    .foregroundStyle(challenge.claimed ? CSColor.inkSecondary : CSColor.ink)
+                    .strikethrough(challenge.claimed, color: CSColor.inkTertiary)
+                    .lineLimit(2)
+                if !challenge.claimed {
                     HStack(spacing: CSSpace.xs) {
                         ForEach(0..<challenge.goal, id: \.self) { i in
                             Capsule()
-                                .fill(i < challenge.progress ? CSColor.accent : Color.white.opacity(0.12))
+                                .fill(i < challenge.progress ? tint : CSColor.nested)
                                 .frame(height: 5)
                         }
                     }
@@ -157,26 +181,24 @@ struct ChallengeRow: View {
                     .accessibilityLabel("Progresso")
                     .accessibilityValue("\(challenge.progress) di \(challenge.goal)")
                 }
-
-                trailing
-                    .frame(minWidth: 64)
-                    .transition(reduceMotion ? AnyTransition.opacity : AnyTransition.opacity.combined(with: .scale(scale: 0.95)))
             }
-            .animation(reduceMotion ? nil : .smooth, value: challenge.claimed)
+
+            trailing
+                .frame(minWidth: 64)
+                .transition(reduceMotion ? AnyTransition.opacity : AnyTransition.opacity.combined(with: .scale(scale: 0.95)))
         }
+        .padding(CSSpace.md)
+        .animation(reduceMotion ? nil : .smooth, value: challenge.claimed)
         .accessibilityElement(children: .contain)
         .sensoryFeedback(.success, trigger: challenge.claimed) { old, new in !old && new }
     }
 
     @ViewBuilder private var trailing: some View {
         if challenge.claimed {
-            VStack(spacing: CSSpace.xxs) {
-                Image(systemName: "checkmark.seal.fill")
-                    .font(CSFont.title(22)).foregroundStyle(CSColor.accent)
-                Text("Riscattato").font(CSFont.micro)
-                    .foregroundStyle(CSColor.inkTertiary)
-            }
-            .accessibilityElement(children: .combine)
+            Text("Fatto")
+                .font(CSFont.caption(13))
+                .foregroundStyle(CSColor.success)
+                .accessibilityLabel("Riscattato")
         } else if challenge.done {
             Button(action: onClaim) {
                 Text("Riscatta")

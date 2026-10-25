@@ -1,32 +1,29 @@
 import SwiftUI
 
-/// Pill that names a rarity with its symbol and gradient.
+/// Nome di una rarità con il suo colore unico: pallino + testo, nessun gradiente.
+/// `compact` = senza capsula (legenda in linea, per la carta).
 struct RarityBadge: View {
     let rarity: Rarity
     var compact: Bool = false
 
     var body: some View {
         HStack(spacing: CSSpace.xs) {
-            Image(systemName: rarity.symbol)
-                .font(.system(.caption2, design: .rounded, weight: .heavy))
-                .imageScale(compact ? .medium : .small)
-            if !compact {
-                Text(rarity.displayName)
-                    .font(.system(.caption2, design: .rounded, weight: .heavy))
-                    .tracking(0.6)
-                    .textCase(.uppercase)
-            }
+            Circle()
+                .fill(rarity.color)
+                .frame(width: 7, height: 7)
+            Text(rarity.displayName)
+                .font(CSFont.micro)
+                .fontWeight(.semibold)
+                .tracking(0.6)
+                .textCase(.uppercase)
+                .foregroundStyle(compact ? CSColor.inkSecondary : CSColor.ink)
+                .lineLimit(1)
         }
-        .foregroundStyle(CSColor.inkInverse)
-        .padding(.horizontal, compact ? 7 : 10)
-        .padding(.vertical, compact ? 5 : 6)
-        .background(
-            Capsule().fill(rarity.linearGradient)
-        )
-        .overlay(
-            Capsule().strokeBorder(.white.opacity(0.35), lineWidth: 0.5)
-        )
-        .shadow(color: rarity.primary.opacity(rarity.glowStrength), radius: 8, y: 2)
+        .padding(.horizontal, compact ? 0 : 10)
+        .padding(.vertical, compact ? 0 : 6)
+        .background {
+            if !compact { Capsule().fill(CSColor.nested) }
+        }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Rarità \(rarity.localizedName)")
     }
@@ -34,7 +31,7 @@ struct RarityBadge: View {
 
 #Preview {
     ZStack {
-        AsphaltBackground()
+        CSColor.panel
         VStack(spacing: 12) {
             ForEach(Rarity.allCases) { RarityBadge(rarity: $0) }
             RarityBadge(rarity: .rara, compact: true)

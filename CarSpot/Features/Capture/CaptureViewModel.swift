@@ -38,6 +38,29 @@ private enum PhotoPreparation {
     }
 }
 
+/// Cosa mostra il reveal dopo il salvataggio: nuova / doppione / stessa auto, e la ricompensa.
+struct RevealInfo: Equatable, Sendable {
+    /// Stessa auto già catturata (stesso posto o foto quasi identica): 0 punti.
+    let isRepeat: Bool
+    /// Posizione di questa carta tra le copie del modello (1 = nuova). Solo tra le non ripetute.
+    let copyNumber: Int
+    /// Totale delle carte (non ripetute) in collezione dopo il salvataggio.
+    let cardNumber: Int
+    /// Prima carta di questa marca.
+    let isNewMake: Bool
+    let xpGained: Int
+    let levelBefore: Int
+    let levelAfter: Int
+    /// Avanzamento nel livello (0...1) prima e dopo l'assegnazione dei punti.
+    let fractionBefore: Double
+    let fractionAfter: Double
+    /// Punti dentro il livello dopo la cattura, e quanti ne servono per il successivo.
+    let xpInLevel: Int
+    let xpForLevel: Int
+
+    var isDuplicate: Bool { !isRepeat && copyNumber > 1 }
+}
+
 /// Orchestrates the capture pipeline: image → on-device anonymization →
 /// recognition → candidate confirmation → persisted card.
 @MainActor
@@ -67,6 +90,10 @@ final class CaptureViewModel {
     var lastReward = 0
     /// Carta appena salvata, per il reveal.
     private(set) var savedCard: SpotCard?
+    /// Dettagli del reveal (nuova/doppione/ripetizione, ricompensa).
+    private(set) var revealInfo: RevealInfo?
+    /// Salvataggio in corso (il confronto foto è asincrono): evita il doppio tocco.
+    private(set) var isSaving = false
     /// Messaggio d'errore per l'utente (mai testo tecnico).
     private(set) var errorMessage: String?
     /// Cambia a ogni errore: serve a far ripartire il timer di auto-chiusura.
@@ -218,14 +245,17 @@ final class CaptureViewModel {
     }
 
     /// Persist the confirmed candidate as a collectible.
-    func save(into context: ModelContext) {
+    func save(into context: ModelContext) async {
+        guard phase == .result, !isSaving else { return }
+        isSaving = true
+        defer { isSaving = false }
         // Fuori dalla pipeline (l'utente conferma dopo): transazione propria.
-        AppServices.errors.measureSync("capture.save", operation: "capture") {
-            persist(into: context)
+        await AppServices.errors.measure("capture.save", operation: "capture") {
+            await persist(into: context)
         }
     }
 
-    private func persist(into context: ModelContext) {
+    private func persist(into context: ModelContext) async {
         guard let candidate = selected else { return }
         let year = candidate.yearEstimate ?? Calendar.current.component(.year, from: .now)
         let a = AppServices.errors.measureSync("capture.rarity", operation: "capture") {
@@ -233,18 +263,51 @@ final class CaptureViewModel {
         }
         // Se la codifica in background non è ancora pronta (raro) si ricade su quella locale.
         let photo = photoJPEG ?? anonymizedImage.flatMap { PhotoEncoding.jpeg($0) }
+        let area = spottedArea ?? String(localized: "Zona sconosciuta")
+        let capturedAt = Date.now
         let card = StoredCard(
             make: candidate.make, model: candidate.model, year: year,
             rarity: a.rarity, colorName: a.colorName,
             power: a.power, agility: a.agility, presence: a.presence,
-            spottedArea: spottedArea ?? String(localized: "Zona sconosciuta"),
+            spottedArea: area, capturedAt: capturedAt,
             photo: photo
         )
-        // Prima carta e prima marca, contate prima dell'inserimento.
-        let makeName = candidate.make
-        let isFirstCard = ((try? context.fetchCount(FetchDescriptor<StoredCard>())) ?? 0) == 0
-        let isNewMake = ((try? context.fetchCount(FetchDescriptor<StoredCard>(
-            predicate: #Predicate { $0.make == makeName }))) ?? 0) == 0
+
+        // Carte esistenti, solo i campi leggeri (le foto si caricano a parte, se servono).
+        var lightFetch = FetchDescriptor<StoredCard>()
+        lightFetch.propertiesToFetch = [\.make, \.model, \.capturedAt, \.spottedArea, \.isRepeat]
+        let existing = (try? context.fetch(lightFetch)) ?? []
+
+        // Ripetizione: stesso modello nello stesso quartiere nelle 24 h (contando anche le
+        // ripetizioni, come il trigger server) oppure foto quasi identica a una recente.
+        var isRepeat = CardCopies.isRepeatByPlace(
+            make: candidate.make, model: candidate.model, area: area, capturedAt: capturedAt,
+            among: existing.map { (make: $0.make, model: $0.model, area: $0.spottedArea, capturedAt: $0.capturedAt) })
+        if !isRepeat, let photo {
+            let target = CardCopies.key(make: candidate.make, model: candidate.model)
+            let cutoff = capturedAt.addingTimeInterval(-PhotoSimilarity.lookback)
+            let recent = existing
+                .filter { $0.capturedAt >= cutoff && CardCopies.key(make: $0.make, model: $0.model) == target }
+                .sorted { $0.capturedAt > $1.capturedAt }
+                .prefix(PhotoSimilarity.maxCandidates)
+                .compactMap(\.photo)
+            isRepeat = await PhotoSimilarity.isNearDuplicate(photo, of: recent)
+            // Nel frattempo l'utente può aver annullato ("Riprova", X): non si salva più nulla.
+            guard phase == .result else { return }
+        }
+        card.isRepeat = isRepeat
+
+        // Numeri del reveal, calcolati prima dell'inserimento e solo tra le non ripetute.
+        let counted = existing.filter { !$0.isRepeat }
+        let makeKey = CardCopies.key(make: candidate.make, model: "")   // confronto solo sulla marca
+        let isNewMake = !counted.contains { CardCopies.key(make: $0.make, model: "") == makeKey }
+        let copyNumber = isRepeat ? 1 : CardCopies.copyNumber(
+            make: candidate.make, model: candidate.model, capturedAt: capturedAt,
+            among: counted.map { (make: $0.make, model: $0.model, capturedAt: $0.capturedAt) })
+        let xp = isRepeat ? 0 : CardCopies.xp(base: a.rarity.xpReward, copyNumber: copyNumber)
+        let currency = xp / 4
+        let isFirstCard = existing.isEmpty
+
         context.insert(card)
         do {
             try context.save()
@@ -256,22 +319,35 @@ final class CaptureViewModel {
             showError(AppError.shown(for: error, fallback: .saveCardFailed), retry: .save)
             return
         }
-        // Award XP/currency for the catch.
-        PlayerStore.award(xp: a.rarity.xpReward, currency: a.rarity.currencyReward, in: context)
-        lastReward = a.rarity.xpReward
+
+        // Award XP/currency for the catch (mai per una ripetizione).
+        let before = LevelSystem.progress(forXP: PlayerStore.profile(context).xp)
+        if !isRepeat {
+            PlayerStore.award(xp: xp, currency: currency, in: context)
+        }
+        let after = LevelSystem.progress(forXP: PlayerStore.profile(context).xp)
+        lastReward = xp
+        revealInfo = RevealInfo(
+            isRepeat: isRepeat, copyNumber: copyNumber,
+            cardNumber: counted.count + (isRepeat ? 0 : 1), isNewMake: isNewMake, xpGained: xp,
+            levelBefore: before.level, levelAfter: after.level,
+            fractionBefore: before.fraction, fractionAfter: after.fraction,
+            xpInLevel: after.into, xpForLevel: after.needed)
+
         // Invio al cloud in background (no-op se sync spento o utente non loggato).
         if let sync = SyncService.shared { Task { await sync.didSave(card) } }
         // Nome del case (es. "leggendaria"), stabile e indipendente dalla lingua.
         AppServices.analytics.track(.cardSaved(
-            rarity: String(describing: a.rarity), make: makeName,
-            isFirstCard: isFirstCard, isNewMake: isNewMake, xpGained: a.rarity.xpReward))
+            rarity: String(describing: a.rarity), make: candidate.make,
+            isFirstCard: isFirstCard, isNewMake: isNewMake, xpGained: xp))
         AppServices.errors.metric(count: "card.saved", attributes: ["rarity": .string(String(describing: a.rarity))])
         errorMessage = nil
         savedCard = card.asSpotCard
         phase = .saved
-        AccessibilityNotification.Announcement(
-            String(localized: "Aggiunta alla collezione: \(candidate.title), \(a.rarity.localizedName)")
-        ).post()
+        let spoken = isRepeat
+            ? String(localized: "Già vista qui: \(candidate.title), nessun punto")
+            : String(localized: "Aggiunta alla collezione: \(candidate.title), \(a.rarity.localizedName)")
+        AccessibilityNotification.Announcement(spoken).post()
     }
 
     func reset() {
@@ -279,6 +355,7 @@ final class CaptureViewModel {
         candidates = []
         selected = nil
         savedCard = nil
+        revealInfo = nil
         errorMessage = nil
         phase = .aiming
     }
@@ -351,7 +428,7 @@ final class CaptureViewModel {
             pipelineStart = .now
             await anonymizeAndRecognize(data)
         case .save:
-            save(into: context)
+            await save(into: context)
         case .dismiss:
             if phase == .aiming { clearCapture() }
         }

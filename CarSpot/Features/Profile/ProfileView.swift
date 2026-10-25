@@ -26,7 +26,7 @@ struct ProfileView: View {
         ScrollView {
             VStack(spacing: CSSpace.lg) {
                 header
-                profileHeader(progress)
+                Surface(.hero, padding: CSSpace.lg) { profileHeader(progress) }
                 statsRow
                 sightingsCard
             }
@@ -65,28 +65,12 @@ struct ProfileView: View {
     }
 
     private var statsRow: some View {
-        HStack(spacing: CSSpace.md) {
-            statTile(cards.count, "Carte", CSColor.accent)
-            statTile(profile?.xp ?? 0, "PE", CSColor.accentWarm, spoken: "Punti esperienza")
-            statTile(profile?.currency ?? 0, "Valuta", Rarity.epica.primary)
-        }
-    }
-
-    private func statTile(_ value: Int, _ label: LocalizedStringKey, _ tint: Color, spoken: LocalizedStringKey? = nil) -> some View {
-        VStack(spacing: CSSpace.xxs) {
-            Text(value, format: .number)
-                .font(CSFont.numeric(24))
-                .foregroundStyle(CSColor.ink)
-                .lineLimit(1)
-                .minimumScaleFactor(0.5)
-            Text(label)
-                .eyebrow(tint)
-                .accessibilityLabel(spoken ?? label)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, CSSpace.md)
-        .glassEffect(.regular, in: .rect(cornerRadius: CSRadius.md))
-        .accessibilityElement(children: .combine)
+        // Le ripetizioni non sono in collezione: non entrano nel conteggio.
+        KPIStrip([
+            .init("Carte", value: cards.filter { !$0.isRepeat }.count.formatted(.number)),
+            .init("PE", value: (profile?.xp ?? 0).formatted(.number), spoken: "Punti esperienza"),
+            .init("Valuta", value: (profile?.currency ?? 0).formatted(.number))
+        ])
     }
 
     private var header: some View {
@@ -129,7 +113,6 @@ struct ProfileView: View {
             levelProgress(progress)
         }
         .frame(maxWidth: .infinity)
-        .padding(.top, CSSpace.xs)
     }
 
     /// Avatar grande: con profilo cloud è un bottone che apre il menu foto.
@@ -193,17 +176,19 @@ struct ProfileView: View {
     }
 
     private var sightingsCard: some View {
-        GlassPanel(cornerRadius: CSRadius.md) {
-            VStack(alignment: .leading, spacing: CSSpace.md) {
+        Surface(.group, padding: nil) {
+            VStack(alignment: .leading, spacing: 0) {
                 Text("Ultimi avvistamenti").eyebrow()
+                    .padding(CSSpace.md)
                 if cards.isEmpty {
                     Text("Ancora nessun avvistamento. Fotografa la tua prima auto.")
                         .font(CSFont.body(14))
                         .foregroundStyle(CSColor.inkSecondary)
+                        .padding([.horizontal, .bottom], CSSpace.md)
                 } else {
                     let recent = Array(cards.prefix(3))
                     ForEach(Array(recent.enumerated()), id: \.element.id) { index, card in
-                        if index > 0 { Divider().overlay(CSColor.hairline) }
+                        SurfaceDivider(inset: index == 0 ? 0 : CSSpace.md)
                         sightingRow(card)
                     }
                 }
@@ -215,7 +200,7 @@ struct ProfileView: View {
         HStack(spacing: CSSpace.md) {
             Image(systemName: "car.side.fill")
                 .font(CSFont.title(18))
-                .foregroundStyle(card.rarity.linearGradient)
+                .foregroundStyle(card.rarity.color)
                 .frame(width: CSSpace.lg)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: CSSpace.xxs / 2) {
@@ -230,6 +215,7 @@ struct ProfileView: View {
             }
             Spacer(minLength: 0)
         }
+        .padding(CSSpace.md)
         .accessibilityElement(children: .combine)
     }
 
