@@ -78,7 +78,10 @@ final class CaptureViewModel {
     }
 
     private let recognizer: any RecognitionService = AppConfig.makeRecognitionService()
-    private let areas = ["Centro Storico", "Lungomare", "Quartiere Nord", "Collina", "Stazione"]
+    private let areaResolver: any AreaResolving = LocationAreaResolver()
+    /// Quartiere/città dello scatto, risolto in parallelo alla pipeline (solo il nome, mai coordinate).
+    private var spottedArea: String?
+    private var areaTask: Task<Void, Never>?
 
     /// Esito della pipeline per le metriche: valori enumerati e stabili.
     private enum Outcome: String {
@@ -123,6 +126,13 @@ final class CaptureViewModel {
         clearCapture()
         errorMessage = nil
         phase = .processing
+
+        // Area dello scatto: parte subito e viaggia in parallelo (non blocca nulla).
+        areaTask = Task { [weak self, areaResolver] in
+            let area = await areaResolver.resolveArea()
+            guard !Task.isCancelled else { return }
+            self?.spottedArea = area
+        }
 
         // 0. Riduzione ImageIO (≤1600 px) + miniatura per il fermo-immagine sfocato.
         let preparedImage = await AppServices.errors.measure("capture.prepare", operation: "capture") {
@@ -204,7 +214,7 @@ final class CaptureViewModel {
             make: candidate.make, model: candidate.model, year: year,
             rarity: a.rarity, colorName: a.colorName,
             power: a.power, agility: a.agility, presence: a.presence,
-            spottedArea: areas.randomElement() ?? "Centro",
+            spottedArea: spottedArea ?? String(localized: "Zona sconosciuta"),
             photo: photo
         )
         // Prima carta e prima marca, contate prima dell'inserimento.
@@ -340,6 +350,9 @@ final class CaptureViewModel {
     private func clearCapture() {
         photoTask?.cancel()
         photoTask = nil
+        areaTask?.cancel()
+        areaTask = nil
+        spottedArea = nil
         photoJPEG = nil
         safeData = nil
         anonymizedImage = nil

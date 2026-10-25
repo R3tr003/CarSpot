@@ -3163,6 +3163,16 @@
           }
         }
       }
+    },
+    "Zona sconosciuta" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown area"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

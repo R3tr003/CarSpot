@@ -13,12 +13,24 @@
 		CA000033 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = CA000043 /* Sentry */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		CA000102 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CA00000A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CA000006;
+			remoteInfo = CarSpot;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		CA000105 /* CarSpotTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CarSpotTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA000005 /* CarSpot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CarSpot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		CA000001 /* CarSpot */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = CarSpot; sourceTree = "<group>"; };
+		CA000101 /* CarSpotTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = CarSpotTests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +45,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CA000103 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -40,6 +59,7 @@
 			isa = PBXGroup;
 			children = (
 				CA000001 /* CarSpot */,
+				CA000101 /* CarSpotTests */,
 				CA000004 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -48,6 +68,7 @@
 			isa = PBXGroup;
 			children = (
 				CA000005 /* CarSpot.app */,
+				CA000105 /* CarSpotTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -81,6 +102,29 @@
 			productReference = CA000005 /* CarSpot.app */;
 			productType = "com.apple.product-type.application";
 		};
+		CA000104 /* CarSpotTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CA000108 /* Build configuration list for PBXNativeTarget "CarSpotTests" */;
+			buildPhases = (
+				CA000109 /* Sources */,
+				CA000103 /* Frameworks */,
+				CA00010A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CA000107 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				CA000101 /* CarSpotTests */,
+			);
+			name = CarSpotTests;
+			packageProductDependencies = (
+			);
+			productName = CarSpotTests;
+			productReference = CA000105 /* CarSpotTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -93,6 +137,10 @@
 				TargetAttributes = {
 					CA000006 = {
 						CreatedOnToolsVersion = 26.0;
+					};
+					CA000104 = {
+						CreatedOnToolsVersion = 26.0;
+						TestTargetID = CA000006;
 					};
 				};
 			};
@@ -118,12 +166,20 @@
 			projectRoot = "";
 			targets = (
 				CA000006 /* CarSpot */,
+				CA000104 /* CarSpotTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		CA000009 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CA00010A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -140,7 +196,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CA000109 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CA000107 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CA000006 /* CarSpot */;
+			targetProxy = CA000102 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		CA00000C /* Debug */ = {
@@ -334,6 +405,44 @@
 			};
 			name = Release;
 		};
+		CA000106 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CD6XZYNW86;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.carspot.andrea.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CarSpot.app/CarSpot";
+			};
+			name = Debug;
+		};
+		CA00010B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CD6XZYNW86;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.carspot.andrea.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CarSpot.app/CarSpot";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -351,6 +460,15 @@
 			buildConfigurations = (
 				CA00000C /* Debug */,
 				CA00000D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CA000108 /* Build configuration list for PBXNativeTarget "CarSpotTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CA000106 /* Debug */,
+				CA00010B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
