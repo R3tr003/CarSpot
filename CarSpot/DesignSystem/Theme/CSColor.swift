@@ -25,6 +25,8 @@ enum CSColor {
     static let accentWarm = Color(hex: 0xFFB23E)
     /// Fondo del pulsante "Accedi con Apple" (bianco, come quello di sistema).
     static let appleButton = Color.white
+    /// Azioni distruttive (esci, elimina, rimuovi): rosso caldo leggibile sul nero.
+    static let danger = Color(hex: 0xFF5A5F)
 
     // MARK: Hairlines & strokes
     static let hairline = Color.white.opacity(0.08)

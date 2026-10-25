@@ -12,7 +12,8 @@ final class MapHost: NSObject, MKMapViewDelegate {
     private var followedUser = false
 
     /// Frazione di altezza lasciata alla mappa dal pannello in posizione media
-    /// (`RootShellView.mediumDetent` = metà schermo).
+    /// (`RootShellView.mediumDetent` = metà schermo). Il logo Maps/Legal resta invece
+    /// fisso in fondo (margini di default), anche se il pannello lo copre.
     private let sheetPeek: CGFloat = 0.50
     /// Zoom "città" del primo centraggio.
     private let citySpan: CLLocationDegrees = 0.05
@@ -61,15 +62,6 @@ final class MapHost: NSObject, MKMapViewDelegate {
         mapView.removeFromSuperview()
         mapView.frame = container.bounds
         container.insertSubview(mapView, at: 0)
-        updateMargins(forHeight: container.bounds.height)
-    }
-
-    /// Margine in basso: legale/bussola restano nella parte visibile sopra il pannello.
-    func updateMargins(forHeight height: CGFloat) {
-        guard height > 0 else { return }
-        let bottom = height * (1 - sheetPeek)
-        guard abs(mapView.directionalLayoutMargins.bottom - bottom) > 0.5 else { return }
-        mapView.directionalLayoutMargins.bottom = bottom
     }
 
     // MARK: MKMapViewDelegate
@@ -135,11 +127,6 @@ final class MapContainerView: UIView {
     override func didMoveToWindow() {
         super.didMoveToWindow()
         if window != nil, isActive { host.attach(to: self) }
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        if host.mapView.superview === self { host.updateMargins(forHeight: bounds.height) }
     }
 }
 

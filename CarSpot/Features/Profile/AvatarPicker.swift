@@ -41,16 +41,7 @@ private struct AvatarPickerModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .confirmationDialog("Foto profilo", isPresented: $isPresented, titleVisibility: .visible) {
-                Button("Scegli dalla libreria") { showLibrary = true }
-                if cameraAvailable {
-                    Button("Scatta una foto") { showCamera = true }
-                }
-                if hasPhoto {
-                    Button("Rimuovi foto", role: .destructive, action: onRemove)
-                }
-                Button("Annulla", role: .cancel) {}
-            }
+            .csActionSheet("Foto profilo", isPresented: $isPresented, actions: menuActions)
             .photosPicker(isPresented: $showLibrary, selection: $selection, matching: .images)
             .onChange(of: selection) { _, item in
                 guard let item else { return }
@@ -84,6 +75,20 @@ private struct AvatarPickerModifier: ViewModifier {
             } message: {
                 Text(alertMessage ?? "")
             }
+    }
+
+    private var menuActions: [CSSheetAction] {
+        var actions = [CSSheetAction(title: "Scegli dalla libreria", systemImage: "photo.on.rectangle") {
+            showLibrary = true
+        }]
+        if cameraAvailable {
+            actions.append(CSSheetAction(title: "Scatta una foto", systemImage: "camera") { showCamera = true })
+        }
+        if hasPhoto {
+            actions.append(CSSheetAction(title: "Rimuovi foto", systemImage: "trash", role: .destructive,
+                                         action: onRemove))
+        }
+        return actions
     }
 
     // MARK: - Flusso

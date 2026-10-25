@@ -9,7 +9,6 @@ import SwiftUI
 /// card flottante con angoli concentrici da piccola/media e a tutta larghezza da alta.
 struct RootShellView: View {
     @State private var selection: Screen = Self.initialScreen
-    @State private var lastContentScreen: Screen = .today
     @State private var mapHost = MapHost()
     @State private var location = LocationManager()
     /// Pannello aperto dal menu dell'avatar.
@@ -64,7 +63,7 @@ struct RootShellView: View {
     // MARK: - Pannello
 
     private var panel: some View {
-        TabView(selection: $selection) {
+        TabView(selection: tabSelection) {
             Tab("Oggi", systemImage: "sun.max.fill", value: .today) {
                 TodayView()
             }
@@ -85,14 +84,7 @@ struct RootShellView: View {
         .environment(\.openProfile) { accountSheet = .profile }
         .environment(\.openSettings) { accountSheet = .settings }
         .onChange(of: selection, initial: true) { _, screen in
-            AppServices.analytics.track(.tabViewed(name: screen.analyticsName))
-            Self.trackScreen(screen.analyticsName)
-            if screen == .capture {
-                showCapture = true
-                selection = lastContentScreen
-            } else {
-                lastContentScreen = screen
-            }
+            Self.trackTab(screen)
         }
         .presentationDetents([Self.smallDetent, Self.mediumDetent, .large], selection: $detent)
         .onChange(of: detent) { _, new in
@@ -134,6 +126,27 @@ struct RootShellView: View {
             CaptureView()
                 .preferredColorScheme(.dark)
         }
+    }
+
+    /// La tab Cattura non viene mai selezionata: apre la camera e la selezione resta
+    /// sulla tab di contenuto. Così la tab bar (anche ridotta a due cerchi, a pannello
+    /// alto) mostra sempre la tab su cui sei, con la camera a destra.
+    private var tabSelection: Binding<Screen> {
+        Binding {
+            selection
+        } set: { screen in
+            if screen == .capture {
+                Self.trackTab(.capture)
+                showCapture = true
+            } else {
+                selection = screen
+            }
+        }
+    }
+
+    private static func trackTab(_ screen: Screen) {
+        AppServices.analytics.track(.tabViewed(name: screen.analyticsName))
+        trackScreen(screen.analyticsName)
     }
 
     // MARK: - Debug

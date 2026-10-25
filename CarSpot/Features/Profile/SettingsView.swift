@@ -57,12 +57,10 @@ struct SettingsView: View {
             cameraStatus = AVCaptureDevice.authorizationStatus(for: .video)
             locationStatus = CLLocationManager().authorizationStatus
         }
-        .confirmationDialog("Vuoi uscire?", isPresented: $showSignOutDialog, titleVisibility: .visible) {
-            Button("Esci", role: .destructive) { startSignOut() }
-            Button("Annulla", role: .cancel) {}
-        } message: {
-            Text("Le carte già sincronizzate restano nel cloud: le ritrovi al prossimo accesso.")
-        }
+        .csActionSheet("Vuoi uscire?",
+                       message: "Le carte già sincronizzate restano nel cloud: le ritrovi al prossimo accesso.",
+                       isPresented: $showSignOutDialog,
+                       actions: [CSSheetAction(title: "Esci", role: .destructive) { startSignOut() }])
         .alert("Dati non sincronizzati", isPresented: $showUnsyncedAlert) {
             Button("Esci comunque", role: .destructive) { signOut() }
             Button("Annulla", role: .cancel) {}
@@ -75,12 +73,10 @@ struct SettingsView: View {
         } message: {
             Text("Non sono riuscito a uscire. Riprova.")
         }
-        .confirmationDialog("Eliminare l'account?", isPresented: $showDeleteDialog, titleVisibility: .visible) {
-            Button("Elimina account", role: .destructive) { deleteAccount() }
-            Button("Annulla", role: .cancel) {}
-        } message: {
-            Text("Le tue carte, le foto e i progressi vengono cancellati per sempre, dal telefono e dal cloud. Non si può annullare.")
-        }
+        .csActionSheet("Eliminare l'account?",
+                       message: "Le tue carte, le foto e i progressi vengono cancellati per sempre, dal telefono e dal cloud. Non si può annullare.",
+                       isPresented: $showDeleteDialog,
+                       actions: [CSSheetAction(title: "Elimina account", role: .destructive) { deleteAccount() }])
         .alert("Eliminazione non riuscita", isPresented: showDeleteError) {
             Button("OK", role: .cancel) {}
         } message: {
