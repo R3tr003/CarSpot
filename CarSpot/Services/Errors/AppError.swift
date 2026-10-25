@@ -11,6 +11,8 @@ enum AppError: LocalizedError, Equatable, Sendable {
     case recognitionFailed
     case recognitionSessionExpired
     case recognitionLimitReached
+    /// La foto non è stata usata: non si è riusciti a oscurare volti e targhe.
+    case anonymizationFailed
     case saveCardFailed
     case saveNameFailed
     case saveRealNameFailed
@@ -77,6 +79,7 @@ enum AppError: LocalizedError, Equatable, Sendable {
         case .recognitionFailed: "recognitionFailed"
         case .recognitionSessionExpired: "recognitionSessionExpired"
         case .recognitionLimitReached: "recognitionLimitReached"
+        case .anonymizationFailed: "anonymizationFailed"
         case .saveCardFailed: "saveCardFailed"
         case .saveNameFailed: "saveNameFailed"
         case .saveRealNameFailed: "saveRealNameFailed"
@@ -97,6 +100,7 @@ enum AppError: LocalizedError, Equatable, Sendable {
         case .recognitionFailed: String(localized: "Non sono riuscito a riconoscere l'auto. Riprova.")
         case .recognitionSessionExpired: String(localized: "Sessione scaduta. Accedi di nuovo per riconoscere le auto.")
         case .recognitionLimitReached: String(localized: "Hai raggiunto il limite di riconoscimenti di oggi. Riprova domani.")
+        case .anonymizationFailed: String(localized: "Non sono riuscito a proteggere la privacy della foto, quindi non l'ho usata. Riprova o scegli un'altra foto.")
         case .saveCardFailed: String(localized: "Non sono riuscito a salvare la carta. Riprova.")
         case .saveNameFailed: String(localized: "Non riesco a salvare il nome. Controlla la connessione e riprova.")
         case .saveRealNameFailed: String(localized: "Non riesco a salvare nome e cognome. Controlla la connessione e riprova.")

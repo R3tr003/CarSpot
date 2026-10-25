@@ -7,22 +7,21 @@ import os
 
 private let visionLog = Logger(subsystem: "com.carspot.andrea.app", category: "vision")
 
-/// Immagine pronta per la pipeline: JPEG ridotto (≤1600 px) + miniatura per il fermo-immagine.
-struct PreparedImage: Sendable {
-    let jpeg: Data
-    let thumbnail: Data
-}
 
 /// Riduce le foto con ImageIO (niente decodifica a piena risoluzione) e applica
 /// l'orientamento EXIF ai pixel. Tutto fuori dal main actor.
 enum ImageDownsampler {
 
-    /// Dati grezzi (camera/libreria) → JPEG 0.85 con lato lungo ≤ 1600 px + miniatura.
+    /// Dati grezzi (camera/libreria) → JPEG 0.85 con lato lungo ≤ 1600 px.
     @concurrent
-    static func prepare(data: Data) async -> PreparedImage? {
-        guard let jpeg = downsampledJPEG(from: data, maxPixel: 1600, quality: 0.85),
-              let thumb = downsampledJPEG(from: jpeg, maxPixel: 360, quality: 0.6) else { return nil }
-        return PreparedImage(jpeg: jpeg, thumbnail: thumb)
+    static func prepare(data: Data) async -> Data? {
+        downsampledJPEG(from: data, maxPixel: 1600, quality: 0.85)
+    }
+
+    /// Miniatura (360 px) di un JPEG. Si ricava SOLO da quello già anonimizzato.
+    @concurrent
+    static func thumbnail(from data: Data) async -> Data? {
+        downsampledJPEG(from: data, maxPixel: 360, quality: 0.6)
     }
 
     static func downsampledJPEG(from data: Data, maxPixel: Int, quality: CGFloat) -> Data? {
@@ -56,34 +55,67 @@ enum ImageDownsampler {
     }
 }
 
+/// Perché l'anonimizzazione non è riuscita. Nessun dato dell'utente nel caso.
+enum AnonymizationError: Error, Equatable, Sendable {
+    /// Il JPEG non si decodifica in un'immagine analizzabile.
+    case undecodable
+    /// Vision non ha potuto analizzare l'immagine: non sappiamo se ci sono volti/targhe.
+    case analysisFailed
+    /// Regioni sensibili trovate ma sfocatura o codifica fallite.
+    case blurFailed
+}
+
 /// On-device privacy pass. Detects faces and license-plate-like text regions and
 /// blurs them BEFORE the image is ever shown, saved or sent. Runs off the main
 /// actor; takes and returns JPEG `Data` so nothing non-Sendable crosses actors.
 /// Riceve immagini già ridotte (≤1600 px): Vision e CoreImage restano veloci.
+///
+/// **Fail-closed:** "nessuna regione sensibile" è l'unico caso in cui l'originale passa
+/// com'è. Se non si riesce ad analizzare o sfocare, `anonymize` lancia: mai l'originale.
 enum ImageAnonymizer {
+
+    /// Rilevatore di regioni sensibili (normalizzate, origine in basso a sinistra).
+    /// Iniettabile per i test; lancia se l'analisi non è possibile.
+    typealias RegionDetector = @Sendable (CGImage) throws -> [CGRect]
 
     /// CIContext è thread-safe ma non `Sendable`: condiviso per non ricrearlo a ogni scatto.
     private static let ciContext = CIContext()
 
-    /// Returns an anonymized JPEG. On any failure returns the input unchanged
-    /// (privacy-safe default would be to redact more, but we never expose less
-    /// than the input — detection failures are logged for tuning).
+    /// Returns an anonymized JPEG, o l'input se non c'è nulla da oscurare.
+    /// Throws `AnonymizationError` se non può garantire l'anonimato.
     @concurrent
-    static func anonymize(jpegData: Data) async -> Data {
-        guard let image = UIImage(data: jpegData),
-              let cg = image.cgImage else { return jpegData }
+    static func anonymize(jpegData: Data) async throws -> Data {
+        try anonymize(jpegData: jpegData, detector: visionRegions)
+    }
 
-        let regions = sensitiveRegions(in: cg)
+    /// Parte sincrona e pura rispetto a Vision: testabile con un rilevatore finto.
+    static func anonymize(jpegData: Data, detector: RegionDetector) throws -> Data {
+        guard let image = UIImage(data: jpegData),
+              let cg = image.cgImage else {
+            visionLog.error("Anonimizzazione: immagine non decodificabile")
+            throw AnonymizationError.undecodable
+        }
+
+        let regions: [CGRect]
+        do {
+            regions = try detector(cg)
+        } catch {
+            visionLog.error("Vision fallita: \(error.localizedDescription)")
+            throw AnonymizationError.analysisFailed
+        }
         guard !regions.isEmpty else { return jpegData }
 
         guard let blurred = blur(image: image, cg: cg, normalizedRegions: regions),
-              let out = blurred.jpegData(compressionQuality: 0.85) else { return jpegData }
+              let out = blurred.jpegData(compressionQuality: 0.85) else {
+            visionLog.error("Anonimizzazione: sfocatura o codifica fallite")
+            throw AnonymizationError.blurFailed
+        }
         return out
     }
 
     // MARK: Detection (Vision boundingBoxes are normalized, origin bottom-left)
 
-    private static func sensitiveRegions(in cg: CGImage) -> [CGRect] {
+    private static let visionRegions: RegionDetector = { cg in
         var rects: [CGRect] = []
 
         let faceRequest = VNDetectFaceRectanglesRequest()
@@ -92,12 +124,7 @@ enum ImageAnonymizer {
         textRequest.usesLanguageCorrection = false
 
         let handler = VNImageRequestHandler(cgImage: cg, orientation: .up)
-        do {
-            try handler.perform([faceRequest, textRequest])
-        } catch {
-            visionLog.error("Vision fallita: \(error.localizedDescription)")
-            AppServices.errors.record(error, area: .vision, step: "anonymize")
-        }
+        try handler.perform([faceRequest, textRequest])
 
         if let faces = faceRequest.results {
             rects += faces.map { $0.boundingBox.insetBy(dx: -0.02, dy: -0.02) }
@@ -114,7 +141,7 @@ enum ImageAnonymizer {
     }
 
     /// Heuristic for European-style plates: 5–8 chars, mostly uppercase + digits.
-    private static func looksLikePlate(_ s: String) -> Bool {
+    static func looksLikePlate(_ s: String) -> Bool {
         let trimmed = s.replacingOccurrences(of: " ", with: "")
         guard (5...8).contains(trimmed.count) else { return false }
         let allowed = CharacterSet.uppercaseLetters.union(.decimalDigits)
