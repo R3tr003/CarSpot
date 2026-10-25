@@ -46,6 +46,8 @@ enum ChallengeEngine {
         let key = PlayerProfile.dayKey(day)
         let seed = key.utf8.reduce(0) { $0 &+ Int($1) }
         let picks = pick(3, seed: seed)
+        // La stessa auto ripresa più volte non fa avanzare gli obiettivi.
+        let cards = cards.filter { !$0.isRepeat }
 
         return picks.map { t in
             let progress = min(t.goal, cards.filter(t.matches).count)

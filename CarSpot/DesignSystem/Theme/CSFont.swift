@@ -51,10 +51,10 @@ enum CSFont {
 
 extension View {
     /// Etichetta di sezione: testo normale (niente maiuscolo spaziato), piccolo e
-    /// secondario. Il colore passato si ignora: l'accent è riservato ad azioni e progressi.
+    /// secondario. Un colore diverso solo per dati o stato (avviso, rarità).
     func eyebrow(_ color: Color = CSColor.inkSecondary) -> some View {
         self
             .font(.system(.footnote, weight: .semibold))
-            .foregroundStyle(CSColor.inkSecondary)
+            .foregroundStyle(color)
     }
 }

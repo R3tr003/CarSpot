@@ -41,3 +41,6 @@ xcuserdata/
 
 # Node (eventuali tool della Edge Function)
 node_modules/
+
+# Mockup del brainstorming
+.superpowers/

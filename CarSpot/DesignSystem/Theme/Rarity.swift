@@ -2,6 +2,11 @@ import SwiftUI
 
 /// Rarity is the spine of the visual system: the accent colour of any card,
 /// badge or glow is derived from its rarity.
+/// Materiale della carta per rarità: opaca, bordo metallico, bordo foil, foil intero.
+enum RarityFinish: Sendable {
+    case matte, metalEdge, foilEdge, fullFoil
+}
+
 enum Rarity: String, CaseIterable, Identifiable, Codable {
     case comune = "Comune"
     case rara = "Rara"
@@ -23,17 +28,30 @@ enum Rarity: String, CaseIterable, Identifiable, Codable {
     /// Come `displayName`, ma già risolto in `String` (VoiceOver, annunci).
     var localizedName: String { String(localized: displayName) }
 
-    /// Ordered gradient stops — cool steel → cyan → violet-magenta → gold.
-    var gradient: [Color] {
+    /// Un colore per rarità, usato ovunque (bordi, badge, pallini, riflessi). Niente arcobaleno.
+    var color: Color {
         switch self {
-        case .comune:      return [Color(hex: 0xB4BCCB), Color(hex: 0x8A93A6)]
-        case .rara:        return [Color(hex: 0x36E2FF), Color(hex: 0x2A7DF0)]
-        case .epica:       return [Color(hex: 0xC04BFF), Color(hex: 0xFF4D9D)]
-        case .leggendaria: return [Color(hex: 0xFFE176), Color(hex: 0xFFA62B), Color(hex: 0xFF5E7E)]
+        case .comune:      return Color(hex: 0xB4BCCB)
+        case .rara:        return Color(hex: 0x36E2FF)
+        case .epica:       return Color(hex: 0xC04BFF)
+        case .leggendaria: return Color(hex: 0xFFC14D)
         }
     }
 
-    var primary: Color { gradient.first ?? CSColor.accent }
+    /// Monocromo: resta per i chiamanti che vogliono un `[Color]`.
+    var gradient: [Color] { [color] }
+
+    var primary: Color { color }
+
+    /// Finitura della carta: la rarità si riconosce dal materiale, non da un alone.
+    var finish: RarityFinish {
+        switch self {
+        case .comune: .matte
+        case .rara: .metalEdge
+        case .epica: .foilEdge
+        case .leggendaria: .fullFoil
+        }
+    }
 
     var linearGradient: LinearGradient {
         LinearGradient(colors: gradient, startPoint: .topLeading, endPoint: .bottomTrailing)

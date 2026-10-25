@@ -36,7 +36,8 @@ struct StatBar: View {
             }
             .frame(height: 6)
         }
-        .onAppear { update(animated: animate) }
+        // Alla comparsa è già piena: si anima solo quando il valore cambia davvero.
+        .onAppear { update(animated: false) }
         .onChange(of: value) { update(animated: animate) }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(label)

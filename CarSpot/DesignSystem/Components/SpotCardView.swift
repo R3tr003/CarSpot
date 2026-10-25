@@ -10,6 +10,8 @@ struct SpotCardView: View {
     var pitch: Double = 0
     var showStats: Bool = false
     var compact: Bool = false
+    /// Copie di questo modello in collezione: "×N" sulla carta quando > 1.
+    var copies: Int = 1
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 

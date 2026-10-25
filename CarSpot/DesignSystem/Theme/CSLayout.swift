@@ -16,6 +16,8 @@ enum CSRadius {
     static let md: CGFloat = 22
     static let lg: CGFloat = 30
     static let card: CGFloat = 28
+    /// Superfici di contenuto (`Surface`); gli elementi annidati scendono (10, 8).
+    static let surface: CGFloat = 20
     static let pill: CGFloat = 999
 }
 

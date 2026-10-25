@@ -12,6 +12,18 @@ enum CSColor {
     /// Raised material seen through glass.
     static let elevated = Color(hex: 0x1C1F26)
 
+    // MARK: Superfici a gradini (più chiaro = più in alto)
+    /// Fondo del pannello di sistema con le tab.
+    static let panel = Color(hex: 0x0E1014)
+    /// Gruppi di righe, statistiche, liste.
+    static let group = Color(hex: 0x15181E)
+    /// Il blocco principale di una schermata.
+    static let hero = Color(hex: 0x1A1D24)
+    /// Elementi dentro una superficie: icone, tracce, chip non selezionati.
+    static let nested = Color(hex: 0x232731)
+    /// Divisori tra righe di una superficie.
+    static let divider = Color.white.opacity(0.06)
+
     // MARK: Ink
     static let ink = Color(hex: 0xF4F6FB)
     static let inkSecondary = Color(hex: 0xA7AEBC)
@@ -27,6 +39,8 @@ enum CSColor {
     static let appleButton = Color.white
     /// Azioni distruttive (esci, elimina, rimuovi): rosso caldo leggibile sul nero.
     static let danger = Color(hex: 0xFF5A5F)
+    /// Stato completato (obiettivi fatti, conferme).
+    static let success = Color(hex: 0x3FC07A)
 
     // MARK: Hairlines & strokes
     static let hairline = Color.white.opacity(0.08)

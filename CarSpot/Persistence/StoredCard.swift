@@ -28,6 +28,9 @@ final class StoredCard {
     /// Path della foto nel bucket `spots` (`<owner>/<id>.jpg`), valorizzato dopo l'upload.
     var photoPath: String?
     var syncStateRaw: String = SyncState.pending.rawValue
+    /// Stessa auto già catturata (stesso posto o foto quasi identica): 0 punti, fuori da
+    /// Collezione, copie e obiettivi; resta solo in cronologia.
+    var isRepeat: Bool = false
 
     @Attribute(.externalStorage) var photo: Data?
 
