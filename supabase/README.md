@@ -67,8 +67,9 @@ curl -s -o /dev/null -w "%{http_code}\n" -X GET  $URL -H "Authorization: Bearer 
 - `migrations/…_0003_rls_initplan_form.sql` — policy nella forma `(select auth.jwt())`.
 - `legacy/0001_init.sql` — schema originale (uuid + Supabase Auth), superato dalla 0002:
   non è nella cronologia remota, non va applicato.
-- `migrations/…_0007_recognition_rate_limit.sql` — contatore giornaliero per utente
-  (`private.recognition_usage`) e `public.consume_recognition_quota`, usati da `recognize`.
+- `migrations/…_0007_recognition_rate_limit.sql` (+ `0008`, policy deny-all) — contatore
+  giornaliero per utente (`private.recognition_usage`) e `public.consume_recognition_quota`,
+  usati da `recognize`.
 - `functions/recognize/` — Edge Function che fa da proxy al provider di
   riconoscimento (la chiave API resta server-side) e normalizza la risposta nei
   `VehicleCandidate` attesi dall'app.
