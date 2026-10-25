@@ -47,7 +47,10 @@ xcodebuild -project CarSpot.xcodeproj -scheme CarSpot -configuration Debug \
 - **Niente chiavi API nell'app:** il riconoscimento passa SEMPRE dalla Edge Function
   `recognize` (cartella `supabase/`), che riceve solo l'immagine già anonimizzata.
 - **Privacy:** volti e targhe sfocati **on-device** (Vision) PRIMA di qualsiasi invio o
-  salvataggio, fail-closed. Al cloud va solo l'area/quartiere, mai coordinate.
+  salvataggio, fail-closed. Al cloud va solo l'area/quartiere, mai coordinate. La
+  posizione esatta di uno scatto (decisione utente 2026-10-25) resta **solo sul
+  dispositivo** (SwiftData, esclusa da `CloudCard` e da analytics/log) e la vede solo
+  il proprietario sulla sua mappa.
 - **Concurrency:** Swift 6 strict, **senza** Default Actor Isolation = MainActor: i
   `@MainActor` sono espliciti (non cambiare il build setting senza chiedere). Tipi che
   attraversano isolation `Sendable`, servizi `async`, UI `@MainActor`, `@Observable`.
