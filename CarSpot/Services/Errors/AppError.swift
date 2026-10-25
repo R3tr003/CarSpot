@@ -9,6 +9,8 @@ enum AppError: LocalizedError, Equatable, Sendable {
     case captureFailed
     case noVehicleFound
     case recognitionFailed
+    /// La foto non è stata usata: non si è riusciti a oscurare volti e targhe.
+    case anonymizationFailed
     case saveCardFailed
     case saveNameFailed
     case saveRealNameFailed
@@ -73,6 +75,7 @@ enum AppError: LocalizedError, Equatable, Sendable {
         case .captureFailed: "captureFailed"
         case .noVehicleFound: "noVehicleFound"
         case .recognitionFailed: "recognitionFailed"
+        case .anonymizationFailed: "anonymizationFailed"
         case .saveCardFailed: "saveCardFailed"
         case .saveNameFailed: "saveNameFailed"
         case .saveRealNameFailed: "saveRealNameFailed"
@@ -91,6 +94,7 @@ enum AppError: LocalizedError, Equatable, Sendable {
         case .captureFailed: String(localized: "Scatto non riuscito. Riprova.")
         case .noVehicleFound: String(localized: "Nessuna auto riconosciuta. Inquadra l'auto di 3/4 e riprova.")
         case .recognitionFailed: String(localized: "Non sono riuscito a riconoscere l'auto. Riprova.")
+        case .anonymizationFailed: String(localized: "Non sono riuscito a proteggere la privacy della foto, quindi non l'ho usata. Riprova o scegli un'altra foto.")
         case .saveCardFailed: String(localized: "Non sono riuscito a salvare la carta. Riprova.")
         case .saveNameFailed: String(localized: "Non riesco a salvare il nome. Controlla la connessione e riprova.")
         case .saveRealNameFailed: String(localized: "Non riesco a salvare nome e cognome. Controlla la connessione e riprova.")

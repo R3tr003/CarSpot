@@ -49,6 +49,7 @@ final class CaptureViewModel {
     /// Cosa fa il bottone "Riprova" del banner d'errore.
     enum Retry: Equatable {
         case dismiss     // torna al mirino
+        case anonymize   // ripete l'anonimizzazione sulla stessa foto
         case recognize   // ripete il riconoscimento sulla stessa immagine
         case save        // ripete il salvataggio
     }
@@ -58,7 +59,8 @@ final class CaptureViewModel {
 
     var phase: Phase = .aiming
     var anonymizedImage: UIImage?
-    /// Miniatura (non anonimizzata, solo in memoria) per lo sfondo sfocato durante l'elaborazione.
+    /// Miniatura per lo sfondo sfocato durante l'elaborazione: solo dal JPEG già anonimizzato,
+    /// quindi `nil` finché l'anonimizzazione non è finita.
     var previewImage: UIImage?
     var candidates: [VehicleCandidate] = []
     var selected: VehicleCandidate?
@@ -91,6 +93,9 @@ final class CaptureViewModel {
     /// Inizio della pipeline in corso (o del riconoscimento ripetuto).
     private var pipelineStart = ContinuousClock.now
 
+    /// JPEG ridotto ma NON anonimizzato, solo in memoria: serve a ripetere l'anonimizzazione
+    /// se fallisce. Mai mostrato, salvato né inviato; si azzera appena l'anonimizzazione riesce.
+    private var pendingData: Data?
     /// JPEG anonimizzato, tenuto per ripetere il riconoscimento senza rifare la pipeline.
     private var safeData: Data?
     /// Foto da salvare, già codificata in background durante il riconoscimento.
@@ -124,7 +129,7 @@ final class CaptureViewModel {
         errorMessage = nil
         phase = .processing
 
-        // 0. Riduzione ImageIO (≤1600 px) + miniatura per il fermo-immagine sfocato.
+        // 0. Riduzione ImageIO (≤1600 px). Nessuna miniatura finché la foto non è anonimizzata.
         let preparedImage = await AppServices.errors.measure("capture.prepare", operation: "capture") {
             await ImageDownsampler.prepare(data: data)
         }
@@ -133,14 +138,32 @@ final class CaptureViewModel {
             finish(.unreadable)
             fail(.photoUnreadable); return
         }
-        previewImage = UIImage(data: prepared.thumbnail)
+        pendingData = prepared
+        await anonymizeAndRecognize(prepared)
+    }
 
+    /// Fail-closed: se l'anonimizzazione non riesce non si riconosce né si salva nulla.
+    private func anonymizeAndRecognize(_ prepared: Data) async {
         // 1. Anonymize on-device BEFORE anything else touches the photo.
-        let safe = await AppServices.errors.measure("capture.anonymize", operation: "capture") {
-            await ImageAnonymizer.anonymize(jpegData: prepared.jpeg)
+        let safe: Data
+        do {
+            safe = try await AppServices.errors.measure("capture.anonymize", operation: "capture") {
+                try await ImageAnonymizer.anonymize(jpegData: prepared)
+            }
+        } catch {
+            captureLog.error("Anonimizzazione fallita")
+            AppServices.errors.record(error, area: .vision, step: "anonymize")
+            finish(.error)
+            fail(.anonymizationFailed, retry: .anonymize); return
         }
+        pendingData = nil
         anonymizedImage = UIImage(data: safe)
         safeData = safe
+
+        // Miniatura per il fermo-immagine: dal JPEG anonimizzato, mai dall'originale.
+        if let thumb = await ImageDownsampler.thumbnail(from: safe) {
+            previewImage = UIImage(data: thumb)
+        }
 
         // La foto da salvare si codifica in parallelo al riconoscimento (fuori dal main actor).
         photoTask = Task { [weak self] in
@@ -312,6 +335,11 @@ final class CaptureViewModel {
             phase = .processing
             pipelineStart = .now
             await recognize(data)
+        case .anonymize:
+            guard let data = pendingData else { dismissError(); return }
+            phase = .processing
+            pipelineStart = .now
+            await anonymizeAndRecognize(data)
         case .save:
             save(into: context)
         case .dismiss:
@@ -325,7 +353,7 @@ final class CaptureViewModel {
 
     private func fail(_ message: String, retry: Retry = .dismiss) {
         showError(message, retry: retry)
-        // Il riconoscimento ripetibile conserva la miniatura per il fermo-immagine.
+        // Il riconoscimento ripetibile conserva la miniatura (già anonimizzata) per il fermo-immagine.
         if retry != .recognize { previewImage = nil }
         phase = .aiming
     }
@@ -341,6 +369,7 @@ final class CaptureViewModel {
         photoTask?.cancel()
         photoTask = nil
         photoJPEG = nil
+        pendingData = nil
         safeData = nil
         anonymizedImage = nil
         previewImage = nil

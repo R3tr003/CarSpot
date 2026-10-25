@@ -2117,6 +2117,16 @@
         }
       }
     },
+    "Non sono riuscito a proteggere la privacy della foto, quindi non l'ho usata. Riprova o scegli un'altra foto." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't protect the photo's privacy, so it wasn't used. Try again or pick another photo."
+          }
+        }
+      }
+    },
     "Non sono riuscito a riconoscere l'auto. Riprova." : {
       "localizations" : {
         "en" : {
