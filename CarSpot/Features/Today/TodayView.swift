@@ -182,6 +182,8 @@ struct ChallengeRow: View {
                     .accessibilityValue("\(challenge.progress) di \(challenge.goal)")
                 }
             }
+            // Occupa tutto lo spazio: icona e "Fatto" restano allineati riga per riga.
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             trailing
                 .frame(minWidth: 64)
