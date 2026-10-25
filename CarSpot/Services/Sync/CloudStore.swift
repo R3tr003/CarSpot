@@ -15,11 +15,15 @@ struct CloudCard: Codable, Sendable {
     let photoPath: String?
     let spottedArea: String?
     let capturedAt: Date
+    /// Stessa auto già catturata: 0 premi. Il server può metterla a true da solo (stesso
+    /// posto nelle 24 ore); `nil` dalle righe vecchie = false.
+    let isRepeat: Bool?
     /// Cursore del pull, impostato dal server: solo in lettura (escluso dall'encode).
     let createdAt: Date?
 
     enum CodingKeys: String, CodingKey {
         case id, make, model, year, rarity, power, agility, presence
+        case isRepeat = "is_repeat"
         case ownerId = "owner_id"
         case colorName = "color_name"
         case photoPath = "photo_path"
@@ -43,6 +47,7 @@ struct CloudCard: Codable, Sendable {
         try c.encodeIfPresent(photoPath, forKey: .photoPath)
         try c.encodeIfPresent(spottedArea, forKey: .spottedArea)
         try c.encode(capturedAt, forKey: .capturedAt)
+        try c.encode(isRepeat ?? false, forKey: .isRepeat)
     }
 }
 

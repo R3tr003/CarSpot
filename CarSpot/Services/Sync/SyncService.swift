@@ -220,7 +220,7 @@ final class SyncService {
         let make = card.make, model = card.model, year = card.year
         let rarity = card.rarityRaw, color = card.colorName
         let power = card.power, agility = card.agility, presence = card.presence
-        let area = card.spottedArea, capturedAt = card.capturedAt
+        let area = card.spottedArea, capturedAt = card.capturedAt, isRepeat = card.isRepeat
 
         do {
             if photoPath == nil, let photo {
@@ -236,7 +236,7 @@ final class SyncService {
                 colorName: color.isEmpty ? nil : color,
                 power: power, agility: agility, presence: presence,
                 photoPath: photoPath, spottedArea: area.isEmpty ? nil : area,
-                capturedAt: capturedAt, createdAt: nil
+                capturedAt: capturedAt, isRepeat: isRepeat, createdAt: nil
             ))
             guard self.userId == userId else { return false }
             if let live = fetchCard(id) {
@@ -398,6 +398,7 @@ final class SyncService {
         card.id = c.id
         card.ownerId = ownerId
         card.photoPath = c.photoPath
+        card.isRepeat = c.isRepeat ?? false
         card.syncState = .synced
         return card
     }
