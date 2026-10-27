@@ -1,0 +1,2759 @@
+{
+ "model": "google/siglip2-base-patch16-256",
+ "level": "gen",
+ "file": "label_embeddings_gen.f16",
+ "count": 304,
+ "dim": 768,
+ "dtype": "float16",
+ "layout": "row-major (count x dim), little-endian",
+ "normalization": "ogni riga L2-normalizzata (poi arrotondata a float16); l'embedding immagine va normalizzato L2 prima del prodotto scalare",
+ "logit_scale": 112.90117645263672,
+ "logit_bias": -16.77180290222168,
+ "scoring": "p = softmax(logit_scale * cos) sulle classi; sigmoid(logit_scale*cos + logit_bias) per la confidenza assoluta",
+ "templates": [
+  "a photo of a {n}.",
+  "a photo of a {n}, a type of car.",
+  "a {n} parked on the street.",
+  "a front view of a {n}.",
+  "a rear view of a {n}.",
+  "a side view of a {n} car."
+ ],
+ "labels": [
+  {
+   "index": 0,
+   "make": "Fiat",
+   "model": "Panda",
+   "generation": "I (141)",
+   "years": "1980-2003",
+   "body": "hatchback",
+   "text": "Fiat Panda (1980–2003)"
+  },
+  {
+   "index": 1,
+   "make": "Fiat",
+   "model": "Panda",
+   "generation": "II (169)",
+   "years": "2003-2012",
+   "body": "hatchback",
+   "text": "Fiat Panda (2003–2012)"
+  },
+  {
+   "index": 2,
+   "make": "Fiat",
+   "model": "Panda",
+   "generation": "III (319)",
+   "years": "2012-present",
+   "body": "hatchback",
+   "text": "Fiat Panda (2012–present)"
+  },
+  {
+   "index": 3,
+   "make": "Fiat",
+   "model": "Grande Panda",
+   "generation": "I",
+   "years": "2025-present",
+   "body": "hatchback",
+   "text": "Fiat Grande Panda (2025–present)"
+  },
+  {
+   "index": 4,
+   "make": "Fiat",
+   "model": "500",
+   "generation": "Nuova 500",
+   "years": "1957-1975",
+   "body": "hatchback",
+   "text": "Fiat 500 (1957–1975)"
+  },
+  {
+   "index": 5,
+   "make": "Fiat",
+   "model": "500",
+   "generation": "II (312)",
+   "years": "2007-present",
+   "body": "hatchback",
+   "text": "Fiat 500 (2007–present)"
+  },
+  {
+   "index": 6,
+   "make": "Fiat",
+   "model": "500e",
+   "generation": "II (332)",
+   "years": "2020-present",
+   "body": "hatchback",
+   "text": "Fiat 500e (2020–present)"
+  },
+  {
+   "index": 7,
+   "make": "Fiat",
+   "model": "500X",
+   "generation": "I (334)",
+   "years": "2014-present",
+   "body": "suv",
+   "text": "Fiat 500X (2014–present)"
+  },
+  {
+   "index": 8,
+   "make": "Fiat",
+   "model": "500L",
+   "generation": "I (330)",
+   "years": "2012-2022",
+   "body": "mpv",
+   "text": "Fiat 500L (2012–2022)"
+  },
+  {
+   "index": 9,
+   "make": "Fiat",
+   "model": "600",
+   "generation": "I (2023)",
+   "years": "2023-present",
+   "body": "suv",
+   "text": "Fiat 600 (2023–present)"
+  },
+  {
+   "index": 10,
+   "make": "Fiat",
+   "model": "Tipo",
+   "generation": "II (356)",
+   "years": "2016-present",
+   "body": "hatchback",
+   "text": "Fiat Tipo (2016–present)"
+  },
+  {
+   "index": 11,
+   "make": "Fiat",
+   "model": "Punto",
+   "generation": "II (188)",
+   "years": "1999-2010",
+   "body": "hatchback",
+   "text": "Fiat Punto (1999–2010)"
+  },
+  {
+   "index": 12,
+   "make": "Fiat",
+   "model": "Grande Punto",
+   "generation": "I (199)",
+   "years": "2005-2012",
+   "body": "hatchback",
+   "text": "Fiat Grande Punto (2005–2012)"
+  },
+  {
+   "index": 13,
+   "make": "Fiat",
+   "model": "Punto Evo",
+   "generation": "I (199)",
+   "years": "2009-2018",
+   "body": "hatchback",
+   "text": "Fiat Punto Evo (2009–2018)"
+  },
+  {
+   "index": 14,
+   "make": "Fiat",
+   "model": "Uno",
+   "generation": "I (146)",
+   "years": "1983-1995",
+   "body": "hatchback",
+   "text": "Fiat Uno (1983–1995)"
+  },
+  {
+   "index": 15,
+   "make": "Fiat",
+   "model": "Cinquecento",
+   "generation": "I (170)",
+   "years": "1991-1998",
+   "body": "hatchback",
+   "text": "Fiat Cinquecento (1991–1998)"
+  },
+  {
+   "index": 16,
+   "make": "Fiat",
+   "model": "Seicento",
+   "generation": "I (187)",
+   "years": "1998-2010",
+   "body": "hatchback",
+   "text": "Fiat Seicento (1998–2010)"
+  },
+  {
+   "index": 17,
+   "make": "Fiat",
+   "model": "Multipla",
+   "generation": "I (186)",
+   "years": "1998-2010",
+   "body": "mpv",
+   "text": "Fiat Multipla (1998–2010)"
+  },
+  {
+   "index": 18,
+   "make": "Fiat",
+   "model": "Bravo",
+   "generation": "II (198)",
+   "years": "2007-2014",
+   "body": "hatchback",
+   "text": "Fiat Bravo (2007–2014)"
+  },
+  {
+   "index": 19,
+   "make": "Fiat",
+   "model": "Doblò",
+   "generation": "II (263)",
+   "years": "2010-2022",
+   "body": "mpv",
+   "text": "Fiat Doblò (2010–2022)"
+  },
+  {
+   "index": 20,
+   "make": "Fiat",
+   "model": "Ducato",
+   "generation": "III (250)",
+   "years": "2006-present",
+   "body": "van",
+   "text": "Fiat Ducato (2006–present)"
+  },
+  {
+   "index": 21,
+   "make": "Fiat",
+   "model": "124 Spider",
+   "generation": "I",
+   "years": "1966-1985",
+   "body": "convertible",
+   "text": "Fiat 124 Spider (1966–1985)"
+  },
+  {
+   "index": 22,
+   "make": "Fiat",
+   "model": "124 Spider",
+   "generation": "II (348)",
+   "years": "2016-2020",
+   "body": "convertible",
+   "text": "Fiat 124 Spider (2016–2020)"
+  },
+  {
+   "index": 23,
+   "make": "Abarth",
+   "model": "595",
+   "generation": "I",
+   "years": "2008-present",
+   "body": "hatchback",
+   "text": "Abarth 595 (2008–present)"
+  },
+  {
+   "index": 24,
+   "make": "Autobianchi",
+   "model": "A112",
+   "generation": "I",
+   "years": "1969-1986",
+   "body": "hatchback",
+   "text": "Autobianchi A112 (1969–1986)"
+  },
+  {
+   "index": 25,
+   "make": "Piaggio",
+   "model": "Ape",
+   "generation": "Ape TM / Ape 50",
+   "years": "1964-present",
+   "body": "three-wheeler",
+   "text": "Piaggio Ape (1964–present)"
+  },
+  {
+   "index": 26,
+   "make": "Lancia",
+   "model": "Ypsilon",
+   "generation": "II (843)",
+   "years": "2003-2011",
+   "body": "hatchback",
+   "text": "Lancia Ypsilon (2003–2011)"
+  },
+  {
+   "index": 27,
+   "make": "Lancia",
+   "model": "Ypsilon",
+   "generation": "III (846)",
+   "years": "2011-2024",
+   "body": "hatchback",
+   "text": "Lancia Ypsilon (2011–2024)"
+  },
+  {
+   "index": 28,
+   "make": "Lancia",
+   "model": "Ypsilon",
+   "generation": "IV",
+   "years": "2024-present",
+   "body": "hatchback",
+   "text": "Lancia Ypsilon (2024–present)"
+  },
+  {
+   "index": 29,
+   "make": "Lancia",
+   "model": "Delta",
+   "generation": "I HF Integrale",
+   "years": "1987-1994",
+   "body": "hatchback",
+   "text": "Lancia Delta (1987–1994)"
+  },
+  {
+   "index": 30,
+   "make": "Lancia",
+   "model": "Delta",
+   "generation": "III (844)",
+   "years": "2008-2014",
+   "body": "hatchback",
+   "text": "Lancia Delta (2008–2014)"
+  },
+  {
+   "index": 31,
+   "make": "Lancia",
+   "model": "Fulvia",
+   "generation": "Coupé",
+   "years": "1965-1976",
+   "body": "coupe",
+   "text": "Lancia Fulvia (1965–1976)"
+  },
+  {
+   "index": 32,
+   "make": "Lancia",
+   "model": "Y10",
+   "generation": "I",
+   "years": "1985-1995",
+   "body": "hatchback",
+   "text": "Lancia Y10 (1985–1995)"
+  },
+  {
+   "index": 33,
+   "make": "Alfa Romeo",
+   "model": "Giulietta",
+   "generation": "III (940)",
+   "years": "2010-2020",
+   "body": "hatchback",
+   "text": "Alfa Romeo Giulietta (2010–2020)"
+  },
+  {
+   "index": 34,
+   "make": "Alfa Romeo",
+   "model": "Giulia",
+   "generation": "IV (952)",
+   "years": "2015-present",
+   "body": "sedan",
+   "text": "Alfa Romeo Giulia (2015–present)"
+  },
+  {
+   "index": 35,
+   "make": "Alfa Romeo",
+   "model": "Stelvio",
+   "generation": "I (949)",
+   "years": "2016-present",
+   "body": "suv",
+   "text": "Alfa Romeo Stelvio (2016–present)"
+  },
+  {
+   "index": 36,
+   "make": "Alfa Romeo",
+   "model": "Tonale",
+   "generation": "I",
+   "years": "2022-present",
+   "body": "suv",
+   "text": "Alfa Romeo Tonale (2022–present)"
+  },
+  {
+   "index": 37,
+   "make": "Alfa Romeo",
+   "model": "Junior",
+   "generation": "I",
+   "years": "2024-present",
+   "body": "suv",
+   "text": "Alfa Romeo Junior (2024–present)"
+  },
+  {
+   "index": 38,
+   "make": "Alfa Romeo",
+   "model": "MiTo",
+   "generation": "I (955)",
+   "years": "2008-2018",
+   "body": "hatchback",
+   "text": "Alfa Romeo MiTo (2008–2018)"
+  },
+  {
+   "index": 39,
+   "make": "Alfa Romeo",
+   "model": "147",
+   "generation": "I",
+   "years": "2000-2010",
+   "body": "hatchback",
+   "text": "Alfa Romeo 147 (2000–2010)"
+  },
+  {
+   "index": 40,
+   "make": "Alfa Romeo",
+   "model": "156",
+   "generation": "I",
+   "years": "1997-2007",
+   "body": "sedan",
+   "text": "Alfa Romeo 156 (1997–2007)"
+  },
+  {
+   "index": 41,
+   "make": "Alfa Romeo",
+   "model": "159",
+   "generation": "I",
+   "years": "2005-2011",
+   "body": "sedan",
+   "text": "Alfa Romeo 159 (2005–2011)"
+  },
+  {
+   "index": 42,
+   "make": "Alfa Romeo",
+   "model": "Brera",
+   "generation": "I",
+   "years": "2005-2010",
+   "body": "coupe",
+   "text": "Alfa Romeo Brera (2005–2010)"
+  },
+  {
+   "index": 43,
+   "make": "Alfa Romeo",
+   "model": "4C",
+   "generation": "I",
+   "years": "2013-2020",
+   "body": "coupe",
+   "text": "Alfa Romeo 4C (2013–2020)"
+  },
+  {
+   "index": 44,
+   "make": "Alfa Romeo",
+   "model": "Spider",
+   "generation": "Duetto (105)",
+   "years": "1966-1993",
+   "body": "convertible",
+   "text": "Alfa Romeo Spider (1966–1993)"
+  },
+  {
+   "index": 45,
+   "make": "Alfa Romeo",
+   "model": "Giulia Sprint GT",
+   "generation": "I",
+   "years": "1963-1976",
+   "body": "coupe",
+   "text": "Alfa Romeo Giulia Sprint GT (1963–1976)"
+  },
+  {
+   "index": 46,
+   "make": "Alfa Romeo",
+   "model": "Alfasud",
+   "generation": "I",
+   "years": "1972-1989",
+   "body": "sedan",
+   "text": "Alfa Romeo Alfasud (1972–1989)"
+  },
+  {
+   "index": 47,
+   "make": "Jeep",
+   "model": "Renegade",
+   "generation": "I (BU)",
+   "years": "2014-present",
+   "body": "suv",
+   "text": "Jeep Renegade (2014–present)"
+  },
+  {
+   "index": 48,
+   "make": "Jeep",
+   "model": "Compass",
+   "generation": "II (MP)",
+   "years": "2017-present",
+   "body": "suv",
+   "text": "Jeep Compass (2017–present)"
+  },
+  {
+   "index": 49,
+   "make": "Jeep",
+   "model": "Avenger",
+   "generation": "I",
+   "years": "2023-present",
+   "body": "suv",
+   "text": "Jeep Avenger (2023–present)"
+  },
+  {
+   "index": 50,
+   "make": "Jeep",
+   "model": "Wrangler",
+   "generation": "JL",
+   "years": "2018-present",
+   "body": "suv",
+   "text": "Jeep Wrangler (2018–present)"
+  },
+  {
+   "index": 51,
+   "make": "Jeep",
+   "model": "Grand Cherokee",
+   "generation": "IV (WK2)",
+   "years": "2010-2021",
+   "body": "suv",
+   "text": "Jeep Grand Cherokee (2010–2021)"
+  },
+  {
+   "index": 52,
+   "make": "Volkswagen",
+   "model": "Golf",
+   "generation": "I (Mk1)",
+   "years": "1974-1983",
+   "body": "hatchback",
+   "text": "Volkswagen Golf (1974–1983)"
+  },
+  {
+   "index": 53,
+   "make": "Volkswagen",
+   "model": "Golf",
+   "generation": "IV (Mk4)",
+   "years": "1997-2003",
+   "body": "hatchback",
+   "text": "Volkswagen Golf (1997–2003)"
+  },
+  {
+   "index": 54,
+   "make": "Volkswagen",
+   "model": "Golf",
+   "generation": "V (Mk5)",
+   "years": "2003-2008",
+   "body": "hatchback",
+   "text": "Volkswagen Golf (2003–2008)"
+  },
+  {
+   "index": 55,
+   "make": "Volkswagen",
+   "model": "Golf",
+   "generation": "VI (Mk6)",
+   "years": "2008-2012",
+   "body": "hatchback",
+   "text": "Volkswagen Golf (2008–2012)"
+  },
+  {
+   "index": 56,
+   "make": "Volkswagen",
+   "model": "Golf",
+   "generation": "VII (Mk7)",
+   "years": "2012-2019",
+   "body": "hatchback",
+   "text": "Volkswagen Golf (2012–2019)"
+  },
+  {
+   "index": 57,
+   "make": "Volkswagen",
+   "model": "Golf",
+   "generation": "VIII (Mk8)",
+   "years": "2019-present",
+   "body": "hatchback",
+   "text": "Volkswagen Golf (2019–present)"
+  },
+  {
+   "index": 58,
+   "make": "Volkswagen",
+   "model": "Polo",
+   "generation": "IV (9N)",
+   "years": "2001-2009",
+   "body": "hatchback",
+   "text": "Volkswagen Polo (2001–2009)"
+  },
+  {
+   "index": 59,
+   "make": "Volkswagen",
+   "model": "Polo",
+   "generation": "V (6R)",
+   "years": "2009-2017",
+   "body": "hatchback",
+   "text": "Volkswagen Polo (2009–2017)"
+  },
+  {
+   "index": 60,
+   "make": "Volkswagen",
+   "model": "Polo",
+   "generation": "VI (AW)",
+   "years": "2017-present",
+   "body": "hatchback",
+   "text": "Volkswagen Polo (2017–present)"
+  },
+  {
+   "index": 61,
+   "make": "Volkswagen",
+   "model": "Up!",
+   "generation": "I",
+   "years": "2011-2023",
+   "body": "hatchback",
+   "text": "Volkswagen Up! (2011–2023)"
+  },
+  {
+   "index": 62,
+   "make": "Volkswagen",
+   "model": "T-Roc",
+   "generation": "I",
+   "years": "2017-present",
+   "body": "suv",
+   "text": "Volkswagen T-Roc (2017–present)"
+  },
+  {
+   "index": 63,
+   "make": "Volkswagen",
+   "model": "T-Cross",
+   "generation": "I",
+   "years": "2018-present",
+   "body": "suv",
+   "text": "Volkswagen T-Cross (2018–present)"
+  },
+  {
+   "index": 64,
+   "make": "Volkswagen",
+   "model": "Tiguan",
+   "generation": "II",
+   "years": "2016-2023",
+   "body": "suv",
+   "text": "Volkswagen Tiguan (2016–2023)"
+  },
+  {
+   "index": 65,
+   "make": "Volkswagen",
+   "model": "Tiguan",
+   "generation": "III",
+   "years": "2024-present",
+   "body": "suv",
+   "text": "Volkswagen Tiguan (2024–present)"
+  },
+  {
+   "index": 66,
+   "make": "Volkswagen",
+   "model": "Passat",
+   "generation": "B8",
+   "years": "2014-2023",
+   "body": "wagon",
+   "text": "Volkswagen Passat (2014–2023)"
+  },
+  {
+   "index": 67,
+   "make": "Volkswagen",
+   "model": "ID.3",
+   "generation": "I",
+   "years": "2019-present",
+   "body": "hatchback",
+   "text": "Volkswagen ID.3 (2019–present)"
+  },
+  {
+   "index": 68,
+   "make": "Volkswagen",
+   "model": "Maggiolino (Beetle)",
+   "generation": "Type 1",
+   "years": "1938-2003",
+   "body": "hatchback",
+   "text": "Volkswagen Maggiolino (Beetle) (1938–2003)"
+  },
+  {
+   "index": 69,
+   "make": "Volkswagen",
+   "model": "Transporter",
+   "generation": "T1 (Bulli)",
+   "years": "1950-1967",
+   "body": "van",
+   "text": "Volkswagen Transporter (1950–1967)"
+  },
+  {
+   "index": 70,
+   "make": "Volkswagen",
+   "model": "Transporter",
+   "generation": "T6",
+   "years": "2015-2024",
+   "body": "van",
+   "text": "Volkswagen Transporter (2015–2024)"
+  },
+  {
+   "index": 71,
+   "make": "Renault",
+   "model": "Clio",
+   "generation": "III",
+   "years": "2005-2012",
+   "body": "hatchback",
+   "text": "Renault Clio (2005–2012)"
+  },
+  {
+   "index": 72,
+   "make": "Renault",
+   "model": "Clio",
+   "generation": "IV",
+   "years": "2012-2019",
+   "body": "hatchback",
+   "text": "Renault Clio (2012–2019)"
+  },
+  {
+   "index": 73,
+   "make": "Renault",
+   "model": "Clio",
+   "generation": "V",
+   "years": "2019-present",
+   "body": "hatchback",
+   "text": "Renault Clio (2019–present)"
+  },
+  {
+   "index": 74,
+   "make": "Renault",
+   "model": "Captur",
+   "generation": "I",
+   "years": "2013-2019",
+   "body": "suv",
+   "text": "Renault Captur (2013–2019)"
+  },
+  {
+   "index": 75,
+   "make": "Renault",
+   "model": "Captur",
+   "generation": "II",
+   "years": "2019-present",
+   "body": "suv",
+   "text": "Renault Captur (2019–present)"
+  },
+  {
+   "index": 76,
+   "make": "Renault",
+   "model": "Megane",
+   "generation": "IV",
+   "years": "2015-2023",
+   "body": "hatchback",
+   "text": "Renault Megane (2015–2023)"
+  },
+  {
+   "index": 77,
+   "make": "Renault",
+   "model": "Twingo",
+   "generation": "I",
+   "years": "1993-2007",
+   "body": "hatchback",
+   "text": "Renault Twingo (1993–2007)"
+  },
+  {
+   "index": 78,
+   "make": "Renault",
+   "model": "Twingo",
+   "generation": "III",
+   "years": "2014-2024",
+   "body": "hatchback",
+   "text": "Renault Twingo (2014–2024)"
+  },
+  {
+   "index": 79,
+   "make": "Renault",
+   "model": "Kadjar",
+   "generation": "I",
+   "years": "2015-2022",
+   "body": "suv",
+   "text": "Renault Kadjar (2015–2022)"
+  },
+  {
+   "index": 80,
+   "make": "Renault",
+   "model": "Zoe",
+   "generation": "I",
+   "years": "2012-2024",
+   "body": "hatchback",
+   "text": "Renault Zoe (2012–2024)"
+  },
+  {
+   "index": 81,
+   "make": "Renault",
+   "model": "4",
+   "generation": "R4",
+   "years": "1961-1992",
+   "body": "hatchback",
+   "text": "Renault 4 (1961–1992)"
+  },
+  {
+   "index": 82,
+   "make": "Renault",
+   "model": "5",
+   "generation": "R5",
+   "years": "1972-1985",
+   "body": "hatchback",
+   "text": "Renault 5 (1972–1985)"
+  },
+  {
+   "index": 83,
+   "make": "Renault",
+   "model": "5 E-Tech",
+   "generation": "I",
+   "years": "2024-present",
+   "body": "hatchback",
+   "text": "Renault 5 E-Tech (2024–present)"
+  },
+  {
+   "index": 84,
+   "make": "Dacia",
+   "model": "Sandero",
+   "generation": "II",
+   "years": "2012-2020",
+   "body": "hatchback",
+   "text": "Dacia Sandero (2012–2020)"
+  },
+  {
+   "index": 85,
+   "make": "Dacia",
+   "model": "Sandero",
+   "generation": "III",
+   "years": "2020-present",
+   "body": "hatchback",
+   "text": "Dacia Sandero (2020–present)"
+  },
+  {
+   "index": 86,
+   "make": "Dacia",
+   "model": "Duster",
+   "generation": "II",
+   "years": "2017-2024",
+   "body": "suv",
+   "text": "Dacia Duster (2017–2024)"
+  },
+  {
+   "index": 87,
+   "make": "Dacia",
+   "model": "Duster",
+   "generation": "III",
+   "years": "2024-present",
+   "body": "suv",
+   "text": "Dacia Duster (2024–present)"
+  },
+  {
+   "index": 88,
+   "make": "Dacia",
+   "model": "Jogger",
+   "generation": "I",
+   "years": "2021-present",
+   "body": "wagon",
+   "text": "Dacia Jogger (2021–present)"
+  },
+  {
+   "index": 89,
+   "make": "Dacia",
+   "model": "Spring",
+   "generation": "I",
+   "years": "2021-present",
+   "body": "hatchback",
+   "text": "Dacia Spring (2021–present)"
+  },
+  {
+   "index": 90,
+   "make": "Citroën",
+   "model": "C3",
+   "generation": "II",
+   "years": "2009-2016",
+   "body": "hatchback",
+   "text": "Citroën C3 (2009–2016)"
+  },
+  {
+   "index": 91,
+   "make": "Citroën",
+   "model": "C3",
+   "generation": "III",
+   "years": "2016-2024",
+   "body": "hatchback",
+   "text": "Citroën C3 (2016–2024)"
+  },
+  {
+   "index": 92,
+   "make": "Citroën",
+   "model": "C3",
+   "generation": "IV",
+   "years": "2024-present",
+   "body": "hatchback",
+   "text": "Citroën C3 (2024–present)"
+  },
+  {
+   "index": 93,
+   "make": "Citroën",
+   "model": "C1",
+   "generation": "II",
+   "years": "2014-2022",
+   "body": "hatchback",
+   "text": "Citroën C1 (2014–2022)"
+  },
+  {
+   "index": 94,
+   "make": "Citroën",
+   "model": "C4 Cactus",
+   "generation": "I",
+   "years": "2014-2020",
+   "body": "suv",
+   "text": "Citroën C4 Cactus (2014–2020)"
+  },
+  {
+   "index": 95,
+   "make": "Citroën",
+   "model": "C4",
+   "generation": "III",
+   "years": "2020-present",
+   "body": "hatchback",
+   "text": "Citroën C4 (2020–present)"
+  },
+  {
+   "index": 96,
+   "make": "Citroën",
+   "model": "C3 Aircross",
+   "generation": "I",
+   "years": "2017-present",
+   "body": "suv",
+   "text": "Citroën C3 Aircross (2017–present)"
+  },
+  {
+   "index": 97,
+   "make": "Citroën",
+   "model": "Berlingo",
+   "generation": "III",
+   "years": "2018-present",
+   "body": "mpv",
+   "text": "Citroën Berlingo (2018–present)"
+  },
+  {
+   "index": 98,
+   "make": "Citroën",
+   "model": "2CV",
+   "generation": "I",
+   "years": "1948-1990",
+   "body": "sedan",
+   "text": "Citroën 2CV (1948–1990)"
+  },
+  {
+   "index": 99,
+   "make": "Citroën",
+   "model": "Ami",
+   "generation": "I",
+   "years": "2020-present",
+   "body": "quadricycle",
+   "text": "Citroën Ami (2020–present)"
+  },
+  {
+   "index": 100,
+   "make": "Peugeot",
+   "model": "108",
+   "generation": "I",
+   "years": "2014-2021",
+   "body": "hatchback",
+   "text": "Peugeot 108 (2014–2021)"
+  },
+  {
+   "index": 101,
+   "make": "Peugeot",
+   "model": "205",
+   "generation": "I",
+   "years": "1983-1998",
+   "body": "hatchback",
+   "text": "Peugeot 205 (1983–1998)"
+  },
+  {
+   "index": 102,
+   "make": "Peugeot",
+   "model": "207",
+   "generation": "I",
+   "years": "2006-2014",
+   "body": "hatchback",
+   "text": "Peugeot 207 (2006–2014)"
+  },
+  {
+   "index": 103,
+   "make": "Peugeot",
+   "model": "208",
+   "generation": "I",
+   "years": "2012-2019",
+   "body": "hatchback",
+   "text": "Peugeot 208 (2012–2019)"
+  },
+  {
+   "index": 104,
+   "make": "Peugeot",
+   "model": "208",
+   "generation": "II",
+   "years": "2019-present",
+   "body": "hatchback",
+   "text": "Peugeot 208 (2019–present)"
+  },
+  {
+   "index": 105,
+   "make": "Peugeot",
+   "model": "2008",
+   "generation": "I",
+   "years": "2013-2019",
+   "body": "suv",
+   "text": "Peugeot 2008 (2013–2019)"
+  },
+  {
+   "index": 106,
+   "make": "Peugeot",
+   "model": "2008",
+   "generation": "II",
+   "years": "2019-present",
+   "body": "suv",
+   "text": "Peugeot 2008 (2019–present)"
+  },
+  {
+   "index": 107,
+   "make": "Peugeot",
+   "model": "308",
+   "generation": "II (T9)",
+   "years": "2013-2021",
+   "body": "hatchback",
+   "text": "Peugeot 308 (2013–2021)"
+  },
+  {
+   "index": 108,
+   "make": "Peugeot",
+   "model": "308",
+   "generation": "III",
+   "years": "2021-present",
+   "body": "hatchback",
+   "text": "Peugeot 308 (2021–present)"
+  },
+  {
+   "index": 109,
+   "make": "Peugeot",
+   "model": "3008",
+   "generation": "II",
+   "years": "2016-2023",
+   "body": "suv",
+   "text": "Peugeot 3008 (2016–2023)"
+  },
+  {
+   "index": 110,
+   "make": "Peugeot",
+   "model": "3008",
+   "generation": "III",
+   "years": "2024-present",
+   "body": "suv",
+   "text": "Peugeot 3008 (2024–present)"
+  },
+  {
+   "index": 111,
+   "make": "Ford",
+   "model": "Fiesta",
+   "generation": "VI",
+   "years": "2008-2017",
+   "body": "hatchback",
+   "text": "Ford Fiesta (2008–2017)"
+  },
+  {
+   "index": 112,
+   "make": "Ford",
+   "model": "Fiesta",
+   "generation": "VII",
+   "years": "2017-2023",
+   "body": "hatchback",
+   "text": "Ford Fiesta (2017–2023)"
+  },
+  {
+   "index": 113,
+   "make": "Ford",
+   "model": "Focus",
+   "generation": "III",
+   "years": "2010-2018",
+   "body": "hatchback",
+   "text": "Ford Focus (2010–2018)"
+  },
+  {
+   "index": 114,
+   "make": "Ford",
+   "model": "Focus",
+   "generation": "IV",
+   "years": "2018-2025",
+   "body": "hatchback",
+   "text": "Ford Focus (2018–2025)"
+  },
+  {
+   "index": 115,
+   "make": "Ford",
+   "model": "Puma",
+   "generation": "II",
+   "years": "2019-present",
+   "body": "suv",
+   "text": "Ford Puma (2019–present)"
+  },
+  {
+   "index": 116,
+   "make": "Ford",
+   "model": "Kuga",
+   "generation": "II",
+   "years": "2012-2019",
+   "body": "suv",
+   "text": "Ford Kuga (2012–2019)"
+  },
+  {
+   "index": 117,
+   "make": "Ford",
+   "model": "Kuga",
+   "generation": "III",
+   "years": "2019-present",
+   "body": "suv",
+   "text": "Ford Kuga (2019–present)"
+  },
+  {
+   "index": 118,
+   "make": "Ford",
+   "model": "Ka",
+   "generation": "II",
+   "years": "2008-2016",
+   "body": "hatchback",
+   "text": "Ford Ka (2008–2016)"
+  },
+  {
+   "index": 119,
+   "make": "Ford",
+   "model": "EcoSport",
+   "generation": "II",
+   "years": "2013-2023",
+   "body": "suv",
+   "text": "Ford EcoSport (2013–2023)"
+  },
+  {
+   "index": 120,
+   "make": "Ford",
+   "model": "Mustang",
+   "generation": "I",
+   "years": "1964-1973",
+   "body": "coupe",
+   "text": "Ford Mustang (1964–1973)"
+  },
+  {
+   "index": 121,
+   "make": "Ford",
+   "model": "Mustang",
+   "generation": "VI (S550)",
+   "years": "2015-2023",
+   "body": "coupe",
+   "text": "Ford Mustang (2015–2023)"
+  },
+  {
+   "index": 122,
+   "make": "Toyota",
+   "model": "Aygo",
+   "generation": "II",
+   "years": "2014-2021",
+   "body": "hatchback",
+   "text": "Toyota Aygo (2014–2021)"
+  },
+  {
+   "index": 123,
+   "make": "Toyota",
+   "model": "Aygo X",
+   "generation": "I",
+   "years": "2022-present",
+   "body": "hatchback",
+   "text": "Toyota Aygo X (2022–present)"
+  },
+  {
+   "index": 124,
+   "make": "Toyota",
+   "model": "Yaris",
+   "generation": "III",
+   "years": "2011-2020",
+   "body": "hatchback",
+   "text": "Toyota Yaris (2011–2020)"
+  },
+  {
+   "index": 125,
+   "make": "Toyota",
+   "model": "Yaris",
+   "generation": "IV",
+   "years": "2020-present",
+   "body": "hatchback",
+   "text": "Toyota Yaris (2020–present)"
+  },
+  {
+   "index": 126,
+   "make": "Toyota",
+   "model": "Yaris Cross",
+   "generation": "I",
+   "years": "2020-present",
+   "body": "suv",
+   "text": "Toyota Yaris Cross (2020–present)"
+  },
+  {
+   "index": 127,
+   "make": "Toyota",
+   "model": "Corolla",
+   "generation": "E210",
+   "years": "2018-present",
+   "body": "hatchback",
+   "text": "Toyota Corolla (2018–present)"
+  },
+  {
+   "index": 128,
+   "make": "Toyota",
+   "model": "C-HR",
+   "generation": "I",
+   "years": "2016-2023",
+   "body": "suv",
+   "text": "Toyota C-HR (2016–2023)"
+  },
+  {
+   "index": 129,
+   "make": "Toyota",
+   "model": "RAV4",
+   "generation": "V",
+   "years": "2018-present",
+   "body": "suv",
+   "text": "Toyota RAV4 (2018–present)"
+  },
+  {
+   "index": 130,
+   "make": "Toyota",
+   "model": "Supra",
+   "generation": "A90",
+   "years": "2019-present",
+   "body": "coupe",
+   "text": "Toyota Supra (2019–present)"
+  },
+  {
+   "index": 131,
+   "make": "Opel",
+   "model": "Corsa",
+   "generation": "D",
+   "years": "2006-2014",
+   "body": "hatchback",
+   "text": "Opel Corsa (2006–2014)"
+  },
+  {
+   "index": 132,
+   "make": "Opel",
+   "model": "Corsa",
+   "generation": "E",
+   "years": "2014-2019",
+   "body": "hatchback",
+   "text": "Opel Corsa (2014–2019)"
+  },
+  {
+   "index": 133,
+   "make": "Opel",
+   "model": "Corsa",
+   "generation": "F",
+   "years": "2019-present",
+   "body": "hatchback",
+   "text": "Opel Corsa (2019–present)"
+  },
+  {
+   "index": 134,
+   "make": "Opel",
+   "model": "Astra",
+   "generation": "K",
+   "years": "2015-2021",
+   "body": "hatchback",
+   "text": "Opel Astra (2015–2021)"
+  },
+  {
+   "index": 135,
+   "make": "Opel",
+   "model": "Astra",
+   "generation": "L",
+   "years": "2021-present",
+   "body": "hatchback",
+   "text": "Opel Astra (2021–present)"
+  },
+  {
+   "index": 136,
+   "make": "Opel",
+   "model": "Mokka",
+   "generation": "B",
+   "years": "2020-present",
+   "body": "suv",
+   "text": "Opel Mokka (2020–present)"
+  },
+  {
+   "index": 137,
+   "make": "Opel",
+   "model": "Crossland",
+   "generation": "I",
+   "years": "2017-2024",
+   "body": "suv",
+   "text": "Opel Crossland (2017–2024)"
+  },
+  {
+   "index": 138,
+   "make": "Opel",
+   "model": "Grandland",
+   "generation": "I",
+   "years": "2017-present",
+   "body": "suv",
+   "text": "Opel Grandland (2017–present)"
+  },
+  {
+   "index": 139,
+   "make": "Opel",
+   "model": "Adam",
+   "generation": "I",
+   "years": "2012-2019",
+   "body": "hatchback",
+   "text": "Opel Adam (2012–2019)"
+  },
+  {
+   "index": 140,
+   "make": "Audi",
+   "model": "A1",
+   "generation": "8X",
+   "years": "2010-2018",
+   "body": "hatchback",
+   "text": "Audi A1 (2010–2018)"
+  },
+  {
+   "index": 141,
+   "make": "Audi",
+   "model": "A1",
+   "generation": "GB",
+   "years": "2018-2025",
+   "body": "hatchback",
+   "text": "Audi A1 (2018–2025)"
+  },
+  {
+   "index": 142,
+   "make": "Audi",
+   "model": "A3",
+   "generation": "8V",
+   "years": "2012-2020",
+   "body": "hatchback",
+   "text": "Audi A3 (2012–2020)"
+  },
+  {
+   "index": 143,
+   "make": "Audi",
+   "model": "A3",
+   "generation": "8Y",
+   "years": "2020-present",
+   "body": "hatchback",
+   "text": "Audi A3 (2020–present)"
+  },
+  {
+   "index": 144,
+   "make": "Audi",
+   "model": "A4",
+   "generation": "B8",
+   "years": "2007-2015",
+   "body": "sedan",
+   "text": "Audi A4 (2007–2015)"
+  },
+  {
+   "index": 145,
+   "make": "Audi",
+   "model": "A4",
+   "generation": "B9",
+   "years": "2015-present",
+   "body": "sedan",
+   "text": "Audi A4 (2015–present)"
+  },
+  {
+   "index": 146,
+   "make": "Audi",
+   "model": "A5",
+   "generation": "F5",
+   "years": "2016-present",
+   "body": "coupe",
+   "text": "Audi A5 (2016–present)"
+  },
+  {
+   "index": 147,
+   "make": "Audi",
+   "model": "A6",
+   "generation": "C8",
+   "years": "2018-present",
+   "body": "sedan",
+   "text": "Audi A6 (2018–present)"
+  },
+  {
+   "index": 148,
+   "make": "Audi",
+   "model": "Q2",
+   "generation": "I",
+   "years": "2016-present",
+   "body": "suv",
+   "text": "Audi Q2 (2016–present)"
+  },
+  {
+   "index": 149,
+   "make": "Audi",
+   "model": "Q3",
+   "generation": "II (F3)",
+   "years": "2018-present",
+   "body": "suv",
+   "text": "Audi Q3 (2018–present)"
+  },
+  {
+   "index": 150,
+   "make": "Audi",
+   "model": "Q5",
+   "generation": "II (FY)",
+   "years": "2016-2024",
+   "body": "suv",
+   "text": "Audi Q5 (2016–2024)"
+  },
+  {
+   "index": 151,
+   "make": "Audi",
+   "model": "TT",
+   "generation": "8J",
+   "years": "2006-2014",
+   "body": "coupe",
+   "text": "Audi TT (2006–2014)"
+  },
+  {
+   "index": 152,
+   "make": "Audi",
+   "model": "TT",
+   "generation": "8S",
+   "years": "2014-2023",
+   "body": "coupe",
+   "text": "Audi TT (2014–2023)"
+  },
+  {
+   "index": 153,
+   "make": "Audi",
+   "model": "R8",
+   "generation": "I",
+   "years": "2006-2023",
+   "body": "coupe",
+   "text": "Audi R8 (2006–2023)"
+  },
+  {
+   "index": 154,
+   "make": "BMW",
+   "model": "Serie 1",
+   "generation": "F20",
+   "years": "2011-2019",
+   "body": "hatchback",
+   "text": "BMW Serie 1 (2011–2019)"
+  },
+  {
+   "index": 155,
+   "make": "BMW",
+   "model": "Serie 1",
+   "generation": "F40",
+   "years": "2019-2024",
+   "body": "hatchback",
+   "text": "BMW Serie 1 (2019–2024)"
+  },
+  {
+   "index": 156,
+   "make": "BMW",
+   "model": "Serie 3",
+   "generation": "F30",
+   "years": "2012-2019",
+   "body": "sedan",
+   "text": "BMW Serie 3 (2012–2019)"
+  },
+  {
+   "index": 157,
+   "make": "BMW",
+   "model": "Serie 3",
+   "generation": "G20",
+   "years": "2018-present",
+   "body": "sedan",
+   "text": "BMW Serie 3 (2018–present)"
+  },
+  {
+   "index": 158,
+   "make": "BMW",
+   "model": "Serie 5",
+   "generation": "G30",
+   "years": "2016-2023",
+   "body": "sedan",
+   "text": "BMW Serie 5 (2016–2023)"
+  },
+  {
+   "index": 159,
+   "make": "BMW",
+   "model": "X1",
+   "generation": "F48",
+   "years": "2015-2022",
+   "body": "suv",
+   "text": "BMW X1 (2015–2022)"
+  },
+  {
+   "index": 160,
+   "make": "BMW",
+   "model": "X1",
+   "generation": "U11",
+   "years": "2022-present",
+   "body": "suv",
+   "text": "BMW X1 (2022–present)"
+  },
+  {
+   "index": 161,
+   "make": "BMW",
+   "model": "X3",
+   "generation": "G01",
+   "years": "2017-present",
+   "body": "suv",
+   "text": "BMW X3 (2017–present)"
+  },
+  {
+   "index": 162,
+   "make": "BMW",
+   "model": "X5",
+   "generation": "G05",
+   "years": "2018-present",
+   "body": "suv",
+   "text": "BMW X5 (2018–present)"
+  },
+  {
+   "index": 163,
+   "make": "BMW",
+   "model": "Z4",
+   "generation": "G29",
+   "years": "2018-present",
+   "body": "convertible",
+   "text": "BMW Z4 (2018–present)"
+  },
+  {
+   "index": 164,
+   "make": "BMW",
+   "model": "2002",
+   "generation": "E10",
+   "years": "1966-1976",
+   "body": "sedan",
+   "text": "BMW 2002 (1966–1976)"
+  },
+  {
+   "index": 165,
+   "make": "BMW",
+   "model": "M3",
+   "generation": "E30",
+   "years": "1986-1991",
+   "body": "coupe",
+   "text": "BMW M3 (1986–1991)"
+  },
+  {
+   "index": 166,
+   "make": "Mini",
+   "model": "Cooper",
+   "generation": "R56",
+   "years": "2006-2013",
+   "body": "hatchback",
+   "text": "Mini Cooper (2006–2013)"
+  },
+  {
+   "index": 167,
+   "make": "Mini",
+   "model": "Cooper",
+   "generation": "F56",
+   "years": "2014-2023",
+   "body": "hatchback",
+   "text": "Mini Cooper (2014–2023)"
+  },
+  {
+   "index": 168,
+   "make": "Mini",
+   "model": "Classic Mini",
+   "generation": "ADO15",
+   "years": "1959-2000",
+   "body": "hatchback",
+   "text": "Mini Classic Mini (1959–2000)"
+  },
+  {
+   "index": 169,
+   "make": "Mercedes-Benz",
+   "model": "Classe A",
+   "generation": "W176",
+   "years": "2012-2018",
+   "body": "hatchback",
+   "text": "Mercedes-Benz Classe A (2012–2018)"
+  },
+  {
+   "index": 170,
+   "make": "Mercedes-Benz",
+   "model": "Classe A",
+   "generation": "W177",
+   "years": "2018-2025",
+   "body": "hatchback",
+   "text": "Mercedes-Benz Classe A (2018–2025)"
+  },
+  {
+   "index": 171,
+   "make": "Mercedes-Benz",
+   "model": "Classe C",
+   "generation": "W205",
+   "years": "2014-2021",
+   "body": "sedan",
+   "text": "Mercedes-Benz Classe C (2014–2021)"
+  },
+  {
+   "index": 172,
+   "make": "Mercedes-Benz",
+   "model": "Classe C",
+   "generation": "W206",
+   "years": "2021-present",
+   "body": "sedan",
+   "text": "Mercedes-Benz Classe C (2021–present)"
+  },
+  {
+   "index": 173,
+   "make": "Mercedes-Benz",
+   "model": "Classe E",
+   "generation": "W213",
+   "years": "2016-2023",
+   "body": "sedan",
+   "text": "Mercedes-Benz Classe E (2016–2023)"
+  },
+  {
+   "index": 174,
+   "make": "Mercedes-Benz",
+   "model": "CLA",
+   "generation": "C118",
+   "years": "2019-present",
+   "body": "sedan",
+   "text": "Mercedes-Benz CLA (2019–present)"
+  },
+  {
+   "index": 175,
+   "make": "Mercedes-Benz",
+   "model": "GLA",
+   "generation": "H247",
+   "years": "2020-present",
+   "body": "suv",
+   "text": "Mercedes-Benz GLA (2020–present)"
+  },
+  {
+   "index": 176,
+   "make": "Mercedes-Benz",
+   "model": "GLC",
+   "generation": "X253",
+   "years": "2015-2022",
+   "body": "suv",
+   "text": "Mercedes-Benz GLC (2015–2022)"
+  },
+  {
+   "index": 177,
+   "make": "Mercedes-Benz",
+   "model": "Classe G",
+   "generation": "W463",
+   "years": "1979-present",
+   "body": "suv",
+   "text": "Mercedes-Benz Classe G (1979–present)"
+  },
+  {
+   "index": 178,
+   "make": "Mercedes-Benz",
+   "model": "SL",
+   "generation": "R107",
+   "years": "1971-1989",
+   "body": "convertible",
+   "text": "Mercedes-Benz SL (1971–1989)"
+  },
+  {
+   "index": 179,
+   "make": "Mercedes-Benz",
+   "model": "AMG GT",
+   "generation": "C190",
+   "years": "2014-2023",
+   "body": "coupe",
+   "text": "Mercedes-Benz AMG GT (2014–2023)"
+  },
+  {
+   "index": 180,
+   "make": "Smart",
+   "model": "Fortwo",
+   "generation": "C451",
+   "years": "2007-2014",
+   "body": "hatchback",
+   "text": "Smart Fortwo (2007–2014)"
+  },
+  {
+   "index": 181,
+   "make": "Smart",
+   "model": "Fortwo",
+   "generation": "C453",
+   "years": "2014-2024",
+   "body": "hatchback",
+   "text": "Smart Fortwo (2014–2024)"
+  },
+  {
+   "index": 182,
+   "make": "Hyundai",
+   "model": "i10",
+   "generation": "II",
+   "years": "2013-2019",
+   "body": "hatchback",
+   "text": "Hyundai i10 (2013–2019)"
+  },
+  {
+   "index": 183,
+   "make": "Hyundai",
+   "model": "i10",
+   "generation": "III",
+   "years": "2019-present",
+   "body": "hatchback",
+   "text": "Hyundai i10 (2019–present)"
+  },
+  {
+   "index": 184,
+   "make": "Hyundai",
+   "model": "i20",
+   "generation": "III",
+   "years": "2020-present",
+   "body": "hatchback",
+   "text": "Hyundai i20 (2020–present)"
+  },
+  {
+   "index": 185,
+   "make": "Hyundai",
+   "model": "Tucson",
+   "generation": "TL",
+   "years": "2015-2020",
+   "body": "suv",
+   "text": "Hyundai Tucson (2015–2020)"
+  },
+  {
+   "index": 186,
+   "make": "Hyundai",
+   "model": "Tucson",
+   "generation": "NX4",
+   "years": "2020-present",
+   "body": "suv",
+   "text": "Hyundai Tucson (2020–present)"
+  },
+  {
+   "index": 187,
+   "make": "Hyundai",
+   "model": "Kona",
+   "generation": "I",
+   "years": "2017-2023",
+   "body": "suv",
+   "text": "Hyundai Kona (2017–2023)"
+  },
+  {
+   "index": 188,
+   "make": "Hyundai",
+   "model": "Bayon",
+   "generation": "I",
+   "years": "2021-present",
+   "body": "suv",
+   "text": "Hyundai Bayon (2021–present)"
+  },
+  {
+   "index": 189,
+   "make": "Hyundai",
+   "model": "Ioniq 5",
+   "generation": "I",
+   "years": "2021-present",
+   "body": "suv",
+   "text": "Hyundai Ioniq 5 (2021–present)"
+  },
+  {
+   "index": 190,
+   "make": "Kia",
+   "model": "Picanto",
+   "generation": "II",
+   "years": "2011-2017",
+   "body": "hatchback",
+   "text": "Kia Picanto (2011–2017)"
+  },
+  {
+   "index": 191,
+   "make": "Kia",
+   "model": "Picanto",
+   "generation": "III",
+   "years": "2017-present",
+   "body": "hatchback",
+   "text": "Kia Picanto (2017–present)"
+  },
+  {
+   "index": 192,
+   "make": "Kia",
+   "model": "Sportage",
+   "generation": "IV",
+   "years": "2015-2021",
+   "body": "suv",
+   "text": "Kia Sportage (2015–2021)"
+  },
+  {
+   "index": 193,
+   "make": "Kia",
+   "model": "Sportage",
+   "generation": "V",
+   "years": "2021-present",
+   "body": "suv",
+   "text": "Kia Sportage (2021–present)"
+  },
+  {
+   "index": 194,
+   "make": "Kia",
+   "model": "Stonic",
+   "generation": "I",
+   "years": "2017-present",
+   "body": "suv",
+   "text": "Kia Stonic (2017–present)"
+  },
+  {
+   "index": 195,
+   "make": "Kia",
+   "model": "Ceed",
+   "generation": "III",
+   "years": "2018-present",
+   "body": "hatchback",
+   "text": "Kia Ceed (2018–present)"
+  },
+  {
+   "index": 196,
+   "make": "Nissan",
+   "model": "Micra",
+   "generation": "K13",
+   "years": "2010-2016",
+   "body": "hatchback",
+   "text": "Nissan Micra (2010–2016)"
+  },
+  {
+   "index": 197,
+   "make": "Nissan",
+   "model": "Micra",
+   "generation": "K14",
+   "years": "2016-2023",
+   "body": "hatchback",
+   "text": "Nissan Micra (2016–2023)"
+  },
+  {
+   "index": 198,
+   "make": "Nissan",
+   "model": "Juke",
+   "generation": "I",
+   "years": "2010-2019",
+   "body": "suv",
+   "text": "Nissan Juke (2010–2019)"
+  },
+  {
+   "index": 199,
+   "make": "Nissan",
+   "model": "Juke",
+   "generation": "II",
+   "years": "2019-present",
+   "body": "suv",
+   "text": "Nissan Juke (2019–present)"
+  },
+  {
+   "index": 200,
+   "make": "Nissan",
+   "model": "Qashqai",
+   "generation": "J11",
+   "years": "2013-2021",
+   "body": "suv",
+   "text": "Nissan Qashqai (2013–2021)"
+  },
+  {
+   "index": 201,
+   "make": "Nissan",
+   "model": "Qashqai",
+   "generation": "J12",
+   "years": "2021-present",
+   "body": "suv",
+   "text": "Nissan Qashqai (2021–present)"
+  },
+  {
+   "index": 202,
+   "make": "Nissan",
+   "model": "Leaf",
+   "generation": "II",
+   "years": "2017-present",
+   "body": "hatchback",
+   "text": "Nissan Leaf (2017–present)"
+  },
+  {
+   "index": 203,
+   "make": "Nissan",
+   "model": "GT-R",
+   "generation": "R35",
+   "years": "2007-2024",
+   "body": "coupe",
+   "text": "Nissan GT-R (2007–2024)"
+  },
+  {
+   "index": 204,
+   "make": "Suzuki",
+   "model": "Ignis",
+   "generation": "III",
+   "years": "2016-present",
+   "body": "hatchback",
+   "text": "Suzuki Ignis (2016–present)"
+  },
+  {
+   "index": 205,
+   "make": "Suzuki",
+   "model": "Swift",
+   "generation": "AZ",
+   "years": "2017-2023",
+   "body": "hatchback",
+   "text": "Suzuki Swift (2017–2023)"
+  },
+  {
+   "index": 206,
+   "make": "Suzuki",
+   "model": "Vitara",
+   "generation": "IV (LY)",
+   "years": "2015-present",
+   "body": "suv",
+   "text": "Suzuki Vitara (2015–present)"
+  },
+  {
+   "index": 207,
+   "make": "Suzuki",
+   "model": "Jimny",
+   "generation": "III (JB43)",
+   "years": "1998-2018",
+   "body": "suv",
+   "text": "Suzuki Jimny (1998–2018)"
+  },
+  {
+   "index": 208,
+   "make": "Suzuki",
+   "model": "Jimny",
+   "generation": "IV (JB74)",
+   "years": "2018-present",
+   "body": "suv",
+   "text": "Suzuki Jimny (2018–present)"
+  },
+  {
+   "index": 209,
+   "make": "Skoda",
+   "model": "Fabia",
+   "generation": "III",
+   "years": "2014-2021",
+   "body": "hatchback",
+   "text": "Skoda Fabia (2014–2021)"
+  },
+  {
+   "index": 210,
+   "make": "Skoda",
+   "model": "Fabia",
+   "generation": "IV",
+   "years": "2021-present",
+   "body": "hatchback",
+   "text": "Skoda Fabia (2021–present)"
+  },
+  {
+   "index": 211,
+   "make": "Skoda",
+   "model": "Octavia",
+   "generation": "III (5E)",
+   "years": "2012-2020",
+   "body": "wagon",
+   "text": "Skoda Octavia (2012–2020)"
+  },
+  {
+   "index": 212,
+   "make": "Skoda",
+   "model": "Octavia",
+   "generation": "IV (NX)",
+   "years": "2019-present",
+   "body": "wagon",
+   "text": "Skoda Octavia (2019–present)"
+  },
+  {
+   "index": 213,
+   "make": "Skoda",
+   "model": "Kamiq",
+   "generation": "I",
+   "years": "2019-present",
+   "body": "suv",
+   "text": "Skoda Kamiq (2019–present)"
+  },
+  {
+   "index": 214,
+   "make": "Skoda",
+   "model": "Karoq",
+   "generation": "I",
+   "years": "2017-present",
+   "body": "suv",
+   "text": "Skoda Karoq (2017–present)"
+  },
+  {
+   "index": 215,
+   "make": "Skoda",
+   "model": "Kodiaq",
+   "generation": "I",
+   "years": "2016-present",
+   "body": "suv",
+   "text": "Skoda Kodiaq (2016–present)"
+  },
+  {
+   "index": 216,
+   "make": "Skoda",
+   "model": "Scala",
+   "generation": "I",
+   "years": "2019-present",
+   "body": "hatchback",
+   "text": "Skoda Scala (2019–present)"
+  },
+  {
+   "index": 217,
+   "make": "Skoda",
+   "model": "Superb",
+   "generation": "III",
+   "years": "2015-2023",
+   "body": "sedan",
+   "text": "Skoda Superb (2015–2023)"
+  },
+  {
+   "index": 218,
+   "make": "Seat",
+   "model": "Ibiza",
+   "generation": "IV (6J)",
+   "years": "2008-2017",
+   "body": "hatchback",
+   "text": "Seat Ibiza (2008–2017)"
+  },
+  {
+   "index": 219,
+   "make": "Seat",
+   "model": "Ibiza",
+   "generation": "V (6F)",
+   "years": "2017-present",
+   "body": "hatchback",
+   "text": "Seat Ibiza (2017–present)"
+  },
+  {
+   "index": 220,
+   "make": "Seat",
+   "model": "Leon",
+   "generation": "III (5F)",
+   "years": "2012-2020",
+   "body": "hatchback",
+   "text": "Seat Leon (2012–2020)"
+  },
+  {
+   "index": 221,
+   "make": "Seat",
+   "model": "Leon",
+   "generation": "IV (KL)",
+   "years": "2020-present",
+   "body": "hatchback",
+   "text": "Seat Leon (2020–present)"
+  },
+  {
+   "index": 222,
+   "make": "Seat",
+   "model": "Arona",
+   "generation": "I",
+   "years": "2017-present",
+   "body": "suv",
+   "text": "Seat Arona (2017–present)"
+  },
+  {
+   "index": 223,
+   "make": "Seat",
+   "model": "Ateca",
+   "generation": "I",
+   "years": "2016-present",
+   "body": "suv",
+   "text": "Seat Ateca (2016–present)"
+  },
+  {
+   "index": 224,
+   "make": "Cupra",
+   "model": "Formentor",
+   "generation": "I",
+   "years": "2020-present",
+   "body": "suv",
+   "text": "Cupra Formentor (2020–present)"
+  },
+  {
+   "index": 225,
+   "make": "Volvo",
+   "model": "XC40",
+   "generation": "I",
+   "years": "2017-present",
+   "body": "suv",
+   "text": "Volvo XC40 (2017–present)"
+  },
+  {
+   "index": 226,
+   "make": "Volvo",
+   "model": "XC60",
+   "generation": "II",
+   "years": "2017-present",
+   "body": "suv",
+   "text": "Volvo XC60 (2017–present)"
+  },
+  {
+   "index": 227,
+   "make": "Volvo",
+   "model": "XC90",
+   "generation": "II",
+   "years": "2015-present",
+   "body": "suv",
+   "text": "Volvo XC90 (2015–present)"
+  },
+  {
+   "index": 228,
+   "make": "Volvo",
+   "model": "V40",
+   "generation": "II",
+   "years": "2012-2019",
+   "body": "hatchback",
+   "text": "Volvo V40 (2012–2019)"
+  },
+  {
+   "index": 229,
+   "make": "Volvo",
+   "model": "V60",
+   "generation": "II",
+   "years": "2018-present",
+   "body": "wagon",
+   "text": "Volvo V60 (2018–present)"
+  },
+  {
+   "index": 230,
+   "make": "Volvo",
+   "model": "240",
+   "generation": "I",
+   "years": "1974-1993",
+   "body": "wagon",
+   "text": "Volvo 240 (1974–1993)"
+  },
+  {
+   "index": 231,
+   "make": "Tesla",
+   "model": "Model 3",
+   "generation": "I",
+   "years": "2017-present",
+   "body": "sedan",
+   "text": "Tesla Model 3 (2017–present)"
+  },
+  {
+   "index": 232,
+   "make": "Tesla",
+   "model": "Model Y",
+   "generation": "I",
+   "years": "2020-present",
+   "body": "suv",
+   "text": "Tesla Model Y (2020–present)"
+  },
+  {
+   "index": 233,
+   "make": "Tesla",
+   "model": "Model S",
+   "generation": "I",
+   "years": "2012-present",
+   "body": "sedan",
+   "text": "Tesla Model S (2012–present)"
+  },
+  {
+   "index": 234,
+   "make": "Polestar",
+   "model": "Polestar 2",
+   "generation": "I",
+   "years": "2019-present",
+   "body": "hatchback",
+   "text": "Polestar Polestar 2 (2019–present)"
+  },
+  {
+   "index": 235,
+   "make": "BYD",
+   "model": "Dolphin",
+   "generation": "I",
+   "years": "2021-present",
+   "body": "hatchback",
+   "text": "BYD Dolphin (2021–present)"
+  },
+  {
+   "index": 236,
+   "make": "MG",
+   "model": "ZS",
+   "generation": "I",
+   "years": "2017-present",
+   "body": "suv",
+   "text": "MG ZS (2017–present)"
+  },
+  {
+   "index": 237,
+   "make": "MG",
+   "model": "MG4",
+   "generation": "I",
+   "years": "2022-present",
+   "body": "hatchback",
+   "text": "MG MG4 (2022–present)"
+  },
+  {
+   "index": 238,
+   "make": "Mazda",
+   "model": "Mazda2",
+   "generation": "DJ",
+   "years": "2014-present",
+   "body": "hatchback",
+   "text": "Mazda Mazda2 (2014–present)"
+  },
+  {
+   "index": 239,
+   "make": "Mazda",
+   "model": "Mazda3",
+   "generation": "BM",
+   "years": "2013-2019",
+   "body": "hatchback",
+   "text": "Mazda Mazda3 (2013–2019)"
+  },
+  {
+   "index": 240,
+   "make": "Mazda",
+   "model": "Mazda3",
+   "generation": "BP",
+   "years": "2019-present",
+   "body": "hatchback",
+   "text": "Mazda Mazda3 (2019–present)"
+  },
+  {
+   "index": 241,
+   "make": "Mazda",
+   "model": "CX-5",
+   "generation": "KF",
+   "years": "2017-present",
+   "body": "suv",
+   "text": "Mazda CX-5 (2017–present)"
+  },
+  {
+   "index": 242,
+   "make": "Mazda",
+   "model": "CX-30",
+   "generation": "I",
+   "years": "2019-present",
+   "body": "suv",
+   "text": "Mazda CX-30 (2019–present)"
+  },
+  {
+   "index": 243,
+   "make": "Mazda",
+   "model": "MX-5",
+   "generation": "NA",
+   "years": "1989-1997",
+   "body": "convertible",
+   "text": "Mazda MX-5 (1989–1997)"
+  },
+  {
+   "index": 244,
+   "make": "Mazda",
+   "model": "MX-5",
+   "generation": "ND",
+   "years": "2015-present",
+   "body": "convertible",
+   "text": "Mazda MX-5 (2015–present)"
+  },
+  {
+   "index": 245,
+   "make": "Honda",
+   "model": "Civic",
+   "generation": "X",
+   "years": "2015-2021",
+   "body": "hatchback",
+   "text": "Honda Civic (2015–2021)"
+  },
+  {
+   "index": 246,
+   "make": "Honda",
+   "model": "Civic",
+   "generation": "XI",
+   "years": "2021-present",
+   "body": "hatchback",
+   "text": "Honda Civic (2021–present)"
+  },
+  {
+   "index": 247,
+   "make": "Honda",
+   "model": "Jazz",
+   "generation": "III",
+   "years": "2015-2020",
+   "body": "hatchback",
+   "text": "Honda Jazz (2015–2020)"
+  },
+  {
+   "index": 248,
+   "make": "Honda",
+   "model": "Jazz",
+   "generation": "IV",
+   "years": "2020-present",
+   "body": "hatchback",
+   "text": "Honda Jazz (2020–present)"
+  },
+  {
+   "index": 249,
+   "make": "Honda",
+   "model": "CR-V",
+   "generation": "V",
+   "years": "2017-2023",
+   "body": "suv",
+   "text": "Honda CR-V (2017–2023)"
+  },
+  {
+   "index": 250,
+   "make": "Land Rover",
+   "model": "Defender",
+   "generation": "Classic (90/110)",
+   "years": "1983-2016",
+   "body": "suv",
+   "text": "Land Rover Defender (1983–2016)"
+  },
+  {
+   "index": 251,
+   "make": "Land Rover",
+   "model": "Defender",
+   "generation": "L663",
+   "years": "2019-present",
+   "body": "suv",
+   "text": "Land Rover Defender (2019–present)"
+  },
+  {
+   "index": 252,
+   "make": "Land Rover",
+   "model": "Range Rover Evoque",
+   "generation": "L538",
+   "years": "2011-2018",
+   "body": "suv",
+   "text": "Land Rover Range Rover Evoque (2011–2018)"
+  },
+  {
+   "index": 253,
+   "make": "Land Rover",
+   "model": "Range Rover Evoque",
+   "generation": "L551",
+   "years": "2019-present",
+   "body": "suv",
+   "text": "Land Rover Range Rover Evoque (2019–present)"
+  },
+  {
+   "index": 254,
+   "make": "Land Rover",
+   "model": "Range Rover Velar",
+   "generation": "L560",
+   "years": "2017-present",
+   "body": "suv",
+   "text": "Land Rover Range Rover Velar (2017–present)"
+  },
+  {
+   "index": 255,
+   "make": "Land Rover",
+   "model": "Discovery Sport",
+   "generation": "L550",
+   "years": "2014-present",
+   "body": "suv",
+   "text": "Land Rover Discovery Sport (2014–present)"
+  },
+  {
+   "index": 256,
+   "make": "Jaguar",
+   "model": "E-Type",
+   "generation": "Series 1",
+   "years": "1961-1975",
+   "body": "coupe",
+   "text": "Jaguar E-Type (1961–1975)"
+  },
+  {
+   "index": 257,
+   "make": "Jaguar",
+   "model": "F-Type",
+   "generation": "I",
+   "years": "2013-2024",
+   "body": "coupe",
+   "text": "Jaguar F-Type (2013–2024)"
+  },
+  {
+   "index": 258,
+   "make": "Jaguar",
+   "model": "F-Pace",
+   "generation": "I",
+   "years": "2016-present",
+   "body": "suv",
+   "text": "Jaguar F-Pace (2016–present)"
+  },
+  {
+   "index": 259,
+   "make": "Porsche",
+   "model": "356",
+   "generation": "I",
+   "years": "1948-1965",
+   "body": "coupe",
+   "text": "Porsche 356 (1948–1965)"
+  },
+  {
+   "index": 260,
+   "make": "Porsche",
+   "model": "911",
+   "generation": "G-Series",
+   "years": "1974-1989",
+   "body": "coupe",
+   "text": "Porsche 911 (1974–1989)"
+  },
+  {
+   "index": 261,
+   "make": "Porsche",
+   "model": "911",
+   "generation": "964/993",
+   "years": "1989-1998",
+   "body": "coupe",
+   "text": "Porsche 911 (1989–1998)"
+  },
+  {
+   "index": 262,
+   "make": "Porsche",
+   "model": "911",
+   "generation": "997",
+   "years": "2004-2012",
+   "body": "coupe",
+   "text": "Porsche 911 (2004–2012)"
+  },
+  {
+   "index": 263,
+   "make": "Porsche",
+   "model": "911",
+   "generation": "991",
+   "years": "2011-2019",
+   "body": "coupe",
+   "text": "Porsche 911 (2011–2019)"
+  },
+  {
+   "index": 264,
+   "make": "Porsche",
+   "model": "911",
+   "generation": "992",
+   "years": "2019-present",
+   "body": "coupe",
+   "text": "Porsche 911 (2019–present)"
+  },
+  {
+   "index": 265,
+   "make": "Porsche",
+   "model": "Cayenne",
+   "generation": "III",
+   "years": "2017-present",
+   "body": "suv",
+   "text": "Porsche Cayenne (2017–present)"
+  },
+  {
+   "index": 266,
+   "make": "Porsche",
+   "model": "Macan",
+   "generation": "I",
+   "years": "2014-2024",
+   "body": "suv",
+   "text": "Porsche Macan (2014–2024)"
+  },
+  {
+   "index": 267,
+   "make": "Porsche",
+   "model": "718 Cayman",
+   "generation": "982",
+   "years": "2016-present",
+   "body": "coupe",
+   "text": "Porsche 718 Cayman (2016–present)"
+  },
+  {
+   "index": 268,
+   "make": "Porsche",
+   "model": "Taycan",
+   "generation": "I",
+   "years": "2019-present",
+   "body": "sedan",
+   "text": "Porsche Taycan (2019–present)"
+  },
+  {
+   "index": 269,
+   "make": "Ferrari",
+   "model": "308 GTB",
+   "generation": "I",
+   "years": "1975-1985",
+   "body": "coupe",
+   "text": "Ferrari 308 GTB (1975–1985)"
+  },
+  {
+   "index": 270,
+   "make": "Ferrari",
+   "model": "Testarossa",
+   "generation": "I",
+   "years": "1984-1996",
+   "body": "coupe",
+   "text": "Ferrari Testarossa (1984–1996)"
+  },
+  {
+   "index": 271,
+   "make": "Ferrari",
+   "model": "F40",
+   "generation": "I",
+   "years": "1987-1992",
+   "body": "coupe",
+   "text": "Ferrari F40 (1987–1992)"
+  },
+  {
+   "index": 272,
+   "make": "Ferrari",
+   "model": "F355",
+   "generation": "I",
+   "years": "1994-1999",
+   "body": "coupe",
+   "text": "Ferrari F355 (1994–1999)"
+  },
+  {
+   "index": 273,
+   "make": "Ferrari",
+   "model": "California",
+   "generation": "I",
+   "years": "2008-2017",
+   "body": "convertible",
+   "text": "Ferrari California (2008–2017)"
+  },
+  {
+   "index": 274,
+   "make": "Ferrari",
+   "model": "458 Italia",
+   "generation": "I",
+   "years": "2009-2015",
+   "body": "coupe",
+   "text": "Ferrari 458 Italia (2009–2015)"
+  },
+  {
+   "index": 275,
+   "make": "Ferrari",
+   "model": "488 GTB",
+   "generation": "I",
+   "years": "2015-2019",
+   "body": "coupe",
+   "text": "Ferrari 488 GTB (2015–2019)"
+  },
+  {
+   "index": 276,
+   "make": "Ferrari",
+   "model": "F8 Tributo",
+   "generation": "I",
+   "years": "2019-2023",
+   "body": "coupe",
+   "text": "Ferrari F8 Tributo (2019–2023)"
+  },
+  {
+   "index": 277,
+   "make": "Ferrari",
+   "model": "296 GTB",
+   "generation": "I",
+   "years": "2021-present",
+   "body": "coupe",
+   "text": "Ferrari 296 GTB (2021–present)"
+  },
+  {
+   "index": 278,
+   "make": "Ferrari",
+   "model": "Roma",
+   "generation": "I",
+   "years": "2020-present",
+   "body": "coupe",
+   "text": "Ferrari Roma (2020–present)"
+  },
+  {
+   "index": 279,
+   "make": "Ferrari",
+   "model": "Portofino",
+   "generation": "I",
+   "years": "2017-2023",
+   "body": "convertible",
+   "text": "Ferrari Portofino (2017–2023)"
+  },
+  {
+   "index": 280,
+   "make": "Ferrari",
+   "model": "812 Superfast",
+   "generation": "I",
+   "years": "2017-2024",
+   "body": "coupe",
+   "text": "Ferrari 812 Superfast (2017–2024)"
+  },
+  {
+   "index": 281,
+   "make": "Ferrari",
+   "model": "SF90 Stradale",
+   "generation": "I",
+   "years": "2019-present",
+   "body": "coupe",
+   "text": "Ferrari SF90 Stradale (2019–present)"
+  },
+  {
+   "index": 282,
+   "make": "Ferrari",
+   "model": "Purosangue",
+   "generation": "I",
+   "years": "2022-present",
+   "body": "suv",
+   "text": "Ferrari Purosangue (2022–present)"
+  },
+  {
+   "index": 283,
+   "make": "Lamborghini",
+   "model": "Countach",
+   "generation": "I",
+   "years": "1974-1990",
+   "body": "coupe",
+   "text": "Lamborghini Countach (1974–1990)"
+  },
+  {
+   "index": 284,
+   "make": "Lamborghini",
+   "model": "Gallardo",
+   "generation": "I",
+   "years": "2003-2013",
+   "body": "coupe",
+   "text": "Lamborghini Gallardo (2003–2013)"
+  },
+  {
+   "index": 285,
+   "make": "Lamborghini",
+   "model": "Aventador",
+   "generation": "I",
+   "years": "2011-2022",
+   "body": "coupe",
+   "text": "Lamborghini Aventador (2011–2022)"
+  },
+  {
+   "index": 286,
+   "make": "Lamborghini",
+   "model": "Huracán",
+   "generation": "I",
+   "years": "2014-2024",
+   "body": "coupe",
+   "text": "Lamborghini Huracán (2014–2024)"
+  },
+  {
+   "index": 287,
+   "make": "Lamborghini",
+   "model": "Urus",
+   "generation": "I",
+   "years": "2018-present",
+   "body": "suv",
+   "text": "Lamborghini Urus (2018–present)"
+  },
+  {
+   "index": 288,
+   "make": "Lamborghini",
+   "model": "Revuelto",
+   "generation": "I",
+   "years": "2023-present",
+   "body": "coupe",
+   "text": "Lamborghini Revuelto (2023–present)"
+  },
+  {
+   "index": 289,
+   "make": "Maserati",
+   "model": "Ghibli",
+   "generation": "M157",
+   "years": "2013-2024",
+   "body": "sedan",
+   "text": "Maserati Ghibli (2013–2024)"
+  },
+  {
+   "index": 290,
+   "make": "Maserati",
+   "model": "Quattroporte",
+   "generation": "VI (M156)",
+   "years": "2013-2024",
+   "body": "sedan",
+   "text": "Maserati Quattroporte (2013–2024)"
+  },
+  {
+   "index": 291,
+   "make": "Maserati",
+   "model": "Levante",
+   "generation": "I",
+   "years": "2016-present",
+   "body": "suv",
+   "text": "Maserati Levante (2016–present)"
+  },
+  {
+   "index": 292,
+   "make": "Maserati",
+   "model": "Grecale",
+   "generation": "I",
+   "years": "2022-present",
+   "body": "suv",
+   "text": "Maserati Grecale (2022–present)"
+  },
+  {
+   "index": 293,
+   "make": "Maserati",
+   "model": "GranTurismo",
+   "generation": "II",
+   "years": "2023-present",
+   "body": "coupe",
+   "text": "Maserati GranTurismo (2023–present)"
+  },
+  {
+   "index": 294,
+   "make": "Maserati",
+   "model": "MC20",
+   "generation": "I",
+   "years": "2020-present",
+   "body": "coupe",
+   "text": "Maserati MC20 (2020–present)"
+  },
+  {
+   "index": 295,
+   "make": "McLaren",
+   "model": "720S",
+   "generation": "I",
+   "years": "2017-2023",
+   "body": "coupe",
+   "text": "McLaren 720S (2017–2023)"
+  },
+  {
+   "index": 296,
+   "make": "Aston Martin",
+   "model": "DB5",
+   "generation": "I",
+   "years": "1963-1965",
+   "body": "coupe",
+   "text": "Aston Martin DB5 (1963–1965)"
+  },
+  {
+   "index": 297,
+   "make": "Aston Martin",
+   "model": "DB11",
+   "generation": "I",
+   "years": "2016-2023",
+   "body": "coupe",
+   "text": "Aston Martin DB11 (2016–2023)"
+  },
+  {
+   "index": 298,
+   "make": "Aston Martin",
+   "model": "Vantage",
+   "generation": "II",
+   "years": "2018-present",
+   "body": "coupe",
+   "text": "Aston Martin Vantage (2018–present)"
+  },
+  {
+   "index": 299,
+   "make": "Bentley",
+   "model": "Continental GT",
+   "generation": "III",
+   "years": "2018-present",
+   "body": "coupe",
+   "text": "Bentley Continental GT (2018–present)"
+  },
+  {
+   "index": 300,
+   "make": "Lotus",
+   "model": "Elise",
+   "generation": "Series 2",
+   "years": "2000-2021",
+   "body": "convertible",
+   "text": "Lotus Elise (2000–2021)"
+  },
+  {
+   "index": 301,
+   "make": "Alpine",
+   "model": "A110",
+   "generation": "II",
+   "years": "2017-present",
+   "body": "coupe",
+   "text": "Alpine A110 (2017–present)"
+  },
+  {
+   "index": 302,
+   "make": "Chevrolet",
+   "model": "Corvette",
+   "generation": "C7",
+   "years": "2014-2019",
+   "body": "coupe",
+   "text": "Chevrolet Corvette (2014–2019)"
+  },
+  {
+   "index": 303,
+   "make": "Dodge",
+   "model": "Challenger",
+   "generation": "III",
+   "years": "2008-2023",
+   "body": "coupe",
+   "text": "Dodge Challenger (2008–2023)"
+  }
+ ]
+}

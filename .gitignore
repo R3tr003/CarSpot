@@ -44,3 +44,11 @@ node_modules/
 
 # Mockup del brainstorming
 .superpowers/
+
+# ─────────────────────────────────────────────────────────────
+# Prova riconoscimento (tools/recognition-trial): venv, cache modelli, foto dell'utente
+# ─────────────────────────────────────────────────────────────
+tools/recognition-trial/.venv/
+tools/recognition-trial/.cache/
+tools/recognition-trial/photos/
+tools/recognition-trial/samples/

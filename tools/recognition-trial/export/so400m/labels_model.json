@@ -1,0 +1,2138 @@
+{
+ "model": "google/siglip2-so400m-patch14-384",
+ "level": "model",
+ "file": "label_embeddings_model.f16",
+ "count": 235,
+ "dim": 1152,
+ "dtype": "float16",
+ "layout": "row-major (count x dim), little-endian",
+ "normalization": "ogni riga L2-normalizzata (poi arrotondata a float16); l'embedding immagine va normalizzato L2 prima del prodotto scalare",
+ "logit_scale": 109.875,
+ "logit_bias": -15.9296875,
+ "scoring": "p = softmax(logit_scale * cos) sulle classi; sigmoid(logit_scale*cos + logit_bias) per la confidenza assoluta",
+ "templates": [
+  "a photo of a {n}.",
+  "a photo of a {n}, a type of car.",
+  "a {n} parked on the street.",
+  "a front view of a {n}.",
+  "a rear view of a {n}.",
+  "a side view of a {n} car."
+ ],
+ "labels": [
+  {
+   "index": 0,
+   "make": "Fiat",
+   "model": "Panda",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Fiat Panda"
+  },
+  {
+   "index": 1,
+   "make": "Fiat",
+   "model": "Grande Panda",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Fiat Grande Panda"
+  },
+  {
+   "index": 2,
+   "make": "Fiat",
+   "model": "500",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Fiat 500"
+  },
+  {
+   "index": 3,
+   "make": "Fiat",
+   "model": "500e",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Fiat 500e"
+  },
+  {
+   "index": 4,
+   "make": "Fiat",
+   "model": "500X",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Fiat 500X"
+  },
+  {
+   "index": 5,
+   "make": "Fiat",
+   "model": "500L",
+   "generation": "",
+   "years": "",
+   "body": "mpv",
+   "text": "Fiat 500L"
+  },
+  {
+   "index": 6,
+   "make": "Fiat",
+   "model": "600",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Fiat 600"
+  },
+  {
+   "index": 7,
+   "make": "Fiat",
+   "model": "Tipo",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Fiat Tipo"
+  },
+  {
+   "index": 8,
+   "make": "Fiat",
+   "model": "Punto",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Fiat Punto"
+  },
+  {
+   "index": 9,
+   "make": "Fiat",
+   "model": "Grande Punto",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Fiat Grande Punto"
+  },
+  {
+   "index": 10,
+   "make": "Fiat",
+   "model": "Punto Evo",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Fiat Punto Evo"
+  },
+  {
+   "index": 11,
+   "make": "Fiat",
+   "model": "Uno",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Fiat Uno"
+  },
+  {
+   "index": 12,
+   "make": "Fiat",
+   "model": "Cinquecento",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Fiat Cinquecento"
+  },
+  {
+   "index": 13,
+   "make": "Fiat",
+   "model": "Seicento",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Fiat Seicento"
+  },
+  {
+   "index": 14,
+   "make": "Fiat",
+   "model": "Multipla",
+   "generation": "",
+   "years": "",
+   "body": "mpv",
+   "text": "Fiat Multipla"
+  },
+  {
+   "index": 15,
+   "make": "Fiat",
+   "model": "Bravo",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Fiat Bravo"
+  },
+  {
+   "index": 16,
+   "make": "Fiat",
+   "model": "Doblò",
+   "generation": "",
+   "years": "",
+   "body": "mpv",
+   "text": "Fiat Doblò"
+  },
+  {
+   "index": 17,
+   "make": "Fiat",
+   "model": "Ducato",
+   "generation": "",
+   "years": "",
+   "body": "van",
+   "text": "Fiat Ducato"
+  },
+  {
+   "index": 18,
+   "make": "Fiat",
+   "model": "124 Spider",
+   "generation": "",
+   "years": "",
+   "body": "convertible",
+   "text": "Fiat 124 Spider"
+  },
+  {
+   "index": 19,
+   "make": "Abarth",
+   "model": "595",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Abarth 595"
+  },
+  {
+   "index": 20,
+   "make": "Autobianchi",
+   "model": "A112",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Autobianchi A112"
+  },
+  {
+   "index": 21,
+   "make": "Piaggio",
+   "model": "Ape",
+   "generation": "",
+   "years": "",
+   "body": "three-wheeler",
+   "text": "Piaggio Ape"
+  },
+  {
+   "index": 22,
+   "make": "Lancia",
+   "model": "Ypsilon",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Lancia Ypsilon"
+  },
+  {
+   "index": 23,
+   "make": "Lancia",
+   "model": "Delta",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Lancia Delta"
+  },
+  {
+   "index": 24,
+   "make": "Lancia",
+   "model": "Fulvia",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Lancia Fulvia"
+  },
+  {
+   "index": 25,
+   "make": "Lancia",
+   "model": "Y10",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Lancia Y10"
+  },
+  {
+   "index": 26,
+   "make": "Alfa Romeo",
+   "model": "Giulietta",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Alfa Romeo Giulietta"
+  },
+  {
+   "index": 27,
+   "make": "Alfa Romeo",
+   "model": "Giulia",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "Alfa Romeo Giulia"
+  },
+  {
+   "index": 28,
+   "make": "Alfa Romeo",
+   "model": "Stelvio",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Alfa Romeo Stelvio"
+  },
+  {
+   "index": 29,
+   "make": "Alfa Romeo",
+   "model": "Tonale",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Alfa Romeo Tonale"
+  },
+  {
+   "index": 30,
+   "make": "Alfa Romeo",
+   "model": "Junior",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Alfa Romeo Junior"
+  },
+  {
+   "index": 31,
+   "make": "Alfa Romeo",
+   "model": "MiTo",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Alfa Romeo MiTo"
+  },
+  {
+   "index": 32,
+   "make": "Alfa Romeo",
+   "model": "147",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Alfa Romeo 147"
+  },
+  {
+   "index": 33,
+   "make": "Alfa Romeo",
+   "model": "156",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "Alfa Romeo 156"
+  },
+  {
+   "index": 34,
+   "make": "Alfa Romeo",
+   "model": "159",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "Alfa Romeo 159"
+  },
+  {
+   "index": 35,
+   "make": "Alfa Romeo",
+   "model": "Brera",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Alfa Romeo Brera"
+  },
+  {
+   "index": 36,
+   "make": "Alfa Romeo",
+   "model": "4C",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Alfa Romeo 4C"
+  },
+  {
+   "index": 37,
+   "make": "Alfa Romeo",
+   "model": "Spider",
+   "generation": "",
+   "years": "",
+   "body": "convertible",
+   "text": "Alfa Romeo Spider"
+  },
+  {
+   "index": 38,
+   "make": "Alfa Romeo",
+   "model": "Giulia Sprint GT",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Alfa Romeo Giulia Sprint GT"
+  },
+  {
+   "index": 39,
+   "make": "Alfa Romeo",
+   "model": "Alfasud",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "Alfa Romeo Alfasud"
+  },
+  {
+   "index": 40,
+   "make": "Jeep",
+   "model": "Renegade",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Jeep Renegade"
+  },
+  {
+   "index": 41,
+   "make": "Jeep",
+   "model": "Compass",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Jeep Compass"
+  },
+  {
+   "index": 42,
+   "make": "Jeep",
+   "model": "Avenger",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Jeep Avenger"
+  },
+  {
+   "index": 43,
+   "make": "Jeep",
+   "model": "Wrangler",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Jeep Wrangler"
+  },
+  {
+   "index": 44,
+   "make": "Jeep",
+   "model": "Grand Cherokee",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Jeep Grand Cherokee"
+  },
+  {
+   "index": 45,
+   "make": "Volkswagen",
+   "model": "Golf",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Volkswagen Golf"
+  },
+  {
+   "index": 46,
+   "make": "Volkswagen",
+   "model": "Polo",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Volkswagen Polo"
+  },
+  {
+   "index": 47,
+   "make": "Volkswagen",
+   "model": "Up!",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Volkswagen Up!"
+  },
+  {
+   "index": 48,
+   "make": "Volkswagen",
+   "model": "T-Roc",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Volkswagen T-Roc"
+  },
+  {
+   "index": 49,
+   "make": "Volkswagen",
+   "model": "T-Cross",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Volkswagen T-Cross"
+  },
+  {
+   "index": 50,
+   "make": "Volkswagen",
+   "model": "Tiguan",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Volkswagen Tiguan"
+  },
+  {
+   "index": 51,
+   "make": "Volkswagen",
+   "model": "Passat",
+   "generation": "",
+   "years": "",
+   "body": "wagon",
+   "text": "Volkswagen Passat"
+  },
+  {
+   "index": 52,
+   "make": "Volkswagen",
+   "model": "ID.3",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Volkswagen ID.3"
+  },
+  {
+   "index": 53,
+   "make": "Volkswagen",
+   "model": "Maggiolino (Beetle)",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Volkswagen Maggiolino (Beetle)"
+  },
+  {
+   "index": 54,
+   "make": "Volkswagen",
+   "model": "Transporter",
+   "generation": "",
+   "years": "",
+   "body": "van",
+   "text": "Volkswagen Transporter"
+  },
+  {
+   "index": 55,
+   "make": "Renault",
+   "model": "Clio",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Renault Clio"
+  },
+  {
+   "index": 56,
+   "make": "Renault",
+   "model": "Captur",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Renault Captur"
+  },
+  {
+   "index": 57,
+   "make": "Renault",
+   "model": "Megane",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Renault Megane"
+  },
+  {
+   "index": 58,
+   "make": "Renault",
+   "model": "Twingo",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Renault Twingo"
+  },
+  {
+   "index": 59,
+   "make": "Renault",
+   "model": "Kadjar",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Renault Kadjar"
+  },
+  {
+   "index": 60,
+   "make": "Renault",
+   "model": "Zoe",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Renault Zoe"
+  },
+  {
+   "index": 61,
+   "make": "Renault",
+   "model": "4",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Renault 4"
+  },
+  {
+   "index": 62,
+   "make": "Renault",
+   "model": "5",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Renault 5"
+  },
+  {
+   "index": 63,
+   "make": "Renault",
+   "model": "5 E-Tech",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Renault 5 E-Tech"
+  },
+  {
+   "index": 64,
+   "make": "Dacia",
+   "model": "Sandero",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Dacia Sandero"
+  },
+  {
+   "index": 65,
+   "make": "Dacia",
+   "model": "Duster",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Dacia Duster"
+  },
+  {
+   "index": 66,
+   "make": "Dacia",
+   "model": "Jogger",
+   "generation": "",
+   "years": "",
+   "body": "wagon",
+   "text": "Dacia Jogger"
+  },
+  {
+   "index": 67,
+   "make": "Dacia",
+   "model": "Spring",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Dacia Spring"
+  },
+  {
+   "index": 68,
+   "make": "Citroën",
+   "model": "C3",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Citroën C3"
+  },
+  {
+   "index": 69,
+   "make": "Citroën",
+   "model": "C1",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Citroën C1"
+  },
+  {
+   "index": 70,
+   "make": "Citroën",
+   "model": "C4 Cactus",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Citroën C4 Cactus"
+  },
+  {
+   "index": 71,
+   "make": "Citroën",
+   "model": "C4",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Citroën C4"
+  },
+  {
+   "index": 72,
+   "make": "Citroën",
+   "model": "C3 Aircross",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Citroën C3 Aircross"
+  },
+  {
+   "index": 73,
+   "make": "Citroën",
+   "model": "Berlingo",
+   "generation": "",
+   "years": "",
+   "body": "mpv",
+   "text": "Citroën Berlingo"
+  },
+  {
+   "index": 74,
+   "make": "Citroën",
+   "model": "2CV",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "Citroën 2CV"
+  },
+  {
+   "index": 75,
+   "make": "Citroën",
+   "model": "Ami",
+   "generation": "",
+   "years": "",
+   "body": "quadricycle",
+   "text": "Citroën Ami"
+  },
+  {
+   "index": 76,
+   "make": "Peugeot",
+   "model": "108",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Peugeot 108"
+  },
+  {
+   "index": 77,
+   "make": "Peugeot",
+   "model": "205",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Peugeot 205"
+  },
+  {
+   "index": 78,
+   "make": "Peugeot",
+   "model": "207",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Peugeot 207"
+  },
+  {
+   "index": 79,
+   "make": "Peugeot",
+   "model": "208",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Peugeot 208"
+  },
+  {
+   "index": 80,
+   "make": "Peugeot",
+   "model": "2008",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Peugeot 2008"
+  },
+  {
+   "index": 81,
+   "make": "Peugeot",
+   "model": "308",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Peugeot 308"
+  },
+  {
+   "index": 82,
+   "make": "Peugeot",
+   "model": "3008",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Peugeot 3008"
+  },
+  {
+   "index": 83,
+   "make": "Ford",
+   "model": "Fiesta",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Ford Fiesta"
+  },
+  {
+   "index": 84,
+   "make": "Ford",
+   "model": "Focus",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Ford Focus"
+  },
+  {
+   "index": 85,
+   "make": "Ford",
+   "model": "Puma",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Ford Puma"
+  },
+  {
+   "index": 86,
+   "make": "Ford",
+   "model": "Kuga",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Ford Kuga"
+  },
+  {
+   "index": 87,
+   "make": "Ford",
+   "model": "Ka",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Ford Ka"
+  },
+  {
+   "index": 88,
+   "make": "Ford",
+   "model": "EcoSport",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Ford EcoSport"
+  },
+  {
+   "index": 89,
+   "make": "Ford",
+   "model": "Mustang",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Ford Mustang"
+  },
+  {
+   "index": 90,
+   "make": "Toyota",
+   "model": "Aygo",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Toyota Aygo"
+  },
+  {
+   "index": 91,
+   "make": "Toyota",
+   "model": "Aygo X",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Toyota Aygo X"
+  },
+  {
+   "index": 92,
+   "make": "Toyota",
+   "model": "Yaris",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Toyota Yaris"
+  },
+  {
+   "index": 93,
+   "make": "Toyota",
+   "model": "Yaris Cross",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Toyota Yaris Cross"
+  },
+  {
+   "index": 94,
+   "make": "Toyota",
+   "model": "Corolla",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Toyota Corolla"
+  },
+  {
+   "index": 95,
+   "make": "Toyota",
+   "model": "C-HR",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Toyota C-HR"
+  },
+  {
+   "index": 96,
+   "make": "Toyota",
+   "model": "RAV4",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Toyota RAV4"
+  },
+  {
+   "index": 97,
+   "make": "Toyota",
+   "model": "Supra",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Toyota Supra"
+  },
+  {
+   "index": 98,
+   "make": "Opel",
+   "model": "Corsa",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Opel Corsa"
+  },
+  {
+   "index": 99,
+   "make": "Opel",
+   "model": "Astra",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Opel Astra"
+  },
+  {
+   "index": 100,
+   "make": "Opel",
+   "model": "Mokka",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Opel Mokka"
+  },
+  {
+   "index": 101,
+   "make": "Opel",
+   "model": "Crossland",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Opel Crossland"
+  },
+  {
+   "index": 102,
+   "make": "Opel",
+   "model": "Grandland",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Opel Grandland"
+  },
+  {
+   "index": 103,
+   "make": "Opel",
+   "model": "Adam",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Opel Adam"
+  },
+  {
+   "index": 104,
+   "make": "Audi",
+   "model": "A1",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Audi A1"
+  },
+  {
+   "index": 105,
+   "make": "Audi",
+   "model": "A3",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Audi A3"
+  },
+  {
+   "index": 106,
+   "make": "Audi",
+   "model": "A4",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "Audi A4"
+  },
+  {
+   "index": 107,
+   "make": "Audi",
+   "model": "A5",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Audi A5"
+  },
+  {
+   "index": 108,
+   "make": "Audi",
+   "model": "A6",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "Audi A6"
+  },
+  {
+   "index": 109,
+   "make": "Audi",
+   "model": "Q2",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Audi Q2"
+  },
+  {
+   "index": 110,
+   "make": "Audi",
+   "model": "Q3",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Audi Q3"
+  },
+  {
+   "index": 111,
+   "make": "Audi",
+   "model": "Q5",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Audi Q5"
+  },
+  {
+   "index": 112,
+   "make": "Audi",
+   "model": "TT",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Audi TT"
+  },
+  {
+   "index": 113,
+   "make": "Audi",
+   "model": "R8",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Audi R8"
+  },
+  {
+   "index": 114,
+   "make": "BMW",
+   "model": "Serie 1",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "BMW Serie 1"
+  },
+  {
+   "index": 115,
+   "make": "BMW",
+   "model": "Serie 3",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "BMW Serie 3"
+  },
+  {
+   "index": 116,
+   "make": "BMW",
+   "model": "Serie 5",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "BMW Serie 5"
+  },
+  {
+   "index": 117,
+   "make": "BMW",
+   "model": "X1",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "BMW X1"
+  },
+  {
+   "index": 118,
+   "make": "BMW",
+   "model": "X3",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "BMW X3"
+  },
+  {
+   "index": 119,
+   "make": "BMW",
+   "model": "X5",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "BMW X5"
+  },
+  {
+   "index": 120,
+   "make": "BMW",
+   "model": "Z4",
+   "generation": "",
+   "years": "",
+   "body": "convertible",
+   "text": "BMW Z4"
+  },
+  {
+   "index": 121,
+   "make": "BMW",
+   "model": "2002",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "BMW 2002"
+  },
+  {
+   "index": 122,
+   "make": "BMW",
+   "model": "M3",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "BMW M3"
+  },
+  {
+   "index": 123,
+   "make": "Mini",
+   "model": "Cooper",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Mini Cooper"
+  },
+  {
+   "index": 124,
+   "make": "Mini",
+   "model": "Classic Mini",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Mini Classic Mini"
+  },
+  {
+   "index": 125,
+   "make": "Mercedes-Benz",
+   "model": "Classe A",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Mercedes-Benz Classe A"
+  },
+  {
+   "index": 126,
+   "make": "Mercedes-Benz",
+   "model": "Classe C",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "Mercedes-Benz Classe C"
+  },
+  {
+   "index": 127,
+   "make": "Mercedes-Benz",
+   "model": "Classe E",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "Mercedes-Benz Classe E"
+  },
+  {
+   "index": 128,
+   "make": "Mercedes-Benz",
+   "model": "CLA",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "Mercedes-Benz CLA"
+  },
+  {
+   "index": 129,
+   "make": "Mercedes-Benz",
+   "model": "GLA",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Mercedes-Benz GLA"
+  },
+  {
+   "index": 130,
+   "make": "Mercedes-Benz",
+   "model": "GLC",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Mercedes-Benz GLC"
+  },
+  {
+   "index": 131,
+   "make": "Mercedes-Benz",
+   "model": "Classe G",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Mercedes-Benz Classe G"
+  },
+  {
+   "index": 132,
+   "make": "Mercedes-Benz",
+   "model": "SL",
+   "generation": "",
+   "years": "",
+   "body": "convertible",
+   "text": "Mercedes-Benz SL"
+  },
+  {
+   "index": 133,
+   "make": "Mercedes-Benz",
+   "model": "AMG GT",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Mercedes-Benz AMG GT"
+  },
+  {
+   "index": 134,
+   "make": "Smart",
+   "model": "Fortwo",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Smart Fortwo"
+  },
+  {
+   "index": 135,
+   "make": "Hyundai",
+   "model": "i10",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Hyundai i10"
+  },
+  {
+   "index": 136,
+   "make": "Hyundai",
+   "model": "i20",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Hyundai i20"
+  },
+  {
+   "index": 137,
+   "make": "Hyundai",
+   "model": "Tucson",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Hyundai Tucson"
+  },
+  {
+   "index": 138,
+   "make": "Hyundai",
+   "model": "Kona",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Hyundai Kona"
+  },
+  {
+   "index": 139,
+   "make": "Hyundai",
+   "model": "Bayon",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Hyundai Bayon"
+  },
+  {
+   "index": 140,
+   "make": "Hyundai",
+   "model": "Ioniq 5",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Hyundai Ioniq 5"
+  },
+  {
+   "index": 141,
+   "make": "Kia",
+   "model": "Picanto",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Kia Picanto"
+  },
+  {
+   "index": 142,
+   "make": "Kia",
+   "model": "Sportage",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Kia Sportage"
+  },
+  {
+   "index": 143,
+   "make": "Kia",
+   "model": "Stonic",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Kia Stonic"
+  },
+  {
+   "index": 144,
+   "make": "Kia",
+   "model": "Ceed",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Kia Ceed"
+  },
+  {
+   "index": 145,
+   "make": "Nissan",
+   "model": "Micra",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Nissan Micra"
+  },
+  {
+   "index": 146,
+   "make": "Nissan",
+   "model": "Juke",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Nissan Juke"
+  },
+  {
+   "index": 147,
+   "make": "Nissan",
+   "model": "Qashqai",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Nissan Qashqai"
+  },
+  {
+   "index": 148,
+   "make": "Nissan",
+   "model": "Leaf",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Nissan Leaf"
+  },
+  {
+   "index": 149,
+   "make": "Nissan",
+   "model": "GT-R",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Nissan GT-R"
+  },
+  {
+   "index": 150,
+   "make": "Suzuki",
+   "model": "Ignis",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Suzuki Ignis"
+  },
+  {
+   "index": 151,
+   "make": "Suzuki",
+   "model": "Swift",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Suzuki Swift"
+  },
+  {
+   "index": 152,
+   "make": "Suzuki",
+   "model": "Vitara",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Suzuki Vitara"
+  },
+  {
+   "index": 153,
+   "make": "Suzuki",
+   "model": "Jimny",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Suzuki Jimny"
+  },
+  {
+   "index": 154,
+   "make": "Skoda",
+   "model": "Fabia",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Skoda Fabia"
+  },
+  {
+   "index": 155,
+   "make": "Skoda",
+   "model": "Octavia",
+   "generation": "",
+   "years": "",
+   "body": "wagon",
+   "text": "Skoda Octavia"
+  },
+  {
+   "index": 156,
+   "make": "Skoda",
+   "model": "Kamiq",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Skoda Kamiq"
+  },
+  {
+   "index": 157,
+   "make": "Skoda",
+   "model": "Karoq",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Skoda Karoq"
+  },
+  {
+   "index": 158,
+   "make": "Skoda",
+   "model": "Kodiaq",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Skoda Kodiaq"
+  },
+  {
+   "index": 159,
+   "make": "Skoda",
+   "model": "Scala",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Skoda Scala"
+  },
+  {
+   "index": 160,
+   "make": "Skoda",
+   "model": "Superb",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "Skoda Superb"
+  },
+  {
+   "index": 161,
+   "make": "Seat",
+   "model": "Ibiza",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Seat Ibiza"
+  },
+  {
+   "index": 162,
+   "make": "Seat",
+   "model": "Leon",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Seat Leon"
+  },
+  {
+   "index": 163,
+   "make": "Seat",
+   "model": "Arona",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Seat Arona"
+  },
+  {
+   "index": 164,
+   "make": "Seat",
+   "model": "Ateca",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Seat Ateca"
+  },
+  {
+   "index": 165,
+   "make": "Cupra",
+   "model": "Formentor",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Cupra Formentor"
+  },
+  {
+   "index": 166,
+   "make": "Volvo",
+   "model": "XC40",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Volvo XC40"
+  },
+  {
+   "index": 167,
+   "make": "Volvo",
+   "model": "XC60",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Volvo XC60"
+  },
+  {
+   "index": 168,
+   "make": "Volvo",
+   "model": "XC90",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Volvo XC90"
+  },
+  {
+   "index": 169,
+   "make": "Volvo",
+   "model": "V40",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Volvo V40"
+  },
+  {
+   "index": 170,
+   "make": "Volvo",
+   "model": "V60",
+   "generation": "",
+   "years": "",
+   "body": "wagon",
+   "text": "Volvo V60"
+  },
+  {
+   "index": 171,
+   "make": "Volvo",
+   "model": "240",
+   "generation": "",
+   "years": "",
+   "body": "wagon",
+   "text": "Volvo 240"
+  },
+  {
+   "index": 172,
+   "make": "Tesla",
+   "model": "Model 3",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "Tesla Model 3"
+  },
+  {
+   "index": 173,
+   "make": "Tesla",
+   "model": "Model Y",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Tesla Model Y"
+  },
+  {
+   "index": 174,
+   "make": "Tesla",
+   "model": "Model S",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "Tesla Model S"
+  },
+  {
+   "index": 175,
+   "make": "Polestar",
+   "model": "Polestar 2",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Polestar Polestar 2"
+  },
+  {
+   "index": 176,
+   "make": "BYD",
+   "model": "Dolphin",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "BYD Dolphin"
+  },
+  {
+   "index": 177,
+   "make": "MG",
+   "model": "ZS",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "MG ZS"
+  },
+  {
+   "index": 178,
+   "make": "MG",
+   "model": "MG4",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "MG MG4"
+  },
+  {
+   "index": 179,
+   "make": "Mazda",
+   "model": "Mazda2",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Mazda Mazda2"
+  },
+  {
+   "index": 180,
+   "make": "Mazda",
+   "model": "Mazda3",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Mazda Mazda3"
+  },
+  {
+   "index": 181,
+   "make": "Mazda",
+   "model": "CX-5",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Mazda CX-5"
+  },
+  {
+   "index": 182,
+   "make": "Mazda",
+   "model": "CX-30",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Mazda CX-30"
+  },
+  {
+   "index": 183,
+   "make": "Mazda",
+   "model": "MX-5",
+   "generation": "",
+   "years": "",
+   "body": "convertible",
+   "text": "Mazda MX-5"
+  },
+  {
+   "index": 184,
+   "make": "Honda",
+   "model": "Civic",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Honda Civic"
+  },
+  {
+   "index": 185,
+   "make": "Honda",
+   "model": "Jazz",
+   "generation": "",
+   "years": "",
+   "body": "hatchback",
+   "text": "Honda Jazz"
+  },
+  {
+   "index": 186,
+   "make": "Honda",
+   "model": "CR-V",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Honda CR-V"
+  },
+  {
+   "index": 187,
+   "make": "Land Rover",
+   "model": "Defender",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Land Rover Defender"
+  },
+  {
+   "index": 188,
+   "make": "Land Rover",
+   "model": "Range Rover Evoque",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Land Rover Range Rover Evoque"
+  },
+  {
+   "index": 189,
+   "make": "Land Rover",
+   "model": "Range Rover Velar",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Land Rover Range Rover Velar"
+  },
+  {
+   "index": 190,
+   "make": "Land Rover",
+   "model": "Discovery Sport",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Land Rover Discovery Sport"
+  },
+  {
+   "index": 191,
+   "make": "Jaguar",
+   "model": "E-Type",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Jaguar E-Type"
+  },
+  {
+   "index": 192,
+   "make": "Jaguar",
+   "model": "F-Type",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Jaguar F-Type"
+  },
+  {
+   "index": 193,
+   "make": "Jaguar",
+   "model": "F-Pace",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Jaguar F-Pace"
+  },
+  {
+   "index": 194,
+   "make": "Porsche",
+   "model": "356",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Porsche 356"
+  },
+  {
+   "index": 195,
+   "make": "Porsche",
+   "model": "911",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Porsche 911"
+  },
+  {
+   "index": 196,
+   "make": "Porsche",
+   "model": "Cayenne",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Porsche Cayenne"
+  },
+  {
+   "index": 197,
+   "make": "Porsche",
+   "model": "Macan",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Porsche Macan"
+  },
+  {
+   "index": 198,
+   "make": "Porsche",
+   "model": "718 Cayman",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Porsche 718 Cayman"
+  },
+  {
+   "index": 199,
+   "make": "Porsche",
+   "model": "Taycan",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "Porsche Taycan"
+  },
+  {
+   "index": 200,
+   "make": "Ferrari",
+   "model": "308 GTB",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Ferrari 308 GTB"
+  },
+  {
+   "index": 201,
+   "make": "Ferrari",
+   "model": "Testarossa",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Ferrari Testarossa"
+  },
+  {
+   "index": 202,
+   "make": "Ferrari",
+   "model": "F40",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Ferrari F40"
+  },
+  {
+   "index": 203,
+   "make": "Ferrari",
+   "model": "F355",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Ferrari F355"
+  },
+  {
+   "index": 204,
+   "make": "Ferrari",
+   "model": "California",
+   "generation": "",
+   "years": "",
+   "body": "convertible",
+   "text": "Ferrari California"
+  },
+  {
+   "index": 205,
+   "make": "Ferrari",
+   "model": "458 Italia",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Ferrari 458 Italia"
+  },
+  {
+   "index": 206,
+   "make": "Ferrari",
+   "model": "488 GTB",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Ferrari 488 GTB"
+  },
+  {
+   "index": 207,
+   "make": "Ferrari",
+   "model": "F8 Tributo",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Ferrari F8 Tributo"
+  },
+  {
+   "index": 208,
+   "make": "Ferrari",
+   "model": "296 GTB",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Ferrari 296 GTB"
+  },
+  {
+   "index": 209,
+   "make": "Ferrari",
+   "model": "Roma",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Ferrari Roma"
+  },
+  {
+   "index": 210,
+   "make": "Ferrari",
+   "model": "Portofino",
+   "generation": "",
+   "years": "",
+   "body": "convertible",
+   "text": "Ferrari Portofino"
+  },
+  {
+   "index": 211,
+   "make": "Ferrari",
+   "model": "812 Superfast",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Ferrari 812 Superfast"
+  },
+  {
+   "index": 212,
+   "make": "Ferrari",
+   "model": "SF90 Stradale",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Ferrari SF90 Stradale"
+  },
+  {
+   "index": 213,
+   "make": "Ferrari",
+   "model": "Purosangue",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Ferrari Purosangue"
+  },
+  {
+   "index": 214,
+   "make": "Lamborghini",
+   "model": "Countach",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Lamborghini Countach"
+  },
+  {
+   "index": 215,
+   "make": "Lamborghini",
+   "model": "Gallardo",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Lamborghini Gallardo"
+  },
+  {
+   "index": 216,
+   "make": "Lamborghini",
+   "model": "Aventador",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Lamborghini Aventador"
+  },
+  {
+   "index": 217,
+   "make": "Lamborghini",
+   "model": "Huracán",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Lamborghini Huracán"
+  },
+  {
+   "index": 218,
+   "make": "Lamborghini",
+   "model": "Urus",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Lamborghini Urus"
+  },
+  {
+   "index": 219,
+   "make": "Lamborghini",
+   "model": "Revuelto",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Lamborghini Revuelto"
+  },
+  {
+   "index": 220,
+   "make": "Maserati",
+   "model": "Ghibli",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "Maserati Ghibli"
+  },
+  {
+   "index": 221,
+   "make": "Maserati",
+   "model": "Quattroporte",
+   "generation": "",
+   "years": "",
+   "body": "sedan",
+   "text": "Maserati Quattroporte"
+  },
+  {
+   "index": 222,
+   "make": "Maserati",
+   "model": "Levante",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Maserati Levante"
+  },
+  {
+   "index": 223,
+   "make": "Maserati",
+   "model": "Grecale",
+   "generation": "",
+   "years": "",
+   "body": "suv",
+   "text": "Maserati Grecale"
+  },
+  {
+   "index": 224,
+   "make": "Maserati",
+   "model": "GranTurismo",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Maserati GranTurismo"
+  },
+  {
+   "index": 225,
+   "make": "Maserati",
+   "model": "MC20",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Maserati MC20"
+  },
+  {
+   "index": 226,
+   "make": "McLaren",
+   "model": "720S",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "McLaren 720S"
+  },
+  {
+   "index": 227,
+   "make": "Aston Martin",
+   "model": "DB5",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Aston Martin DB5"
+  },
+  {
+   "index": 228,
+   "make": "Aston Martin",
+   "model": "DB11",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Aston Martin DB11"
+  },
+  {
+   "index": 229,
+   "make": "Aston Martin",
+   "model": "Vantage",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Aston Martin Vantage"
+  },
+  {
+   "index": 230,
+   "make": "Bentley",
+   "model": "Continental GT",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Bentley Continental GT"
+  },
+  {
+   "index": 231,
+   "make": "Lotus",
+   "model": "Elise",
+   "generation": "",
+   "years": "",
+   "body": "convertible",
+   "text": "Lotus Elise"
+  },
+  {
+   "index": 232,
+   "make": "Alpine",
+   "model": "A110",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Alpine A110"
+  },
+  {
+   "index": 233,
+   "make": "Chevrolet",
+   "model": "Corvette",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Chevrolet Corvette"
+  },
+  {
+   "index": 234,
+   "make": "Dodge",
+   "model": "Challenger",
+   "generation": "",
+   "years": "",
+   "body": "coupe",
+   "text": "Dodge Challenger"
+  }
+ ]
+}

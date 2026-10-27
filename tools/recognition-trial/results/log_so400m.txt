@@ -1,0 +1,87 @@
+W1025 18:09:06.615000 83479 torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+[transformers] Model config: bos_token_id must be `None` or an integer within the vocabulary (between 0 and 31999), got 49406. This may result in unexpected behavior.
+[transformers] Model config: eos_token_id must be `None` or an integer within the vocabulary (between 0 and 31999), got 49407. This may result in unexpected behavior.
+Loading weights:   0%|          | 0/888 [00:00<?, ?it/s]Loading weights:   0%|          | 4/888 [00:04<17:16,  1.17s/it]Loading weights:  94%|█████████▍| 833/888 [00:04<00:00, 240.60it/s]Loading weights: 100%|██████████| 888/888 [00:05<00:00, 172.30it/s]
+modello google/siglip2-so400m-patch14-384 su mps, logit_scale=109.9
+testo: 304+235 etichette in 101.0s
+{
+  "model": "google/siglip2-so400m-patch14-384",
+  "device": "mps",
+  "n_images": 76,
+  "n_skipped_out_of_catalog": 0,
+  "make_top1": 0.9605263157894737,
+  "make_top3": 0.9868421052631579,
+  "model_top1": 0.8289473684210527,
+  "model_top3": 0.9868421052631579,
+  "model_top1_from_gen_prompts": 0.9078947368421053,
+  "model_top3_from_gen_prompts": 0.9736842105263158,
+  "ms_per_image_mean": 404.2697949604955,
+  "ms_per_image_median": 402.15600000101404,
+  "catalog": {
+    "generation_classes": 304,
+    "model_classes": 235
+  },
+  "conf_top1_mean_correct": 0.9190574903336782,
+  "conf_top1_mean_wrong": 0.5696348510682583,
+  "top_confusions": [
+    {
+      "truth": "Fiat Panda",
+      "pred": "Fiat Grande Panda",
+      "n": 2
+    },
+    {
+      "truth": "Fiat 500",
+      "pred": "Fiat Cinquecento",
+      "n": 2
+    },
+    {
+      "truth": "Ford Fiesta",
+      "pred": "BYD Dolphin",
+      "n": 2
+    },
+    {
+      "truth": "Alfa Romeo Giulietta",
+      "pred": "Alfa Romeo Alfasud",
+      "n": 1
+    },
+    {
+      "truth": "Volkswagen Golf",
+      "pred": "Ford Kuga",
+      "n": 1
+    },
+    {
+      "truth": "Peugeot 208",
+      "pred": "Peugeot 207",
+      "n": 1
+    },
+    {
+      "truth": "Citroën C3",
+      "pred": "Citroën C3 Aircross",
+      "n": 1
+    },
+    {
+      "truth": "BMW Serie 3",
+      "pred": "BMW M3",
+      "n": 1
+    },
+    {
+      "truth": "Tesla Model 3",
+      "pred": "Tesla Model Y",
+      "n": 1
+    },
+    {
+      "truth": "Skoda Octavia",
+      "pred": "Skoda Scala",
+      "n": 1
+    }
+  ]
+}
+W1025 18:11:38.385000 84332 torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+[transformers] Model config: bos_token_id must be `None` or an integer within the vocabulary (between 0 and 31999), got 49406. This may result in unexpected behavior.
+[transformers] Model config: eos_token_id must be `None` or an integer within the vocabulary (between 0 and 31999), got 49407. This may result in unexpected behavior.
+Loading weights:   0%|          | 0/888 [00:00<?, ?it/s]Loading weights:   0%|          | 4/888 [00:04<18:16,  1.24s/it]Loading weights:  94%|█████████▍| 833/888 [00:05<00:00, 227.72it/s]Loading weights: 100%|██████████| 888/888 [00:05<00:00, 162.27it/s]
+/Users/andre/Desktop/CarSpot/tools/recognition-trial/export/so400m/label_embeddings_gen.f16: (304, 1152) 684 KB
+/Users/andre/Desktop/CarSpot/tools/recognition-trial/export/so400m/label_embeddings_model.f16: (235, 1152) 529 KB
+FINITO

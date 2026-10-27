@@ -1,0 +1,305 @@
+make,model,generation,years,body
+Fiat,Panda,I (141),1980-2003,hatchback
+Fiat,Panda,II (169),2003-2012,hatchback
+Fiat,Panda,III (319),2012-present,hatchback
+Fiat,Grande Panda,I,2025-present,hatchback
+Fiat,500,Nuova 500,1957-1975,hatchback
+Fiat,500,II (312),2007-present,hatchback
+Fiat,500e,II (332),2020-present,hatchback
+Fiat,500X,I (334),2014-present,suv
+Fiat,500L,I (330),2012-2022,mpv
+Fiat,600,I (2023),2023-present,suv
+Fiat,Tipo,II (356),2016-present,hatchback
+Fiat,Punto,II (188),1999-2010,hatchback
+Fiat,Grande Punto,I (199),2005-2012,hatchback
+Fiat,Punto Evo,I (199),2009-2018,hatchback
+Fiat,Uno,I (146),1983-1995,hatchback
+Fiat,Cinquecento,I (170),1991-1998,hatchback
+Fiat,Seicento,I (187),1998-2010,hatchback
+Fiat,Multipla,I (186),1998-2010,mpv
+Fiat,Bravo,II (198),2007-2014,hatchback
+Fiat,Doblò,II (263),2010-2022,mpv
+Fiat,Ducato,III (250),2006-present,van
+Fiat,124 Spider,I,1966-1985,convertible
+Fiat,124 Spider,II (348),2016-2020,convertible
+Abarth,595,I,2008-present,hatchback
+Autobianchi,A112,I,1969-1986,hatchback
+Piaggio,Ape,Ape TM / Ape 50,1964-present,three-wheeler
+Lancia,Ypsilon,II (843),2003-2011,hatchback
+Lancia,Ypsilon,III (846),2011-2024,hatchback
+Lancia,Ypsilon,IV,2024-present,hatchback
+Lancia,Delta,I HF Integrale,1987-1994,hatchback
+Lancia,Delta,III (844),2008-2014,hatchback
+Lancia,Fulvia,Coupé,1965-1976,coupe
+Lancia,Y10,I,1985-1995,hatchback
+Alfa Romeo,Giulietta,III (940),2010-2020,hatchback
+Alfa Romeo,Giulia,IV (952),2015-present,sedan
+Alfa Romeo,Stelvio,I (949),2016-present,suv
+Alfa Romeo,Tonale,I,2022-present,suv
+Alfa Romeo,Junior,I,2024-present,suv
+Alfa Romeo,MiTo,I (955),2008-2018,hatchback
+Alfa Romeo,147,I,2000-2010,hatchback
+Alfa Romeo,156,I,1997-2007,sedan
+Alfa Romeo,159,I,2005-2011,sedan
+Alfa Romeo,Brera,I,2005-2010,coupe
+Alfa Romeo,4C,I,2013-2020,coupe
+Alfa Romeo,Spider,Duetto (105),1966-1993,convertible
+Alfa Romeo,Giulia Sprint GT,I,1963-1976,coupe
+Alfa Romeo,Alfasud,I,1972-1989,sedan
+Jeep,Renegade,I (BU),2014-present,suv
+Jeep,Compass,II (MP),2017-present,suv
+Jeep,Avenger,I,2023-present,suv
+Jeep,Wrangler,JL,2018-present,suv
+Jeep,Grand Cherokee,IV (WK2),2010-2021,suv
+Volkswagen,Golf,I (Mk1),1974-1983,hatchback
+Volkswagen,Golf,IV (Mk4),1997-2003,hatchback
+Volkswagen,Golf,V (Mk5),2003-2008,hatchback
+Volkswagen,Golf,VI (Mk6),2008-2012,hatchback
+Volkswagen,Golf,VII (Mk7),2012-2019,hatchback
+Volkswagen,Golf,VIII (Mk8),2019-present,hatchback
+Volkswagen,Polo,IV (9N),2001-2009,hatchback
+Volkswagen,Polo,V (6R),2009-2017,hatchback
+Volkswagen,Polo,VI (AW),2017-present,hatchback
+Volkswagen,Up!,I,2011-2023,hatchback
+Volkswagen,T-Roc,I,2017-present,suv
+Volkswagen,T-Cross,I,2018-present,suv
+Volkswagen,Tiguan,II,2016-2023,suv
+Volkswagen,Tiguan,III,2024-present,suv
+Volkswagen,Passat,B8,2014-2023,wagon
+Volkswagen,ID.3,I,2019-present,hatchback
+Volkswagen,Maggiolino (Beetle),Type 1,1938-2003,hatchback
+Volkswagen,Transporter,T1 (Bulli),1950-1967,van
+Volkswagen,Transporter,T6,2015-2024,van
+Renault,Clio,III,2005-2012,hatchback
+Renault,Clio,IV,2012-2019,hatchback
+Renault,Clio,V,2019-present,hatchback
+Renault,Captur,I,2013-2019,suv
+Renault,Captur,II,2019-present,suv
+Renault,Megane,IV,2015-2023,hatchback
+Renault,Twingo,I,1993-2007,hatchback
+Renault,Twingo,III,2014-2024,hatchback
+Renault,Kadjar,I,2015-2022,suv
+Renault,Zoe,I,2012-2024,hatchback
+Renault,4,R4,1961-1992,hatchback
+Renault,5,R5,1972-1985,hatchback
+Renault,5 E-Tech,I,2024-present,hatchback
+Dacia,Sandero,II,2012-2020,hatchback
+Dacia,Sandero,III,2020-present,hatchback
+Dacia,Duster,II,2017-2024,suv
+Dacia,Duster,III,2024-present,suv
+Dacia,Jogger,I,2021-present,wagon
+Dacia,Spring,I,2021-present,hatchback
+Citroën,C3,II,2009-2016,hatchback
+Citroën,C3,III,2016-2024,hatchback
+Citroën,C3,IV,2024-present,hatchback
+Citroën,C1,II,2014-2022,hatchback
+Citroën,C4 Cactus,I,2014-2020,suv
+Citroën,C4,III,2020-present,hatchback
+Citroën,C3 Aircross,I,2017-present,suv
+Citroën,Berlingo,III,2018-present,mpv
+Citroën,2CV,I,1948-1990,sedan
+Citroën,Ami,I,2020-present,quadricycle
+Peugeot,108,I,2014-2021,hatchback
+Peugeot,205,I,1983-1998,hatchback
+Peugeot,207,I,2006-2014,hatchback
+Peugeot,208,I,2012-2019,hatchback
+Peugeot,208,II,2019-present,hatchback
+Peugeot,2008,I,2013-2019,suv
+Peugeot,2008,II,2019-present,suv
+Peugeot,308,II (T9),2013-2021,hatchback
+Peugeot,308,III,2021-present,hatchback
+Peugeot,3008,II,2016-2023,suv
+Peugeot,3008,III,2024-present,suv
+Ford,Fiesta,VI,2008-2017,hatchback
+Ford,Fiesta,VII,2017-2023,hatchback
+Ford,Focus,III,2010-2018,hatchback
+Ford,Focus,IV,2018-2025,hatchback
+Ford,Puma,II,2019-present,suv
+Ford,Kuga,II,2012-2019,suv
+Ford,Kuga,III,2019-present,suv
+Ford,Ka,II,2008-2016,hatchback
+Ford,EcoSport,II,2013-2023,suv
+Ford,Mustang,I,1964-1973,coupe
+Ford,Mustang,VI (S550),2015-2023,coupe
+Toyota,Aygo,II,2014-2021,hatchback
+Toyota,Aygo X,I,2022-present,hatchback
+Toyota,Yaris,III,2011-2020,hatchback
+Toyota,Yaris,IV,2020-present,hatchback
+Toyota,Yaris Cross,I,2020-present,suv
+Toyota,Corolla,E210,2018-present,hatchback
+Toyota,C-HR,I,2016-2023,suv
+Toyota,RAV4,V,2018-present,suv
+Toyota,Supra,A90,2019-present,coupe
+Opel,Corsa,D,2006-2014,hatchback
+Opel,Corsa,E,2014-2019,hatchback
+Opel,Corsa,F,2019-present,hatchback
+Opel,Astra,K,2015-2021,hatchback
+Opel,Astra,L,2021-present,hatchback
+Opel,Mokka,B,2020-present,suv
+Opel,Crossland,I,2017-2024,suv
+Opel,Grandland,I,2017-present,suv
+Opel,Adam,I,2012-2019,hatchback
+Audi,A1,8X,2010-2018,hatchback
+Audi,A1,GB,2018-2025,hatchback
+Audi,A3,8V,2012-2020,hatchback
+Audi,A3,8Y,2020-present,hatchback
+Audi,A4,B8,2007-2015,sedan
+Audi,A4,B9,2015-present,sedan
+Audi,A5,F5,2016-present,coupe
+Audi,A6,C8,2018-present,sedan
+Audi,Q2,I,2016-present,suv
+Audi,Q3,II (F3),2018-present,suv
+Audi,Q5,II (FY),2016-2024,suv
+Audi,TT,8J,2006-2014,coupe
+Audi,TT,8S,2014-2023,coupe
+Audi,R8,I,2006-2023,coupe
+BMW,Serie 1,F20,2011-2019,hatchback
+BMW,Serie 1,F40,2019-2024,hatchback
+BMW,Serie 3,F30,2012-2019,sedan
+BMW,Serie 3,G20,2018-present,sedan
+BMW,Serie 5,G30,2016-2023,sedan
+BMW,X1,F48,2015-2022,suv
+BMW,X1,U11,2022-present,suv
+BMW,X3,G01,2017-present,suv
+BMW,X5,G05,2018-present,suv
+BMW,Z4,G29,2018-present,convertible
+BMW,2002,E10,1966-1976,sedan
+BMW,M3,E30,1986-1991,coupe
+Mini,Cooper,R56,2006-2013,hatchback
+Mini,Cooper,F56,2014-2023,hatchback
+Mini,Classic Mini,ADO15,1959-2000,hatchback
+Mercedes-Benz,Classe A,W176,2012-2018,hatchback
+Mercedes-Benz,Classe A,W177,2018-2025,hatchback
+Mercedes-Benz,Classe C,W205,2014-2021,sedan
+Mercedes-Benz,Classe C,W206,2021-present,sedan
+Mercedes-Benz,Classe E,W213,2016-2023,sedan
+Mercedes-Benz,CLA,C118,2019-present,sedan
+Mercedes-Benz,GLA,H247,2020-present,suv
+Mercedes-Benz,GLC,X253,2015-2022,suv
+Mercedes-Benz,Classe G,W463,1979-present,suv
+Mercedes-Benz,SL,R107,1971-1989,convertible
+Mercedes-Benz,AMG GT,C190,2014-2023,coupe
+Smart,Fortwo,C451,2007-2014,hatchback
+Smart,Fortwo,C453,2014-2024,hatchback
+Hyundai,i10,II,2013-2019,hatchback
+Hyundai,i10,III,2019-present,hatchback
+Hyundai,i20,III,2020-present,hatchback
+Hyundai,Tucson,TL,2015-2020,suv
+Hyundai,Tucson,NX4,2020-present,suv
+Hyundai,Kona,I,2017-2023,suv
+Hyundai,Bayon,I,2021-present,suv
+Hyundai,Ioniq 5,I,2021-present,suv
+Kia,Picanto,II,2011-2017,hatchback
+Kia,Picanto,III,2017-present,hatchback
+Kia,Sportage,IV,2015-2021,suv
+Kia,Sportage,V,2021-present,suv
+Kia,Stonic,I,2017-present,suv
+Kia,Ceed,III,2018-present,hatchback
+Nissan,Micra,K13,2010-2016,hatchback
+Nissan,Micra,K14,2016-2023,hatchback
+Nissan,Juke,I,2010-2019,suv
+Nissan,Juke,II,2019-present,suv
+Nissan,Qashqai,J11,2013-2021,suv
+Nissan,Qashqai,J12,2021-present,suv
+Nissan,Leaf,II,2017-present,hatchback
+Nissan,GT-R,R35,2007-2024,coupe
+Suzuki,Ignis,III,2016-present,hatchback
+Suzuki,Swift,AZ,2017-2023,hatchback
+Suzuki,Vitara,IV (LY),2015-present,suv
+Suzuki,Jimny,III (JB43),1998-2018,suv
+Suzuki,Jimny,IV (JB74),2018-present,suv
+Skoda,Fabia,III,2014-2021,hatchback
+Skoda,Fabia,IV,2021-present,hatchback
+Skoda,Octavia,III (5E),2012-2020,wagon
+Skoda,Octavia,IV (NX),2019-present,wagon
+Skoda,Kamiq,I,2019-present,suv
+Skoda,Karoq,I,2017-present,suv
+Skoda,Kodiaq,I,2016-present,suv
+Skoda,Scala,I,2019-present,hatchback
+Skoda,Superb,III,2015-2023,sedan
+Seat,Ibiza,IV (6J),2008-2017,hatchback
+Seat,Ibiza,V (6F),2017-present,hatchback
+Seat,Leon,III (5F),2012-2020,hatchback
+Seat,Leon,IV (KL),2020-present,hatchback
+Seat,Arona,I,2017-present,suv
+Seat,Ateca,I,2016-present,suv
+Cupra,Formentor,I,2020-present,suv
+Volvo,XC40,I,2017-present,suv
+Volvo,XC60,II,2017-present,suv
+Volvo,XC90,II,2015-present,suv
+Volvo,V40,II,2012-2019,hatchback
+Volvo,V60,II,2018-present,wagon
+Volvo,240,I,1974-1993,wagon
+Tesla,Model 3,I,2017-present,sedan
+Tesla,Model Y,I,2020-present,suv
+Tesla,Model S,I,2012-present,sedan
+Polestar,Polestar 2,I,2019-present,hatchback
+BYD,Dolphin,I,2021-present,hatchback
+MG,ZS,I,2017-present,suv
+MG,MG4,I,2022-present,hatchback
+Mazda,Mazda2,DJ,2014-present,hatchback
+Mazda,Mazda3,BM,2013-2019,hatchback
+Mazda,Mazda3,BP,2019-present,hatchback
+Mazda,CX-5,KF,2017-present,suv
+Mazda,CX-30,I,2019-present,suv
+Mazda,MX-5,NA,1989-1997,convertible
+Mazda,MX-5,ND,2015-present,convertible
+Honda,Civic,X,2015-2021,hatchback
+Honda,Civic,XI,2021-present,hatchback
+Honda,Jazz,III,2015-2020,hatchback
+Honda,Jazz,IV,2020-present,hatchback
+Honda,CR-V,V,2017-2023,suv
+Land Rover,Defender,Classic (90/110),1983-2016,suv
+Land Rover,Defender,L663,2019-present,suv
+Land Rover,Range Rover Evoque,L538,2011-2018,suv
+Land Rover,Range Rover Evoque,L551,2019-present,suv
+Land Rover,Range Rover Velar,L560,2017-present,suv
+Land Rover,Discovery Sport,L550,2014-present,suv
+Jaguar,E-Type,Series 1,1961-1975,coupe
+Jaguar,F-Type,I,2013-2024,coupe
+Jaguar,F-Pace,I,2016-present,suv
+Porsche,356,I,1948-1965,coupe
+Porsche,911,G-Series,1974-1989,coupe
+Porsche,911,964/993,1989-1998,coupe
+Porsche,911,997,2004-2012,coupe
+Porsche,911,991,2011-2019,coupe
+Porsche,911,992,2019-present,coupe
+Porsche,Cayenne,III,2017-present,suv
+Porsche,Macan,I,2014-2024,suv
+Porsche,718 Cayman,982,2016-present,coupe
+Porsche,Taycan,I,2019-present,sedan
+Ferrari,308 GTB,I,1975-1985,coupe
+Ferrari,Testarossa,I,1984-1996,coupe
+Ferrari,F40,I,1987-1992,coupe
+Ferrari,F355,I,1994-1999,coupe
+Ferrari,California,I,2008-2017,convertible
+Ferrari,458 Italia,I,2009-2015,coupe
+Ferrari,488 GTB,I,2015-2019,coupe
+Ferrari,F8 Tributo,I,2019-2023,coupe
+Ferrari,296 GTB,I,2021-present,coupe
+Ferrari,Roma,I,2020-present,coupe
+Ferrari,Portofino,I,2017-2023,convertible
+Ferrari,812 Superfast,I,2017-2024,coupe
+Ferrari,SF90 Stradale,I,2019-present,coupe
+Ferrari,Purosangue,I,2022-present,suv
+Lamborghini,Countach,I,1974-1990,coupe
+Lamborghini,Gallardo,I,2003-2013,coupe
+Lamborghini,Aventador,I,2011-2022,coupe
+Lamborghini,Huracán,I,2014-2024,coupe
+Lamborghini,Urus,I,2018-present,suv
+Lamborghini,Revuelto,I,2023-present,coupe
+Maserati,Ghibli,M157,2013-2024,sedan
+Maserati,Quattroporte,VI (M156),2013-2024,sedan
+Maserati,Levante,I,2016-present,suv
+Maserati,Grecale,I,2022-present,suv
+Maserati,GranTurismo,II,2023-present,coupe
+Maserati,MC20,I,2020-present,coupe
+McLaren,720S,I,2017-2023,coupe
+Aston Martin,DB5,I,1963-1965,coupe
+Aston Martin,DB11,I,2016-2023,coupe
+Aston Martin,Vantage,II,2018-present,coupe
+Bentley,Continental GT,III,2018-present,coupe
+Lotus,Elise,Series 2,2000-2021,convertible
+Alpine,A110,II,2017-present,coupe
+Chevrolet,Corvette,C7,2014-2019,coupe
+Dodge,Challenger,III,2008-2023,coupe
