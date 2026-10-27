@@ -14,8 +14,6 @@ struct RarityBadge: View {
             Text(rarity.displayName)
                 .font(CSFont.micro)
                 .fontWeight(.semibold)
-                .tracking(0.6)
-                .textCase(.uppercase)
                 .foregroundStyle(compact ? CSColor.inkSecondary : CSColor.ink)
                 .lineLimit(1)
         }

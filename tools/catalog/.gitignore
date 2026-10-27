@@ -1,0 +1,3 @@
+# Output della pipeline: rigenerabile, pesante (immagini).
+out/
+__pycache__/

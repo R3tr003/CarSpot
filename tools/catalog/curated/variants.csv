@@ -1,0 +1,109 @@
+make,model,variant,year_start,year_end,aliases
+Volkswagen,Golf,GTI,1976,,Golf GTi
+Volkswagen,Golf,GTD,1982,,
+Volkswagen,Golf,GTE,2014,,
+Volkswagen,Golf,R,2002,,Golf R32|R32
+Volkswagen,Polo,GTI,1998,,Polo GTi
+Volkswagen,Up!,GTI,2018,2023,up! GTI
+Volkswagen,Scirocco,R,2009,2017,
+Volkswagen,T-Roc,R,2019,,
+Volkswagen,Tiguan,R,2020,,
+Audi,A1,=S1,2014,2018,
+Audi,A3,=S3,1999,,
+Audi,A3,=RS 3,2011,,RS3
+Audi,A4,=S4,1997,,
+Audi,A4,=RS 4,1999,,RS4
+Audi,A5,=S5,2007,,
+Audi,A5,=RS 5,2010,,RS5
+Audi,A6,=S6,1994,,
+Audi,A6,=RS 6,2002,,RS6
+Audi,A7,=RS 7,2013,,RS7
+Audi,Q3,=RS Q3,2013,,RSQ3
+Audi,Q8,=RS Q8,2019,,RSQ8
+Audi,TT,=TTS,2008,2023,
+Audi,TT,=TT RS,2009,2023,TTRS
+BMW,Serie 1,=M135i,2019,,M135i xDrive
+BMW,Serie 2,=M2,2015,,
+BMW,Serie 4,=M4,2014,,
+BMW,X5,=X5 M,2009,,
+BMW,X3,=X3 M,2019,,
+Mercedes-Benz,Classe A,=AMG A 45,2013,,A45 AMG|A 45 AMG
+Mercedes-Benz,Classe A,=AMG A 35,2018,,A35 AMG
+Mercedes-Benz,Classe C,=AMG C 63,2007,,C63 AMG|C 63 AMG
+Mercedes-Benz,Classe E,=AMG E 63,2009,,E63 AMG
+Mercedes-Benz,Classe G,=AMG G 63,2012,,G63 AMG|G 63
+Mercedes-Benz,Classe CLA,=AMG CLA 45,2013,,CLA45 AMG
+Fiat,Panda,4x4,1983,,Panda 4×4
+Fiat,Panda,Cross,2014,,
+Fiat,Punto,Abarth,2008,2015,
+Fiat,Grande Punto,Abarth,2007,2010,
+Alfa Romeo,Giulia,Quadrifoglio,2016,,Giulia QV|Giulia Quadrifoglio Verde
+Alfa Romeo,Stelvio,Quadrifoglio,2017,,Stelvio QV
+Alfa Romeo,Giulietta,Quadrifoglio Verde,2010,2020,Giulietta QV
+Alfa Romeo,MiTo,Quadrifoglio Verde,2009,2018,MiTo QV
+Alfa Romeo,147,GTA,2002,2005,
+Alfa Romeo,156,GTA,2002,2005,
+Lancia,Delta,HF Integrale,1987,1994,Delta Integrale|Integrale
+Lancia,Ypsilon,HF,2024,,
+Ford,Fiesta,ST,2005,2023,
+Ford,Focus,ST,2002,,
+Ford,Focus,RS,2002,2018,
+Ford,Puma,ST,2020,,
+Ford,Mustang,GT,1965,,
+Ford,Mustang,=Shelby GT500,2007,,GT500
+Ford,Ranger,Raptor,2019,,
+Toyota,Yaris,=GR Yaris,2020,,GR Yaris
+Toyota,Corolla,=GR Corolla,2022,,GR Corolla
+Toyota,Supra,=GR Supra,2019,,GR Supra
+Honda,Civic,Type R,1997,,Civic Type-R
+Hyundai,i20,N,2021,2024,
+Hyundai,i30,N,2017,,
+Hyundai,Kona,N,2021,,
+Hyundai,Ioniq 5,N,2024,,
+Renault,Clio,RS,2000,2022,Clio R.S.|Clio Renault Sport
+Renault,Clio,V6,2001,2005,Clio V6 Renault Sport
+Renault,Mégane,RS,2004,2023,Megane RS|Mégane R.S.
+Renault,Twingo,RS,2008,2013,
+Peugeot,208,GTi,2013,2019,
+Peugeot,308,GTi,2015,2021,
+Peugeot,205,GTI,1984,1994,
+Citroën,Saxo,VTS,1996,2003,
+Porsche,911,Turbo,1975,,911 Turbo S
+Porsche,911,GT3,1999,,
+Porsche,911,GT3 RS,2003,,
+Porsche,911,GT2 RS,2010,,
+Porsche,911,Targa,1966,,
+Porsche,Cayenne,Turbo,2002,,
+Porsche,Panamera,Turbo,2009,,
+Porsche,Taycan,Turbo S,2019,,
+Porsche,Macan,GTS,2015,,
+Porsche,Cayman,=Cayman GT4,2015,,718 Cayman GT4
+Mini,Hatch,=Cooper S,2001,,Mini Cooper S|Cooper S
+Mini,Hatch,=John Cooper Works,2008,,JCW|Mini JCW
+Seat,León,=León Cupra,1999,2020,Leon Cupra
+Seat,Ibiza,=Ibiza Cupra,1996,2017,Ibiza Cupra
+Škoda,Octavia,RS,2000,,Octavia vRS
+Škoda,Fabia,RS,2003,2014,
+Subaru,Impreza,WRX STI,1994,2014,Impreza STI
+Mitsubishi,Lancer,Evolution,1992,2016,Lancer Evo|Evo
+Nissan,GT-R,Nismo,2014,,
+Opel,Corsa,OPC,2007,2018,
+Opel,Astra,OPC,2005,2019,
+Kia,Ceed,GT,2013,,cee'd GT
+Kia,EV6,GT,2022,,
+Volvo,V60,Polestar,2014,2018,
+Jaguar,F-Type,R,2014,,
+Maserati,Ghibli,Trofeo,2021,,
+Maserati,Levante,Trofeo,2019,,
+Lamborghini,Huracán,Performante,2017,2019,Huracan Performante
+Lamborghini,Huracán,STO,2021,,Huracan STO
+Lamborghini,Aventador,SVJ,2018,2022,
+Ferrari,F8,Spider,2019,2023,F8 Spider
+Ferrari,488,Pista,2018,2020,488 Pista
+Ferrari,812,Competizione,2021,,
+Ferrari,296,GTS,2022,,
+Aston Martin,Vantage,AMR,2017,,
+McLaren,720S,Spider,2019,2023,
+Dacia,Duster,Extreme,2022,,
+Tesla,Model 3,Performance,2018,,
+Tesla,Model S,Plaid,2021,,

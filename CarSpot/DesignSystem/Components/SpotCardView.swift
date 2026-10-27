@@ -20,7 +20,6 @@ struct SpotCardView: View {
         RoundedRectangle(cornerRadius: CSRadius.card, style: .continuous)
     }
     private var color: Color { card.rarity.color }
-    private var finish: RarityFinish { card.rarity.finish }
     /// Inclinazione effettiva: ferma con Riduci movimento e nella versione compatta.
     private var tiltRoll: Double { reduceMotion || compact ? 0 : roll }
     private var tiltPitch: Double { reduceMotion || compact ? 0 : pitch }
@@ -36,7 +35,7 @@ struct SpotCardView: View {
             VStack(spacing: CSSpace.sm) {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: CSSpace.xxs) {
-                        Text(card.make.uppercased()).eyebrow(color)
+                        Text(card.make).eyebrow(color)
                             .lineLimit(1).minimumScaleFactor(0.6)
                         Text(card.model)
                             .font(CSFont.title(19))
@@ -87,83 +86,15 @@ struct SpotCardView: View {
         .aspectRatio(0.7, contentMode: .fit)
         // Layout a proporzione fissa: il Dynamic Type è limitato.
         .dynamicTypeSize(...DynamicTypeSize.xLarge)
-        .overlay { foilLayer }
-        .overlay { specularLayer }
-        .overlay { borderLayer }
+        .overlay {
+            RarityFrame(rarity: card.rarity, shape: shape,
+                        roll: tiltRoll, pitch: tiltPitch, compact: compact)
+        }
         .shadow(color: .black.opacity(compact ? 0.3 : 0.5),
                 radius: compact ? 10 : 20, y: compact ? 6 : 14)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabelText)
         .accessibilityValue(statsSpoken)
-    }
-
-    // MARK: Materiali
-
-    /// Foil monocromo: sul bordo (Epica) o su tutta la carta (Leggendaria). Mai in compact.
-    @ViewBuilder private var foilLayer: some View {
-        if !compact {
-            switch finish {
-            case .fullFoil:
-                HolographicFoil(color: color, roll: tiltRoll, pitch: tiltPitch, strength: 1, wash: 0.09)
-                    .clipShape(shape)
-            case .foilEdge:
-                HolographicFoil(color: color, roll: tiltRoll, pitch: tiltPitch, strength: 1.6)
-                    .mask { shape.strokeBorder(lineWidth: 5) }
-            case .matte, .metalEdge:
-                EmptyView()
-            }
-        }
-    }
-
-    /// Riflesso speculare radiale tinto del colore della rarità, che segue l'inclinazione.
-    @ViewBuilder private var specularLayer: some View {
-        if !compact {
-            GeometryReader { geo in
-                let base: Double = switch finish {
-                case .matte: 0.10
-                case .metalEdge: 0.20
-                case .foilEdge: 0.24
-                case .fullFoil: 0.30
-                }
-                let level = base * (0.4 + min(1, (abs(tiltRoll) + abs(tiltPitch)) / 0.8))
-                RadialGradient(
-                    colors: [color.opacity(level), .clear],
-                    center: UnitPoint(x: 0.5 + tiltRoll * 0.35, y: 0.2 - tiltPitch * 0.25),
-                    startRadius: 0,
-                    endRadius: max(geo.size.width, geo.size.height) * 0.55
-                )
-            }
-            .clipShape(shape)
-            .allowsHitTesting(false)
-        }
-    }
-
-    /// Bordo: 1 pt tenue (opaca), 2 pt metallico con luce legata a `roll` (Rara, Leggendaria),
-    /// 2 pt pieno sotto il foil (Epica).
-    @ViewBuilder private var borderLayer: some View {
-        switch finish {
-        case .matte:
-            shape.strokeBorder(color.opacity(0.35), lineWidth: 1)
-        case .foilEdge:
-            shape.strokeBorder(color, lineWidth: 2)
-        case .metalEdge, .fullFoil:
-            if compact {
-                shape.strokeBorder(color, lineWidth: 2)
-            } else {
-                let highlight = min(0.9, max(0.1, 0.5 + tiltRoll * 0.4))
-                shape.strokeBorder(
-                    LinearGradient(
-                        stops: [
-                            .init(color: color.mix(with: .black, by: 0.18), location: 0),
-                            .init(color: color.mix(with: .white, by: 0.5), location: highlight),
-                            .init(color: color.mix(with: .black, by: 0.18), location: 1)
-                        ],
-                        startPoint: .topLeading, endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 2
-                )
-            }
-        }
     }
 
     /// "×N" in alto a destra.
@@ -196,12 +127,104 @@ struct SpotCardView: View {
     private func miniStat(_ label: LocalizedStringKey, _ value: Int) -> some View {
         VStack(spacing: 1) {
             Text("\(value)").font(CSFont.numeric(15)).foregroundStyle(CSColor.ink)
-            Text(label).font(CSFont.micro).tracking(1)
+            Text(label).font(CSFont.micro)
                 .foregroundStyle(CSColor.inkTertiary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, CSSpace.xs)
         .background(RoundedRectangle(cornerRadius: CSRadius.sm, style: .continuous).fill(CSColor.nested))
+    }
+}
+
+// MARK: - Bordo e materiale per rarità
+
+/// Bordo, foil e riflesso di una carta, per rarità. Si usa come `overlay` di una carta
+/// con la stessa `shape`. `roll`/`pitch` sono già l'inclinazione effettiva (0 con
+/// Riduci movimento); `compact` = solo bordo, niente foil né riflessi.
+struct RarityFrame: View {
+    let rarity: Rarity
+    let shape: RoundedRectangle
+    var roll: Double = 0
+    var pitch: Double = 0
+    var compact: Bool = false
+
+    private var color: Color { rarity.color }
+    private var finish: RarityFinish { rarity.finish }
+
+    var body: some View {
+        ZStack {
+            foilLayer
+            specularLayer
+            borderLayer
+        }
+        .allowsHitTesting(false)
+    }
+
+    /// Foil monocromo: sul bordo (Epica) o su tutta la carta (Leggendaria). Mai in compact.
+    @ViewBuilder private var foilLayer: some View {
+        if !compact {
+            switch finish {
+            case .fullFoil:
+                HolographicFoil(color: color, roll: roll, pitch: pitch, strength: 1, wash: 0.09)
+                    .clipShape(shape)
+            case .foilEdge:
+                HolographicFoil(color: color, roll: roll, pitch: pitch, strength: 1.6)
+                    .mask { shape.strokeBorder(lineWidth: 5) }
+            case .matte, .metalEdge:
+                EmptyView()
+            }
+        }
+    }
+
+    /// Riflesso speculare radiale tinto del colore della rarità, che segue l'inclinazione.
+    @ViewBuilder private var specularLayer: some View {
+        if !compact {
+            GeometryReader { geo in
+                let base: Double = switch finish {
+                case .matte: 0.10
+                case .metalEdge: 0.20
+                case .foilEdge: 0.24
+                case .fullFoil: 0.30
+                }
+                let level = base * (0.4 + min(1, (abs(roll) + abs(pitch)) / 0.8))
+                RadialGradient(
+                    colors: [color.opacity(level), .clear],
+                    center: UnitPoint(x: 0.5 + roll * 0.35, y: 0.2 - pitch * 0.25),
+                    startRadius: 0,
+                    endRadius: max(geo.size.width, geo.size.height) * 0.55
+                )
+            }
+            .clipShape(shape)
+            .allowsHitTesting(false)
+        }
+    }
+
+    /// Bordo: 1 pt tenue (opaca), 2 pt metallico con luce legata a `roll` (Rara, Leggendaria),
+    /// 2 pt pieno sotto il foil (Epica).
+    @ViewBuilder private var borderLayer: some View {
+        switch finish {
+        case .matte:
+            shape.strokeBorder(color.opacity(0.35), lineWidth: 1)
+        case .foilEdge:
+            shape.strokeBorder(color, lineWidth: 2)
+        case .metalEdge, .fullFoil:
+            if compact {
+                shape.strokeBorder(color, lineWidth: 2)
+            } else {
+                let highlight = min(0.9, max(0.1, 0.5 + roll * 0.4))
+                shape.strokeBorder(
+                    LinearGradient(
+                        stops: [
+                            .init(color: color.mix(with: .black, by: 0.18), location: 0),
+                            .init(color: color.mix(with: .white, by: 0.5), location: highlight),
+                            .init(color: color.mix(with: .black, by: 0.18), location: 1)
+                        ],
+                        startPoint: .topLeading, endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 2
+                )
+            }
+        }
     }
 }
 
