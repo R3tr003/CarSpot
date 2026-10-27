@@ -32,6 +32,12 @@ final class StoredCard {
     /// Collezione, copie e obiettivi; resta solo in cronologia.
     var isRepeat: Bool = false
 
+    // Posizione esatta dello scatto: SOLO sul dispositivo (decisione utente 2026-10-25).
+    // Mai in `CloudCard`/sync, analytics o log; le carte scaricate dal cloud restano a nil.
+    // La vede solo il proprietario sulla sua mappa. Opzionali: migrazione leggera.
+    var latitude: Double?
+    var longitude: Double?
+
     @Attribute(.externalStorage) var photo: Data?
 
     init(make: String, model: String, year: Int, rarity: Rarity, colorName: String,
@@ -51,6 +57,12 @@ final class StoredCard {
     }
 
     var rarity: Rarity { Rarity(rawValue: rarityRaw) ?? .comune }
+
+    /// Coordinate valide dello scatto, se la carta ne ha (solo carte fatte su questo dispositivo).
+    var spotCoordinate: SpotCoordinate? {
+        guard let latitude, let longitude else { return nil }
+        return SpotCoordinate(latitude: latitude, longitude: longitude)
+    }
 
     var syncState: SyncState {
         get { SyncState(rawValue: syncStateRaw) ?? .pending }

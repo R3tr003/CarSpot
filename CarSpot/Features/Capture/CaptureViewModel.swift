@@ -110,7 +110,11 @@ final class CaptureViewModel {
     private let areaResolver: any AreaResolving = LocationAreaResolver()
     /// Quartiere/città dello scatto, risolto in parallelo alla pipeline (solo il nome, mai coordinate).
     private var spottedArea: String?
+    /// Posizione esatta dello scatto: solo per `StoredCard` (dispositivo), mai in cloud/log/analytics.
+    private var spottedCoordinate: SpotCoordinate?
     private var areaTask: Task<Void, Never>?
+    /// Attesa massima, al salvataggio, del risultato di area/posizione ancora in corso.
+    private static let spotWait: Duration = .seconds(1)
 
     /// Esito della pipeline per le metriche: valori enumerati e stabili.
     private enum Outcome: String {
@@ -118,8 +122,12 @@ final class CaptureViewModel {
         case recognitionFailed = "recognition_failed", offline, cancelled, error
     }
 
-    /// Origine dello scatto per le metriche: "camera" | "library" (l'auto-capture di debug è camera).
-    private var metricSource = "camera"
+    /// Da dove arriva la foto. Per le metriche vale `rawValue` (l'auto-capture di debug è camera);
+    /// la posizione dello scatto si salva solo per la camera.
+    private enum CaptureSource: String {
+        case camera, library
+    }
+    private var captureSource = CaptureSource.camera
     /// Inizio della pipeline in corso (o del riconoscimento ripetuto).
     private var pipelineStart = ContinuousClock.now
 
@@ -152,7 +160,7 @@ final class CaptureViewModel {
 
     private func runPipeline(data: Data, source: String) async {
         AppServices.analytics.track(.captureStarted(source: source))
-        metricSource = source == "library" ? "library" : "camera"
+        captureSource = source == "library" ? .library : .camera
         pipelineStart = .now
         AppServices.errors.metric(count: "capture.started")
         clearCapture()
@@ -161,9 +169,10 @@ final class CaptureViewModel {
 
         // Area dello scatto: parte subito e viaggia in parallelo (non blocca nulla).
         areaTask = Task { [weak self, areaResolver] in
-            let area = await areaResolver.resolveArea()
+            let spot = await areaResolver.resolveSpot()
             guard !Task.isCancelled else { return }
-            self?.spottedArea = area
+            self?.spottedArea = spot.area
+            self?.spottedCoordinate = spot.coordinate
         }
 
         // 0. Riduzione ImageIO (≤1600 px). Nessuna miniatura finché la foto non è anonimizzata.
@@ -263,7 +272,13 @@ final class CaptureViewModel {
         }
         // Se la codifica in background non è ancora pronta (raro) si ricade su quella locale.
         let photo = photoJPEG ?? anonymizedImage.flatMap { PhotoEncoding.jpeg($0) }
+        // Area e posizione partono all'inizio della pipeline: di solito sono già pronte; se no
+        // si aspetta un attimo (tetto breve, il salvataggio non resta mai appeso al GPS).
+        await awaitSpot(upTo: Self.spotWait)
+        // Nel frattempo l'utente può aver annullato: `clearCapture()` ha azzerato tutto.
+        guard phase == .result else { return }
         let area = spottedArea ?? String(localized: "Zona sconosciuta")
+        let coordinate = spottedCoordinate
         let capturedAt = Date.now
         let card = StoredCard(
             make: candidate.make, model: candidate.model, year: year,
@@ -296,6 +311,11 @@ final class CaptureViewModel {
             guard phase == .result else { return }
         }
         card.isRepeat = isRepeat
+        // Una foto dalla libreria non è stata scattata qui: la posizione di adesso sarebbe falsa.
+        if captureSource == .camera, let spot = coordinate {
+            card.latitude = spot.latitude
+            card.longitude = spot.longitude
+        }
 
         // Numeri del reveal, calcolati prima dell'inserimento e solo tra le non ripetute.
         let counted = existing.filter { !$0.isRepeat }
@@ -368,19 +388,19 @@ final class CaptureViewModel {
         let ms = Double(elapsed.components.seconds) * 1_000
             + Double(elapsed.components.attoseconds) / 1_000_000_000_000_000
         let attributes: TelemetryAttributes = [
-            "outcome": .string(outcome.rawValue), "source": .string(metricSource),
+            "outcome": .string(outcome.rawValue), "source": .string(captureSource.rawValue),
         ]
         AppServices.errors.metric(count: "capture.outcome", attributes: attributes)
         // L'annullamento non è un esito di prodotto: non si traccia.
         if let analyticsOutcome = AnalyticsCaptureOutcome(rawValue: outcome.rawValue) {
             AppServices.analytics.track(.captureCompleted(
-                outcome: analyticsOutcome, source: metricSource,
+                outcome: analyticsOutcome, source: captureSource.rawValue,
                 durationMs: Int(ms.rounded()), candidates: candidates))
         }
         AppServices.errors.metric(distribution: "capture.duration", value: ms, unit: .millisecond,
                                   attributes: ["outcome": .string(outcome.rawValue)])
         AppServices.errors.log("capture finished", level: outcome == .error ? .error : .info, attributes: [
-            "outcome": .string(outcome.rawValue), "source": .string(metricSource),
+            "outcome": .string(outcome.rawValue), "source": .string(captureSource.rawValue),
             "duration_ms": .int(Int(ms.rounded())), "candidates": .int(candidates),
         ])
     }
@@ -452,12 +472,25 @@ final class CaptureViewModel {
         AccessibilityNotification.Announcement(message).post()
     }
 
+    /// Aspetta che `areaTask` finisca, ma non oltre `limit`. Non lo annulla: se scade il
+    /// risultato arriva dopo e viene ignorato (la carta si salva senza posizione).
+    private func awaitSpot(upTo limit: Duration) async {
+        guard let task = areaTask else { return }
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask { await task.value }
+            group.addTask { try? await Task.sleep(for: limit) }
+            await group.next()
+            group.cancelAll()
+        }
+    }
+
     private func clearCapture() {
         photoTask?.cancel()
         photoTask = nil
         areaTask?.cancel()
         areaTask = nil
         spottedArea = nil
+        spottedCoordinate = nil
         photoJPEG = nil
         pendingData = nil
         safeData = nil

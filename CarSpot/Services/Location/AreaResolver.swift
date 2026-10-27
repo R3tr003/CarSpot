@@ -22,11 +22,46 @@ struct PlaceNames: Sendable, Equatable {
     }
 }
 
+/// Coordinata esatta di uno scatto. Resta SOLO sul dispositivo (`StoredCard`): mai nel
+/// cloud, negli eventi di analytics o nei log. Tipo proprio per non portarsi dietro `CLLocation`.
+struct SpotCoordinate: Sendable, Equatable {
+    let latitude: Double
+    let longitude: Double
+
+    /// `nil` se la coppia non è una coordinata valida (NaN, fuori range).
+    init?(latitude: Double, longitude: Double) {
+        guard latitude.isFinite, longitude.isFinite,
+              (-90...90).contains(latitude), (-180...180).contains(longitude) else { return nil }
+        self.latitude = latitude
+        self.longitude = longitude
+    }
+
+    init?(_ location: CLLocation) {
+        self.init(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
+    }
+}
+
+/// Dove è stato fatto uno scatto: il nome dell'area (può andare al cloud) e, a parte,
+/// la coordinata esatta (solo locale).
+struct ResolvedSpot: Sendable, Equatable {
+    var area: String?
+    var coordinate: SpotCoordinate?
+}
+
 /// Ricava il nome dell'area dove si trova l'utente ora. `nil` = non disponibile
 /// (niente permesso, nessun fix, offline, errore): il chiamante usa il fallback.
-/// Dalla posizione esce solo la stringa dell'area: coordinate mai salvate, loggate o inviate.
+/// Dal nome dell'area non si risale alla posizione; la coordinata esatta esce solo da
+/// `resolveSpot()` e il chiamante la salva unicamente sul dispositivo.
 protocol AreaResolving: Sendable {
     func resolveArea() async -> String?
+    func resolveSpot() async -> ResolvedSpot
+}
+
+extension AreaResolving {
+    /// Implementazioni senza coordinate (test, anteprime): solo l'area.
+    func resolveSpot() async -> ResolvedSpot {
+        ResolvedSpot(area: await resolveArea(), coordinate: nil)
+    }
 }
 
 /// Posizione corrente one-shot.
@@ -48,11 +83,17 @@ struct LocationAreaResolver: AreaResolving {
     var lookupTimeout: Duration = .seconds(4)
 
     func resolveArea() async -> String? {
+        await resolveSpot().area
+    }
+
+    func resolveSpot() async -> ResolvedSpot {
         let source = source, lookup = lookup
         guard let location = await Self.first(within: locationTimeout, { await source.currentLocation() }) else {
             areaLog.info("Area non risolta: nessuna posizione")
-            return nil
+            return ResolvedSpot()
         }
+        // La coordinata c'è anche se il nome dell'area non si trova.
+        let coordinate = SpotCoordinate(location)
         let names = await Self.first(within: lookupTimeout) { () async -> PlaceNames? in
             do {
                 return try await lookup.placeNames(at: location)
@@ -64,9 +105,9 @@ struct LocationAreaResolver: AreaResolving {
         }
         guard let area = names?.areaName else {
             areaLog.info("Area non risolta: nessun nome di luogo")
-            return nil
+            return ResolvedSpot(area: nil, coordinate: coordinate)
         }
-        return area
+        return ResolvedSpot(area: area, coordinate: coordinate)
     }
 
     /// Risultato di `operation`, oppure `nil` se scade prima il tempo.
@@ -89,7 +130,9 @@ struct LocationAreaResolver: AreaResolving {
 /// Posizione fissa (o assente) per test, anteprime e simulatore senza GPS.
 struct MockAreaResolver: AreaResolving {
     var area: String?
+    var coordinate: SpotCoordinate?
     func resolveArea() async -> String? { area }
+    func resolveSpot() async -> ResolvedSpot { ResolvedSpot(area: area, coordinate: coordinate) }
 }
 
 // MARK: Implementazioni di sistema

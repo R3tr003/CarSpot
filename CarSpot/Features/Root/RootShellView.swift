@@ -15,6 +15,9 @@ struct RootShellView: View {
     @State private var accountSheet: AccountSheet?
     @State private var showCapture = Self.startsOnCapture
     @State private var detent: PresentationDetent = Self.mediumDetent
+    /// Carte del segnaposto (o gruppo) toccato sulla mappa; vuoto = pannello normale.
+    @State private var spotIDs: [UUID] = []
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// Piccola: solo titolo + tab bar (come Flighty). Media: metà mappa. Alta: sotto l'isola.
     private static let smallDetent = PresentationDetent.height(200)
@@ -56,7 +59,19 @@ struct RootShellView: View {
         // quindi riceve tutti i tocchi fuori dal pannello.
         MapSlot(host: mapHost, isActive: true)
             .ignoresSafeArea()
+            .background { MapPinsFeed(host: mapHost) }
+            #if DEBUG
+            .background { DebugMapPinSeeder() }
+            #endif
             .task { location.request() }
+            .onAppear {
+                let selection = $spotIDs
+                mapHost.onSelectionChange = { ids in
+                    withAnimation(Self.spotAnimation(reduceMotion: UIAccessibility.isReduceMotionEnabled)) {
+                        selection.wrappedValue = ids
+                    }
+                }
+            }
             .sheet(isPresented: .constant(true)) { panel }
     }
 
@@ -81,6 +96,17 @@ struct RootShellView: View {
         }
         .tabBarMinimizeBehavior(.onScrollDown)
         .tint(CSColor.accent)
+        .overlay {
+            if !spotIDs.isEmpty {
+                MapSpotPanel(ids: spotIDs, onClose: closeSpot, onOpenDetail: { detent = .large })
+                    .id(spotIDs)
+                    .transition(.opacity)
+            }
+        }
+        .onChange(of: spotIDs) { old, new in
+            // Dal pannello piccolo la carta non si leggerebbe: si apre a metà.
+            if old.isEmpty, !new.isEmpty, detent == Self.smallDetent { detent = Self.mediumDetent }
+        }
         .environment(\.openProfile) { accountSheet = .profile }
         .environment(\.openSettings) { accountSheet = .settings }
         .onChange(of: selection, initial: true) { _, screen in
@@ -126,6 +152,16 @@ struct RootShellView: View {
             CaptureView()
                 .preferredColorScheme(.dark)
         }
+    }
+
+    private func closeSpot() {
+        withAnimation(Self.spotAnimation(reduceMotion: reduceMotion)) { spotIDs = [] }
+        mapHost.deselectAll()
+    }
+
+    /// Comparsa del pannello del segnaposto: dissolvenza breve, senza rimbalzo (solo feedback).
+    private static func spotAnimation(reduceMotion: Bool) -> Animation {
+        reduceMotion ? .easeOut(duration: 0.15) : .spring(duration: 0.3, bounce: 0)
     }
 
     /// Anche la tab Cattura viene selezionata davvero (la TabView UIKit ci resta comunque):
