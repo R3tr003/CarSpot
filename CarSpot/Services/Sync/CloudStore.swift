@@ -58,15 +58,40 @@ struct CloudProfile: Decodable, Sendable {
     let level: Int
 }
 
-/// Riscatto di un obiettivo del giorno. `day` = "yyyy-MM-dd".
-struct CloudClaim: Codable, Sendable {
-    let day: String
-    let challengeId: String
+/// Riscatto di una missione (`public.mission_claims`). Il premio lo decide il server.
+struct CloudMissionClaim: Codable, Sendable {
+    /// "day" | "week" | "month" | "community".
+    let period: String
+    /// "yyyy-MM-dd".
+    let periodStart: String
+    let missionId: String
+    let goal: Int
+    let params: MissionParams?
+    /// Inizio del periodo all'ora del telefono; opzionale in lettura (colonna nullable).
+    let windowStart: Date?
+    /// Fine (esclusa) del periodo; il server la valida contro il periodo locale reale.
+    let windowEnd: Date?
 
     enum CodingKeys: String, CodingKey {
-        case day
-        case challengeId = "challenge_id"
+        case period, goal, params
+        case periodStart = "period_start"
+        case missionId = "mission_id"
+        case windowStart = "window_start"
+        case windowEnd = "window_end"
     }
+
+    init(_ payload: MissionClaimPayload) {
+        period = payload.period.rawValue
+        periodStart = payload.periodStart
+        missionId = payload.missionId
+        goal = payload.goal
+        params = payload.params
+        windowStart = payload.windowStart
+        windowEnd = payload.windowEnd
+    }
+
+    /// Identità locale del riscatto, uguale a `Mission.id`.
+    var identity: String { "\(period):\(periodStart)|\(missionId)" }
 }
 
 /// Persistenza cloud dietro protocollo (convenzione del progetto). Un solo tentativo per
@@ -81,7 +106,12 @@ protocol CloudStore: Sendable {
     /// Righe con `created_at >= createdAfter`, ordinate per `created_at` crescente.
     func fetchCards(createdAfter: Date?, offset: Int, limit: Int) async throws -> [CloudCard]
     func fetchProfile(userId: String) async throws -> CloudProfile?
-    /// Chiave primaria duplicata (23505) = già fatto = successo.
-    func insertClaim(_ claim: CloudClaim) async throws
-    func fetchClaims(sinceDay: String) async throws -> [CloudClaim]
+    /// Chiave primaria duplicata (23505) = già fatto = successo. Errori di regola = P0001.
+    func insertMissionClaim(_ claim: CloudMissionClaim) async throws
+    /// Riscatti con `period_start >= sinceDay` ("yyyy-MM-dd").
+    func fetchMissionClaims(sinceDay: String) async throws -> [CloudMissionClaim]
+    /// Id dei badge ottenuti (`player_badges.badge_id`).
+    func fetchBadges() async throws -> [String]
+    /// Missioni comuni con `ends_on >= day` ("yyyy-MM-dd").
+    func fetchCommunityMissions(endingAfter day: String) async throws -> [CommunityMission]
 }

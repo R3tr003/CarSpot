@@ -56,9 +56,9 @@ final class SupabaseCloudStore: CloudStore {
         return rows.first
     }
 
-    func insertClaim(_ claim: CloudClaim) async throws {
+    func insertMissionClaim(_ claim: CloudMissionClaim) async throws {
         do {
-            try await client.from("challenge_claims")
+            try await client.from("mission_claims")
                 .insert(claim, returning: .minimal)
                 .execute()
         } catch let error as PostgrestError where error.code == "23505" {
@@ -66,10 +66,29 @@ final class SupabaseCloudStore: CloudStore {
         }
     }
 
-    func fetchClaims(sinceDay: String) async throws -> [CloudClaim] {
-        try await client.from("challenge_claims")
-            .select("day,challenge_id")
-            .gte("day", value: sinceDay)
+    func fetchMissionClaims(sinceDay: String) async throws -> [CloudMissionClaim] {
+        try await client.from("mission_claims")
+            .select("period,period_start,mission_id,goal,params,window_start")
+            .gte("period_start", value: sinceDay)
+            .execute()
+            .value
+    }
+
+    func fetchBadges() async throws -> [String] {
+        struct Row: Decodable { let badgeId: String
+            enum CodingKeys: String, CodingKey { case badgeId = "badge_id" } }
+        let rows: [Row] = try await client.from("player_badges")
+            .select("badge_id")
+            .execute()
+            .value
+        return rows.map(\.badgeId)
+    }
+
+    func fetchCommunityMissions(endingAfter day: String) async throws -> [CommunityMission] {
+        try await client.from("community_missions")
+            .select("id,scope,title_it,title_en,starts_on,ends_on,rule,goal,reward,badge_id")
+            .gte("ends_on", value: day)
+            .order("starts_on", ascending: true)
             .execute()
             .value
     }

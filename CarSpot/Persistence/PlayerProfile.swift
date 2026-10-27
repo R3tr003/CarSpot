@@ -8,12 +8,20 @@ final class PlayerProfile {
     var currency: Int = 0
     var streak: Int = 1
     var lastActiveDay: String = ""           // "yyyy-MM-dd"
-    /// Keys of already-claimed daily challenges ("yyyy-MM-dd|challengeID").
+    /// Vecchi obiettivi del giorno: non più usato, resta per la migrazione leggera.
     var claimedChallenges: [String] = []
     /// Id Clerk a cui appartengono questi progressi; "" = mai associato a un account.
     var ownerId: String = ""
-    /// Riscatti non ancora inviati al cloud (stesse chiavi di `claimedChallenges`).
+    /// Vecchi riscatti in coda: non più usato, resta per la migrazione leggera.
     var pendingClaims: [String] = []
+    /// Identità (`Mission.id`) delle missioni già riscattate.
+    var claimedMissions: [String] = []
+    /// Riscatti di missioni non ancora inviati al cloud (JSON di `MissionClaimPayload`).
+    var pendingMissionClaims: [String] = []
+    /// Identità delle missioni già viste in Oggi (spegne il pallino "nuova").
+    var seenMissions: [String] = []
+    /// Badge ottenuti (id del modello/missione).
+    var badges: [String] = []
 
     init() {
         lastActiveDay = Self.dayKey()
@@ -28,6 +36,10 @@ final class PlayerProfile {
         streak = 1
         claimedChallenges = []
         pendingClaims = []
+        claimedMissions = []
+        pendingMissionClaims = []
+        seenMissions = []
+        badges = []
         ownerId = id
     }
 
@@ -109,13 +121,33 @@ enum PlayerStore {
         AppServices.analytics.track(.levelUp(level: after))
     }
 
-    /// Gauge di progressione per le dashboard: livello, PE e sfide completate oggi.
-    /// Si chiama dopo ogni cambio rilevante (cattura, riscatto) e all'avvio.
+    /// Carte del giocatore ridotte ai dati che servono alle missioni.
+    static func missionCards(_ context: ModelContext) -> [MissionCard] {
+        ((try? context.fetch(FetchDescriptor<StoredCard>())) ?? []).map(MissionCard.init)
+    }
+
+    /// Gauge di progressione per le dashboard: livello, PE e missioni del giorno completate.
+    /// Aggiorna anche la serie (calcolata dalle carte). Si chiama dopo ogni cambio
+    /// rilevante (cattura, riscatto) e all'avvio.
     static func reportProgress(_ context: ModelContext) {
         let p = profile(context)
-        let cards = (try? context.fetch(FetchDescriptor<StoredCard>())) ?? []
-        let completed = ChallengeEngine.today(cards: cards, claimed: p.claimedChallenges)
-            .filter(\.done).count
+        let cards = missionCards(context)
+        let calendar = Calendar.missions
+        let now = Date.now
+
+        let day = MissionBoard.build(
+            cards: cards, ownerId: p.ownerId, claimed: Set(p.claimedMissions), seen: Set(p.seenMissions),
+            community: [], region: nil, now: now, calendar: calendar
+        ).first { $0.kind == .day }
+        let completed = day?.current.filter(\.done).count ?? 0
+
+        let captures = cards.map { StreakCapture(capturedAt: $0.capturedAt, rarity: $0.rarity, isRepeat: $0.isRepeat) }
+        let streak = StreakCalculator.state(captures: captures, now: now, calendar: calendar).count
+        if p.streak != streak {
+            p.streak = streak
+            try? context.save()
+        }
+
         let errors = AppServices.errors
         errors.metric(gauge: "player.level", value: Double(p.level))
         errors.metric(gauge: "player.xp", value: Double(p.xp))
@@ -124,21 +156,50 @@ enum PlayerStore {
         AnalyticsProfileSync.refresh(in: context)
     }
 
-    /// Claims a completed daily challenge once, awarding its reward.
+    /// Riscatta una missione completata una sola volta, assegnando il premio in locale.
+    /// Il server ricalcola e decide al push (`SyncService.didClaimMission`).
     @discardableResult
-    static func claim(_ challenge: DailyChallengeVM, in context: ModelContext) -> Bool {
-        guard challenge.done, !challenge.claimed else { return false }
+    static func claim(_ status: MissionStatus, in context: ModelContext) -> Bool {
+        guard status.claimable else { return false }
         let p = profile(context)
-        let key = "\(PlayerProfile.dayKey())|\(challenge.id)"
-        guard !p.claimedChallenges.contains(key) else { return false }
+        let mission = status.mission
+        guard !p.claimedMissions.contains(mission.id) else { return false }
         let levelBefore = p.level
-        p.claimedChallenges.append(key)
-        p.xp += challenge.reward
-        p.currency += challenge.reward / 4
+        p.claimedMissions.append(mission.id)
+        p.xp += mission.reward
+        p.currency += mission.reward / 4
+        if let badge = mission.badgeId, !p.badges.contains(badge) {
+            p.badges.append(badge)
+        }
         try? context.save()
         trackLevelUp(from: levelBefore, to: p.level)
         AppServices.errors.metric(count: "challenge.claimed")
         reportProgress(context)
         return true
+    }
+
+    /// Annulla in locale un riscatto rifiutato dal server o scaduto prima dell'invio:
+    /// toglie identità e badge e ritira il premio (mai sotto zero). Senza `reward`
+    /// (payload di una versione precedente) si toglie solo il riscatto.
+    static func revertClaim(_ payload: MissionClaimPayload, in context: ModelContext) {
+        let p = profile(context)
+        p.claimedMissions.removeAll { $0 == payload.identity }
+        if let badge = payload.badgeId { p.badges.removeAll { $0 == badge } }
+        if let reward = payload.reward {
+            p.xp = max(0, p.xp - reward)
+            p.currency = max(0, p.currency - reward / 4)
+        }
+        try? context.save()
+        reportProgress(context)
+    }
+
+    /// Segna come viste le missioni mostrate; tiene solo le ultime 300.
+    static func markSeen(_ ids: [String], in context: ModelContext) {
+        let p = profile(context)
+        var known = Set(p.seenMissions)
+        let fresh = ids.filter { known.insert($0).inserted }
+        guard !fresh.isEmpty else { return }
+        p.seenMissions = Array((p.seenMissions + fresh).suffix(300))
+        try? context.save()
     }
 }

@@ -6,6 +6,16 @@ import os
 /// Sync cloud di carte e progressi. Unico scrittore di SwiftData per conto del cloud:
 /// la UI legge sempre la cache locale (`@Query`), qui si inviano le carte in attesa e si
 /// scaricano solo le differenze. `store == nil` (niente Supabase/Clerk) = sync spento.
+/// Riscatto annullato (rifiutato dal server o scaduto): la UI lo mostra una volta e lo svuota.
+struct ClaimRejection: Identifiable, Sendable, Equatable {
+    /// Identità della missione (`Mission.id`).
+    let id: String
+    let title: String
+    let reward: Int
+    /// `true` = scaduto prima dell'invio; `false` = rifiutato dal server.
+    let expired: Bool
+}
+
 @MainActor
 @Observable
 final class SyncService {
@@ -20,6 +30,11 @@ final class SyncService {
     private static let maxConcurrentDownloads = 3
 
     private(set) var userId: String?
+    /// Missioni comuni (cache su disco + ultimo pull): la UI le filtra per regione.
+    private(set) var communityMissions: [CommunityMission] = CommunityMissionCache.load()
+
+    /// Riscatti annullati da mostrare all'utente (`clearClaimRejections` dopo la lettura).
+    private(set) var claimRejections: [ClaimRejection] = []
 
     @ObservationIgnored private let container: ModelContainer
     @ObservationIgnored private let store: (any CloudStore)?
@@ -99,7 +114,14 @@ final class SyncService {
             try await AppServices.errors.measure("sync.pull", operation: "sync") {
                 pulledCards = try await pullCards(store: store, userId: userId)
                 try await pullProfile(store: store, userId: userId)
-                try await pullClaims(store: store, userId: userId)
+                try await pullMissionClaims(store: store, userId: userId)
+                try await pullBadges(store: store, userId: userId)
+                // Le missioni comuni sono accessorie: se falliscono il resto del pull vale.
+                do {
+                    try await pullCommunity(store: store, userId: userId)
+                } catch {
+                    Self.log.error("Pull missioni comuni non riuscito: \(error.localizedDescription, privacy: .public)")
+                }
             }
             if self.userId == userId {
                 lastPullAt = .now
@@ -127,15 +149,19 @@ final class SyncService {
     }
 
     /// Riscatto fatto in locale: va in coda e si prova subito l'invio.
-    func didClaim(key: String) async {
-        guard store != nil, userId != nil else { return }
+    func didClaimMission(_ payload: MissionClaimPayload) async {
+        guard store != nil, userId != nil, let json = Self.encode(payload) else { return }
         let profile = PlayerStore.profile(context)
-        if !profile.pendingClaims.contains(key) {
-            profile.pendingClaims.append(key)
+        if !profile.pendingMissionClaims.contains(json) {
+            profile.pendingMissionClaims.append(json)
             try? context.save()
         }
         mutationEpoch += 1
         await pushPending()
+    }
+
+    func clearClaimRejections() {
+        claimRejections = []
     }
 
     /// Prova a svuotare le code; ritorna carte + riscatti ancora in attesa.
@@ -188,6 +214,7 @@ final class SyncService {
         if isPushing { pushAgain = true; return }
         isPushing = true
         defer { isPushing = false }
+        dropLegacyClaims()
         // Si ripete se nel frattempo è arrivata un'altra carta/riscatto.
         pushedCount = 0
         await AppServices.errors.measure("sync.push", operation: "sync") {
@@ -202,6 +229,16 @@ final class SyncService {
             AppServices.errors.metric(count: "sync.pushed", value: UInt(pushedCount))
         }
         AppServices.errors.metric(gauge: "sync.pending", value: Double(pendingCount(userId: userId)))
+    }
+
+    /// Vecchi riscatti degli obiettivi del giorno: l'endpoint è revocato lato server e non
+    /// si possono convertire in missioni, quindi si scartano.
+    private func dropLegacyClaims() {
+        let profile = PlayerStore.profile(context)
+        guard !profile.pendingClaims.isEmpty else { return }
+        Self.log.notice("Scarto \(profile.pendingClaims.count) riscatti del vecchio formato")
+        profile.pendingClaims = []
+        try? context.save()
     }
 
     /// Un giro su carte e riscatti in attesa. `false` al primo errore (si ritenta al prossimo sync).
@@ -254,28 +291,61 @@ final class SyncService {
     }
 
     private func pushClaims(store: any CloudStore, userId: String) async -> Bool {
-        for key in PlayerStore.profile(context).pendingClaims {
-            let parts = key.split(separator: "|", maxSplits: 1).map(String.init)
-            do {
-                if parts.count == 2 {
-                    try await store.insertClaim(CloudClaim(day: parts[0], challengeId: parts[1]))
+        for json in PlayerStore.profile(context).pendingMissionClaims {
+            guard let payload = Self.decode(json) else {
+                // Riga illeggibile: inutile tenerla.
+                Self.log.error("Riscatto in coda illeggibile, lo scarto")
+                removePending(json)
+                continue
+            }
+            if Date.now > payload.deadline {
+                Self.log.notice("Riscatto scaduto, lo scarto: \(payload.identity, privacy: .public)")
+                reject(payload, expired: true)
+            } else {
+                do {
+                    try await store.insertMissionClaim(CloudMissionClaim(payload))
                     pushedCount += 1
+                } catch let error as PostgrestError where error.code == "P0001" {
+                    // Rifiutato dal server: si annulla anche il premio locale (il pull riallinea i PE).
+                    Self.log.notice("Riscatto rifiutato dal server: \(payload.identity, privacy: .public)")
+                    guard self.userId == userId else { return false }
+                    reject(payload, expired: false)
+                } catch {
+                    Self.log.error("Invio riscatto fallito: \(error.localizedDescription, privacy: .public)")
+                    AppServices.errors.record(error, area: .sync, step: "push_claim")
+                    Self.reportFailure(stage: "push", error: error)
+                    return false
                 }
-            } catch let error as PostgrestError where error.code == "P0001" {
-                // Rifiutato dal server (giorno fuori finestra o tetto giornaliero): inutile ritentare.
-                Self.log.notice("Riscatto rifiutato dal server, lo scarto: \(key, privacy: .public)")
-            } catch {
-                Self.log.error("Invio riscatto fallito: \(error.localizedDescription, privacy: .public)")
-                AppServices.errors.record(error, area: .sync, step: "push_claim")
-                Self.reportFailure(stage: "push", error: error)
-                return false
             }
             guard self.userId == userId else { return false }
-            let profile = PlayerStore.profile(context)
-            profile.pendingClaims.removeAll { $0 == key }
-            try? context.save()
+            removePending(json)
         }
         return true
+    }
+
+    /// Annulla il premio locale e segnala il riscatto perso alla UI.
+    private func reject(_ payload: MissionClaimPayload, expired: Bool) {
+        PlayerStore.revertClaim(payload, in: context)
+        claimRejections.append(ClaimRejection(
+            id: payload.identity, title: payload.title ?? "",
+            reward: payload.reward ?? 0, expired: expired))
+        AppServices.errors.metric(count: "mission.claim_rejected")
+    }
+
+    private func removePending(_ json: String) {
+        let profile = PlayerStore.profile(context)
+        profile.pendingMissionClaims.removeAll { $0 == json }
+        try? context.save()
+    }
+
+    private static func encode(_ payload: MissionClaimPayload) -> String? {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        return (try? encoder.encode(payload)).flatMap { String(data: $0, encoding: .utf8) }
+    }
+
+    private static func decode(_ json: String) -> MissionClaimPayload? {
+        try? JSONDecoder().decode(MissionClaimPayload.self, from: Data(json.utf8))
     }
 
     // MARK: - Pull
@@ -325,20 +395,41 @@ final class SyncService {
         try? context.save()
     }
 
-    private func pullClaims(store: any CloudStore, userId: String) async throws {
-        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: .now) ?? .now
-        let remote = try await store.fetchClaims(sinceDay: PlayerProfile.dayKey(yesterday))
+    /// Riscatti degli ultimi 40 giorni: le identità si aggiungono a `claimedMissions`.
+    private func pullMissionClaims(store: any CloudStore, userId: String) async throws {
+        let since = Calendar.missions.date(byAdding: .day, value: -40, to: .now) ?? .now
+        let remote = try await store.fetchMissionClaims(sinceDay: PlayerProfile.dayKey(since))
         guard self.userId == userId else { return }
         let profile = PlayerStore.profile(context)
+        var known = Set(profile.claimedMissions)
         var changed = false
-        for claim in remote {
-            let key = "\(claim.day)|\(claim.challengeId)"
-            if !profile.claimedChallenges.contains(key) {
-                profile.claimedChallenges.append(key)
-                changed = true
-            }
+        for claim in remote where known.insert(claim.identity).inserted {
+            profile.claimedMissions.append(claim.identity)
+            changed = true
         }
         if changed { try? context.save() }
+    }
+
+    private func pullBadges(store: any CloudStore, userId: String) async throws {
+        let remote = try await store.fetchBadges()
+        guard self.userId == userId else { return }
+        let profile = PlayerStore.profile(context)
+        var known = Set(profile.badges)
+        var changed = false
+        for badge in remote where known.insert(badge).inserted {
+            profile.badges.append(badge)
+            changed = true
+        }
+        if changed { try? context.save() }
+    }
+
+    /// Missioni comuni attive o finite da meno di 3 giorni; cache su disco per l'offline.
+    private func pullCommunity(store: any CloudStore, userId: String) async throws {
+        let since = Calendar.missions.date(byAdding: .day, value: -3, to: .now) ?? .now
+        let remote = try await store.fetchCommunityMissions(endingAfter: PlayerProfile.dayKey(since))
+        guard self.userId == userId else { return }
+        CommunityMissionCache.save(remote)
+        communityMissions = remote
     }
 
     // MARK: - Helper
@@ -372,7 +463,9 @@ final class SyncService {
     }
 
     private func pendingCount(userId: String) -> Int {
-        pendingCards(userId: userId).count + PlayerStore.profile(context).pendingClaims.count
+        let profile = PlayerStore.profile(context)
+        // `pendingClaims` (vecchio formato) conta: finché esiste, il pull non tocca i PE.
+        return pendingCards(userId: userId).count + profile.pendingMissionClaims.count + profile.pendingClaims.count
     }
 
     private func fetchCard(_ id: UUID) -> StoredCard? {
