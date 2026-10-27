@@ -23,3 +23,10 @@
 - ⏭️ Prossima: provider di riconoscimento (prova Claude Haiku vs Sonnet) + deploy di
   `recognize`; catalogo modelli con immagine standard (prova con immagini da internet) e
   Collezione "album"; marker reali sulla mappa (decisione privacy); rarità da specs reali.
+- ✅ 2026-10-27: mappa con i segnaposti reali (coordinate solo locali), catalogo modelli
+  (migration 0010: 281 marche, 3.771 modelli, immagini Wikimedia in Storage) e Collezione
+  album, missioni giornaliere/settimanali/mensili (0011 + 0012 di hardening), prova SigLIP2
+  zero-shot in `tools/recognition-trial` (numeri su foto Commons, non ancora su foto reali).
+  Nota: la 0012 è attiva sul server ma non registrata in `supabase_migrations.schema_migrations`.
+- ⏭️ Prossima: misurare SigLIP2 sulle foto vere dell'utente e portarlo on-device (Core ML)
+  al posto del mock, abbinato al catalogo; premio per marca completa (server).
