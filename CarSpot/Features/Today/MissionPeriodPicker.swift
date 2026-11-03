@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// Selettore a 4 segmenti (Oggi, Settimana, Mese, Comuni) con pallini numerati:
-/// rosso = da riscattare, verde = nuove (il rosso vince).
+/// Selettore a 4 segmenti (Oggi, Settimana, Mese, Comuni) con un puntino accanto alla
+/// parola: rosso = da riscattare, verde = nuove (il rosso vince). I numeri li legge VoiceOver.
 struct MissionPeriodPicker: View {
     @Binding var selection: MissionPeriodKind
     let segments: [MissionSegment]
@@ -9,10 +9,6 @@ struct MissionPeriodPicker: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Namespace private var pill
-
-    // Pallino numerato: misure fisse, il testo non cresce oltre "large".
-    private let badgeMinSize: CGFloat = 13
-    private let badgeMaxCount = 9
 
     var body: some View {
         Group {
@@ -64,14 +60,8 @@ struct MissionPeriodPicker: View {
                     .foregroundStyle(selected ? CSColor.ink : CSColor.inkSecondary)
                     .lineLimit(1)
                     .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 0.5 : 0.8)
-                    // Il pallino parte dall'angolo alto a destra dell'etichetta e cresce verso destra.
-                    .overlay(alignment: .topTrailing) {
-                        if let segment {
-                            badge(for: segment)
-                                .alignmentGuide(.trailing) { $0[.leading] }
-                                .alignmentGuide(.top) { $0.height / 2 }
-                        }
-                    }
+                    // Affiancato, mai sopra la parola.
+                    .statusDot(segment.flatMap(dotColor))
                     .padding(.horizontal, CSSpace.xxs)
             }
             .frame(maxWidth: .infinity, minHeight: CSSize.minTap)
@@ -95,30 +85,11 @@ struct MissionPeriodPicker: View {
         }
     }
 
-    /// Pallino piccolo con numero; nessuno se non c'è nulla da segnalare.
-    @ViewBuilder private func badge(for segment: MissionSegment) -> some View {
-        let claimable = segment.claimableCount
-        let fresh = segment.newCount
-        if claimable > 0 {
-            dot(countText(claimable), fill: CSColor.danger, text: CSColor.inkInverse)
-        } else if fresh > 0 {
-            dot(countText(fresh), fill: CSColor.success, text: CSColor.inkInverse)
-        }
-    }
-
-    private func countText(_ count: Int) -> String {
-        count > badgeMaxCount ? "\(badgeMaxCount)+" : "\(count)"
-    }
-
-    private func dot(_ value: String, fill: Color, text: Color) -> some View {
-        Text(value)
-            .font(CSFont.micro).monospacedDigit()
-            .dynamicTypeSize(...DynamicTypeSize.large)
-            .foregroundStyle(text)
-            .padding(.horizontal, CSSpace.xxs)
-            .frame(minWidth: badgeMinSize, minHeight: badgeMinSize)
-            .background(fill, in: Capsule())
-            .accessibilityHidden(true)
+    /// Colore del puntino; nessuno se non c'è nulla da segnalare.
+    private func dotColor(for segment: MissionSegment) -> Color? {
+        if segment.claimableCount > 0 { return CSColor.danger }
+        if segment.newCount > 0 { return CSColor.success }
+        return nil
     }
 
     private func accessibilityLabel(for kind: MissionPeriodKind, segment: MissionSegment?) -> String {

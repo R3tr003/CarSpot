@@ -13,6 +13,7 @@ struct MapSpotPanel: View {
     var onOpenDetail: () -> Void
 
     @Query private var cards: [StoredCard]
+    @Environment(SyncService.self) private var sync: SyncService?
     @State private var path: [UUID] = []
     @AccessibilityFocusState private var titleFocused: Bool
     // Misure che seguono la dimensione del testo (Dynamic Type).
@@ -35,7 +36,7 @@ struct MapSpotPanel: View {
                 .toolbarVisibility(.hidden, for: .navigationBar)
                 .navigationDestination(for: UUID.self) { id in
                     if let card = cards.first(where: { $0.id == id }) {
-                        CardDetailView(card: card.asSpotCard)
+                        CardDetailView(card: card.asSpotCard(failedPhotos: sync?.failedPhotos ?? []))
                     }
                 }
         }
@@ -101,9 +102,11 @@ struct MapSpotPanel: View {
         Surface(.hero) {
             VStack(alignment: .leading, spacing: CSSpace.md) {
                 SpotPhoto(photo: card.photo, color: card.rarity.color,
-                          side: nil, radius: CSRadius.sm)
+                          side: nil, radius: CSRadius.sm, isPending: isPending(card))
                     .frame(height: heroPhotoHeight)
                     .accessibilityHidden(true)
+                    // Foto ripristinata dal cloud: si scarica quando la carta appare.
+                    .task(id: card.id) { await sync?.loadPhotoIfNeeded(cardId: card.id) }
 
                 VStack(alignment: .leading, spacing: CSSpace.xxs) {
                     Text(card.make)
@@ -128,7 +131,7 @@ struct MapSpotPanel: View {
                 .font(CSFont.body(15))
                 .foregroundStyle(CSColor.inkSecondary)
 
-                PrimaryButton(title: "Apri la carta", icon: "rectangle.portrait.on.rectangle.portrait") {
+                PrimaryButton(title: "Apri la carta", icon: "rectangle.portrait.on.rectangle.portrait.fill") {
                     path.append(card.id)
                 }
             }
@@ -155,8 +158,10 @@ struct MapSpotPanel: View {
 
     private func row(_ card: StoredCard) -> some View {
         HStack(spacing: CSSpace.sm) {
-            SpotPhoto(photo: card.photo, color: card.rarity.color, side: thumbnailSide, radius: CSRadius.sm)
+            SpotPhoto(photo: card.photo, color: card.rarity.color, side: thumbnailSide,
+                      radius: CSRadius.sm, isPending: isPending(card))
                 .accessibilityHidden(true)
+                .task(id: card.id) { await sync?.loadPhotoIfNeeded(cardId: card.id) }
             VStack(alignment: .leading, spacing: CSSpace.xxs) {
                 Text(card.make)
                     .font(CSFont.caption(12)).foregroundStyle(CSColor.inkSecondary)
@@ -186,6 +191,11 @@ struct MapSpotPanel: View {
         .accessibilityHint("Apre la carta")
     }
 
+    /// Foto nel cloud in download (non già fallita): al posto dell'icona va lo skeleton.
+    private func isPending(_ card: StoredCard) -> Bool {
+        card.isPhotoPending && !(sync?.failedPhotos.contains(card.id) ?? false)
+    }
+
     private static func dateText(_ date: Date) -> String {
         date.formatted(.dateTime.day().month(.wide).year().hour().minute().locale(.app))
     }
@@ -212,6 +222,8 @@ private struct SpotPhoto: View {
     let color: Color
     let side: CGFloat?
     let radius: CGFloat
+    /// Foto in arrivo dal cloud.
+    var isPending = false
 
     @State private var image: SpotDecodedImage?
 
@@ -226,6 +238,9 @@ private struct SpotPhoto: View {
                     Image(decorative: image.cgImage, scale: 1)
                         .resizable()
                         .scaledToFill()
+                } else if isPending || photo != nil {
+                    // Foto in arrivo (download o decodifica): skeleton al posto dell'icona.
+                    SkeletonBlock(cornerRadius: radius).skeletonPulse()
                 } else {
                     Image(systemName: "car.fill")
                         .font(CSFont.title(side == nil ? 40 : 17))

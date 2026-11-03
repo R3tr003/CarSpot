@@ -163,14 +163,21 @@ struct MapKitPlaceNameLookup: PlaceNameLookup {
         guard let request = MKReverseGeocodingRequest(location: location) else { return PlaceNames() }
         guard let item = try await request.mapItems.first else { return PlaceNames() }
         return PlaceNames(
-            neighbourhood: Self.neighbourhood(of: item),
+            neighbourhood: (Self.self as any SubLocalityReading.Type).neighbourhood(of: item),
             city: item.addressRepresentations?.cityName)
     }
 
     /// Le nuove API (`address`, `addressRepresentations`) non espongono il quartiere:
     /// l'unico accesso è `placemark.subLocality`, deprecato in iOS 26. Isolato qui.
     @available(iOS, deprecated: 26.0, message: "MapKit non ha ancora un equivalente per il quartiere")
-    private static func neighbourhood(of item: MKMapItem) -> String? {
+    fileprivate static func neighbourhood(of item: MKMapItem) -> String? {
         item.placemark.subLocality
     }
 }
+
+/// Chiamata via protocollo: la deprecazione resta confinata qui e non dà warning in build.
+private protocol SubLocalityReading {
+    static func neighbourhood(of item: MKMapItem) -> String?
+}
+
+extension MapKitPlaceNameLookup: SubLocalityReading {}

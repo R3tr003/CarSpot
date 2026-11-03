@@ -109,19 +109,9 @@ private struct IntroCarPage: View {
     var body: some View {
         VStack(spacing: CSSpace.lg) {
             Spacer()
-            ZStack {
-                RadialGradient(
-                    colors: [Rarity.leggendaria.primary.opacity(0.35), .clear],
-                    center: .center, startRadius: 4, endRadius: 240
-                )
+            // Marchio dell'app, senza alone: la stessa altezza della vecchia intro.
+            BrandMark(width: 220)
                 .frame(height: 320)
-
-                Image(systemName: "car.side.fill")
-                    .font(.system(size: 132, weight: .black))
-                    .foregroundStyle(Rarity.leggendaria.linearGradient)
-                    .shadow(color: Rarity.leggendaria.primary.opacity(0.5), radius: 30, y: 12)
-            }
-            .accessibilityHidden(true)
 
             VStack(spacing: CSSpace.sm) {
                 Text("CarSpot").eyebrow(Rarity.leggendaria.primary)

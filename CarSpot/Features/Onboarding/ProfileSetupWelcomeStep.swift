@@ -17,7 +17,7 @@ struct ProfileSetupWelcomeStep: View {
         Item(icon: "camera.viewfinder", title: "Fotografa",
              caption: "Inquadra un'auto: la riconosciamo e sfochiamo targhe e volti sul telefono.",
              rarity: .comune),
-        Item(icon: "rectangle.stack.fill", title: "Colleziona",
+        Item(icon: "square.grid.2x2.fill", title: "Colleziona",
              caption: "Ogni auto diventa una carta con la sua rarità, da Comune a Leggendaria.",
              rarity: .rara),
         Item(icon: "map.fill", title: "Conquista la zona",

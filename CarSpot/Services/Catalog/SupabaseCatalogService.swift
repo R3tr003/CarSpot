@@ -9,7 +9,7 @@ struct SupabaseCatalogService: CatalogService {
     private static let pageSize = 1000
 
     func changes(since: Date) async throws -> CatalogChanges {
-        let from = CatalogJSON.formatDate(since)
+        let from = Self.afterMillisecond(of: since)
         var changes = CatalogChanges()
 
         for row in try await pages("car_makes", since: from, as: MakeRow.self) {
@@ -22,6 +22,18 @@ struct SupabaseCatalogService: CatalogService {
             if row.deleted_at != nil { changes.deletedVariantIds.insert(row.id) } else { changes.variants.append(row.model) }
         }
         return changes
+    }
+
+    /// Postgres salva `updated_at` al microsecondo, la cache dell'app al millisecondo: con
+    /// `gt` sul valore troncato l'ultima riga tornava a ogni avvio (cache riscritta e album
+    /// ricostruito). Si parte dal millisecondo successivo, in ISO 8601 UTC. Conti in interi:
+    /// con i `Double` a quest'ordine di grandezza il millisecondo si perde nella formattazione.
+    static func afterMillisecond(of date: Date) -> String {
+        let micro = Int64((date.timeIntervalSince1970 * 1_000_000).rounded())
+        let ms = micro / 1000 + 1
+        let seconds = Date(timeIntervalSince1970: TimeInterval(ms / 1000))
+        let base = seconds.formatted(Date.ISO8601FormatStyle()).dropLast()  // senza la "Z"
+        return base + String(format: ".%03lldZ", ms % 1000)
     }
 
     /// Pagine da 1000 righe, in ordine stabile.

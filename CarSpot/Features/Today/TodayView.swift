@@ -11,6 +11,9 @@ struct TodayView: View {
 
     private var profile: PlayerProfile? { profiles.first }
 
+    /// Primo ripristino dal cloud con la collezione ancora vuota: skeleton al posto dei falsi zeri.
+    private var restoring: Bool { sync?.isRestoring == true && cards.isEmpty }
+
     /// Selezione ricordata finché la schermata esiste.
     @State private var selection: MissionPeriodKind = .day
     /// Missioni comuni da disco, solo se manca il `SyncService` (ospite / offline).
@@ -68,7 +71,7 @@ struct TodayView: View {
 
                 greeting
 
-                levelCard
+                if restoring { levelCardSkeleton } else { levelCard }
 
                 // Ogni minuto rilegge l'orario: solo per "finisce tra…" e per il cambio di giorno.
                 TimelineView(.everyMinute) { timeline in
@@ -79,7 +82,7 @@ struct TodayView: View {
                 }
             }
             .padding(CSSpace.lg)
-            .padding(.bottom, 130)
+            .padding(.bottom, CSSize.tabBarClearance)
         }
         .scrollIndicators(.hidden)
         .sensoryFeedback(.success, trigger: claimTicks)
@@ -116,7 +119,9 @@ struct TodayView: View {
 
             // Il cambio di contenuto non deve rimbalzare: anima solo la pillola del selettore.
             VStack(alignment: .leading, spacing: CSSpace.sm) {
-                if let segment {
+                if restoring {
+                    missionsSkeleton
+                } else if let segment {
                     if !segment.current.isEmpty {
                         let done = segment.current.filter(\.done).count
                         HStack {
@@ -129,6 +134,8 @@ struct TodayView: View {
                         .eyebrow()
                         .padding(.horizontal, CSSpace.xxs)
                         group(segment.current)
+                    } else if segment.kind == .community && sync?.isRestoring == true {
+                        missionsSkeleton
                     } else if segment.kind == .community {
                         Surface(.group) {
                             Text("Nessuna missione comune in corso")
@@ -155,6 +162,19 @@ struct TodayView: View {
         }
     }
 
+    /// Tre righe segnaposto nella stessa superficie del gruppo di missioni.
+    private var missionsSkeleton: some View {
+        Surface(.group, padding: nil) {
+            VStack(spacing: 0) {
+                ForEach(0..<3, id: \.self) { index in
+                    if index > 0 { SurfaceDivider(inset: CSSpace.md) }
+                    MissionRowSkeleton()
+                }
+            }
+        }
+        .skeletonLoading()
+    }
+
     private func group(_ list: [MissionStatus]) -> some View {
         Surface(.group, padding: nil) {
             VStack(spacing: 0) {
@@ -166,12 +186,16 @@ struct TodayView: View {
         }
     }
 
-    /// "finisce tra 6 h" sotto le 24 ore, altrimenti in giorni.
+    /// "finisce tra 6 ore" sotto le 24 ore, altrimenti in giorni: unità per esteso, al
+    /// plurale giusto nella lingua dell'app.
     private func endsInText(_ end: Date, now: Date) -> LocalizedStringKey {
         let hours = max(1, Int((end.timeIntervalSince(now) / 3600).rounded(.up)))
-        if hours < 24 { return "finisce tra \(hours) h" }
-        let days = Int((Double(hours) / 24).rounded(.up))
-        return "finisce tra \(days) g"
+        let duration: Duration = hours < 24
+            ? .seconds(hours * 3600)
+            : .seconds(Int((Double(hours) / 24).rounded(.up)) * 86_400)
+        let unit: Duration.UnitsFormatStyle.Unit = hours < 24 ? .hours : .days
+        let text = duration.formatted(.units(allowed: [unit], width: .wide).locale(.app))
+        return "finisce tra \(text)"
     }
 
     /// "Settimana scorsa · riscatta entro martedì": l'ultimo giorno utile, il più vicino.
@@ -232,6 +256,28 @@ struct TodayView: View {
 
     private var dayUnitSingular: LocalizedStringKey { "giorno" }
     private var dayUnitPlural: LocalizedStringKey { "giorni" }
+
+    /// Blocco eroe in caricamento: stessa superficie e ritmo di `levelCard`.
+    private var levelCardSkeleton: some View {
+        Surface(.hero) {
+            VStack(alignment: .leading, spacing: CSSpace.md) {
+                VStack(alignment: .leading, spacing: CSSpace.xxs) {
+                    SkeletonLine(width: 56)
+                    SkeletonBlock(cornerRadius: CSRadius.sm).frame(width: 44, height: 34)
+                }
+                VStack(alignment: .leading, spacing: CSSpace.xs) {
+                    SkeletonLine(width: 120)
+                    SkeletonLine(height: 6)
+                }
+                HStack {
+                    SkeletonLine(width: 72)
+                    Spacer(minLength: CSSpace.md)
+                    SkeletonLine(width: 56)
+                }
+            }
+        }
+        .skeletonLoading()
+    }
 
     /// Blocco eroe: livello, progresso verso il prossimo, serie e carte.
     private var levelCard: some View {

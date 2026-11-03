@@ -1,43 +1,27 @@
 {
   "fill" : {
-    "automatic-gradient" : "extended-srgb:0.00000,0.53333,1.00000,1.00000"
+    "automatic-gradient" : "srgb:0.95000,0.96000,0.97500,1.00000"
   },
-  "groups" : [
+  "fill-specializations" : [
     {
-      "layers" : [
-        {
-          "hidden" : false,
-          "image-name" : "carspot-light.png",
-          "image-name-specializations" : [
-            {
-              "appearance" : "dark",
-              "value" : "carspot-dark.png"
-            }
-          ],
-          "name" : "CarSpot",
-          "position" : {
-            "scale" : 0.97,
-            "translation-in-points" : [
-              3.08,
-              -10.185
-            ]
-          }
-        }
-      ],
-      "shadow" : {
-        "kind" : "neutral",
-        "opacity" : 0.5
-      },
-      "translucency" : {
-        "enabled" : true,
-        "value" : 0.3
+      "appearance" : "dark",
+      "value" : {
+        "automatic-gradient" : "srgb:0.12500,0.14000,0.17500,1.00000"
       }
     }
   ],
+  "groups" : [
+    {
+      "layers" : [
+        { "image-name" : "dot-glyph.png", "name" : "Ruota" },
+        { "image-name" : "c-glyph.png", "name" : "C" }
+      ],
+      "shadow" : { "kind" : "neutral", "opacity" : 0.5 },
+      "translucency" : { "enabled" : true, "value" : 0.2 }
+    }
+  ],
   "supported-platforms" : {
-    "circles" : [
-      "watchOS"
-    ],
+    "circles" : [ "watchOS" ],
     "squares" : "shared"
   }
 }

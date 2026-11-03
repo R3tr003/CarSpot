@@ -84,8 +84,11 @@ struct KPIStrip: View {
                         Rectangle().fill(CSColor.divider).frame(width: 1).padding(.vertical, CSSpace.sm)
                             .accessibilityHidden(true)
                     }
+                    // Etichetta in alto, valore in basso: con etichette su 1 o 2 righe i
+                    // numeri restano sulla stessa linea.
                     VStack(alignment: .leading, spacing: CSSpace.xxs) {
                         Text(item.label).eyebrow()
+                        Spacer(minLength: 0)
                         Text(item.value)
                             .font(CSFont.numeric(22))
                             .monospacedDigit()
@@ -94,7 +97,7 @@ struct KPIStrip: View {
                             .minimumScaleFactor(0.5)
                             .contentTransition(.numericText())
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     .padding(CSSpace.md)
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(item.spoken ?? item.label)

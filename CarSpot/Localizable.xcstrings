@@ -1,5 +1,5 @@
 {
-  "sourceLanguage" : "en",
+  "sourceLanguage" : "it",
   "strings" : {
     "" : {
       "comment" : "Stringa vuota (nessun testo): titolo/aiuto assente in certi stati.",
@@ -13,6 +13,46 @@
       },
       "shouldTranslate" : false
     },
+    "· Altra versione" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "· Other version"
+          }
+        }
+      }
+    },
+    "· in pericolo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "· at risk"
+          }
+        }
+      }
+    },
+    "«%@» non risulta completata sul server." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” isn't completed according to the server."
+          }
+        }
+      }
+    },
+    "«%@»: il riscatto non è arrivato in tempo al server." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”: the claim didn't reach the server in time."
+          }
+        }
+      }
+    },
     "@" : {
       "localizations" : {
         "en" : {
@@ -23,6 +63,22 @@
         }
       },
       "shouldTranslate" : false
+    },
+    "%@ · riscatta entro %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ · claim by %2$@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ · riscatta entro %2$@"
+          }
+        }
+      }
     },
     "%@ %@" : {
       "localizations" : {
@@ -41,12 +97,72 @@
       },
       "shouldTranslate" : false
     },
+    "%@ %@, rarità %@, %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ %@, %@ rarity, %@"
+          }
+        }
+      }
+    },
     "%@ L'accesso è limitato dalle restrizioni di questo dispositivo." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ Access is limited by this device's restrictions."
+          }
+        }
+      }
+    },
+    "%@, %lld da riscattare" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$lld to claim"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$lld da riscattare"
+          }
+        }
+      }
+    },
+    "%@, %lld nuove" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$lld new"
+          }
+        },
+        "it" : {
+          "variations" : {
+            "plural" : {
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$@, %2$lld nuove"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$@, %2$lld nuova"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$@, %2$lld nuove"
+                }
+              }
+            }
           }
         }
       }
@@ -78,6 +194,58 @@
         }
       }
     },
+    "%lld auto con 80+ di potenza" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld cars with 80+ power"
+          }
+        }
+      }
+    },
+    "%lld auto degli anni %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld cars from the %2$@s"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld auto degli anni %2$@"
+          }
+        }
+      }
+    },
+    "%lld auto di %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld %2$@ cars"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld auto di %2$@"
+          }
+        }
+      }
+    },
+    "%lld auto prima del 1990" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld cars from before 1990"
+          }
+        }
+      }
+    },
     "%lld copie" : {
       "localizations" : {
         "en" : {
@@ -104,6 +272,82 @@
         }
       }
     },
+    "%lld di %lld completate" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld of %2$lld completed"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld di %2$lld completate"
+          }
+        }
+      }
+    },
+    "%lld Epiche o superiori" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Epics or better"
+          }
+        }
+      }
+    },
+    "%lld icone anni '80 e '90" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld '80s and '90s icons"
+          }
+        }
+      }
+    },
+    "%lld Leggendarie" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Legendaries"
+          }
+        }
+      }
+    },
+    "%lld marche diverse" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld different makes"
+          }
+        }
+      }
+    },
+    "%lld modelli che non hai" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld models you don't have"
+          }
+        }
+      }
+    },
+    "%lld modelli nuovi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld new models"
+          }
+        }
+      }
+    },
     "%lld PE al livello %lld" : {
       "localizations" : {
         "en" : {
@@ -120,13 +364,48 @@
         }
       }
     },
-    "%lld PE al prossimo livello" : {
-      "extractionState" : "stale",
+    "%lld PE tolti." : {
       "localizations" : {
         "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld XP to next level"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld XP removed."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld XP removed."
+                }
+              }
+            }
+          }
+        },
+        "it" : {
+          "variations" : {
+            "plural" : {
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld PE tolti."
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld PE tolto."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld PE tolti."
+                }
+              }
+            }
           }
         }
       }
@@ -141,6 +420,66 @@
         }
       }
     },
+    "%lld piccole cattive" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld hot hatches"
+          }
+        }
+      }
+    },
+    "%lld quartieri diversi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld different neighborhoods"
+          }
+        }
+      }
+    },
+    "%lld Rare o superiori" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Rares or better"
+          }
+        }
+      }
+    },
+    "%lld sportive italiane" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Italian sports cars"
+          }
+        }
+      }
+    },
+    "%lld sportive tedesche" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld German sports cars"
+          }
+        }
+      }
+    },
+    "%lld su %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld of %2$lld"
+          }
+        }
+      }
+    },
     "%lld su 100" : {
       "localizations" : {
         "en" : {
@@ -150,6 +489,19 @@
           }
         }
       }
+    },
+    "%lld versioni su %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld of %2$lld versions"
+          }
+        }
+      }
+    },
+    "%lld/%lld" : {
+      "shouldTranslate" : false
     },
     "%lldª" : {
       "localizations" : {
@@ -308,33 +660,12 @@
         }
       }
     },
-    "Aggiungi 3 auto alla collezione" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add 3 cars to your collection"
-          }
-        }
-      }
-    },
     "Aggiungi alla collezione" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Add to collection"
-          }
-        }
-      }
-    },
-    "Aggiunta alla collezione" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Added to your collection"
           }
         }
       }
@@ -395,12 +726,62 @@
         }
       }
     },
+    "altra versione" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "other version"
+          }
+        }
+      }
+    },
     "Ancora nessun avvistamento. Fotografa la tua prima auto." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "No sightings yet. Photograph your first car."
+          }
+        }
+      }
+    },
+    "Anni" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Years"
+          }
+        }
+      }
+    },
+    "Anni '80" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1980s"
+          }
+        }
+      }
+    },
+    "Anni '90" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1990s"
+          }
+        }
+      }
+    },
+    "Anni %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@s"
           }
         }
       }
@@ -431,6 +812,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Preview · sample data"
+          }
+        }
+      }
+    },
+    "Apre l'elenco delle carte" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens the list of cards"
+          }
+        }
+      }
+    },
+    "Apre la carta" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens the card"
           }
         }
       }
@@ -475,6 +876,16 @@
         }
       }
     },
+    "Apri la carta" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open card"
+          }
+        }
+      }
+    },
     "Avanti" : {
       "localizations" : {
         "en" : {
@@ -491,6 +902,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sighting"
+          }
+        }
+      }
+    },
+    "Badge" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Badge"
+          }
+        }
+      }
+    },
+    "Badge ottenuto" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Badge earned"
           }
         }
       }
@@ -525,6 +956,16 @@
         }
       }
     },
+    "Berlina" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sedan"
+          }
+        }
+      }
+    },
     "Buona caccia" : {
       "localizations" : {
         "en" : {
@@ -541,6 +982,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Happy hunting, @%@"
+          }
+        }
+      }
+    },
+    "Cabrio" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Convertible"
           }
         }
       }
@@ -591,6 +1042,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Change number"
+          }
+        }
+      }
+    },
+    "Cancella la ricerca" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear search"
+          }
+        }
+      }
+    },
+    "Carrozzeria" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Body style"
           }
         }
       }
@@ -646,12 +1117,22 @@
         }
       }
     },
-    "Cattura 2 auto oggi" : {
+    "Cattura %lld auto" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Capture 2 cars today"
+            "value" : "Catch %lld cars"
+          }
+        }
+      }
+    },
+    "Cattura la tua prima auto per iniziare l'album" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capture your first car to start the album"
           }
         }
       }
@@ -666,22 +1147,12 @@
         }
       }
     },
-    "Cattura un'auto Epica" : {
+    "Cattura un'auto" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Capture an Epic car"
-          }
-        }
-      }
-    },
-    "Cattura una Rara o superiore" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Capture a Rare or higher"
+            "value" : "Catch a car"
           }
         }
       }
@@ -693,6 +1164,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Old Town"
+          }
+        }
+      }
+    },
+    "Cerca marca o modello" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search make or model"
           }
         }
       }
@@ -723,6 +1204,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "They show us how the app is used and alert us to errors. Never photos, plates or location."
+          }
+        }
+      }
+    },
+    "Classiche" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Classics"
           }
         }
       }
@@ -838,12 +1329,42 @@
         }
       }
     },
+    "Complete" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete"
+          }
+        }
+      }
+    },
     "Comune" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Common"
+          }
+        }
+      }
+    },
+    "Comuni" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shared"
+          }
+        }
+      }
+    },
+    "Concluse" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ended"
           }
         }
       }
@@ -1074,12 +1595,52 @@
         }
       }
     },
+    "Coupé" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coupé"
+          }
+        }
+      }
+    },
     "Da chiedere" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Not asked yet"
+          }
+        }
+      }
+    },
+    "da trovare" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "to find"
+          }
+        }
+      }
+    },
+    "Da trovare" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To find"
+          }
+        }
+      }
+    },
+    "dal %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "since %@"
           }
         }
       }
@@ -1204,6 +1765,16 @@
         }
       }
     },
+    "Epoca" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Era"
+          }
+        }
+      }
+    },
     "Errore di rete: %@" : {
       "localizations" : {
         "en" : {
@@ -1255,6 +1826,16 @@
         }
       }
     },
+    "Europa" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Europe"
+          }
+        }
+      }
+    },
     "Fatto" : {
       "localizations" : {
         "en" : {
@@ -1265,13 +1846,22 @@
         }
       }
     },
-    "Firenze" : {
-      "comment" : "Segnaposto di esempio sulla mappa.",
+    "finisce tra %@" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Florence"
+            "value" : "ends in %@"
+          }
+        }
+      }
+    },
+    "fino al %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "until %@"
           }
         }
       }
@@ -1292,6 +1882,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Photo to crop"
+          }
+        }
+      }
+    },
+    "Foto del %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo from %@"
           }
         }
       }
@@ -1353,6 +1953,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Photograph the cars you meet, discover their rarity and build your collection."
+          }
+        }
+      }
+    },
+    "Fuori catalogo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not in catalog"
+          }
+        }
+      }
+    },
+    "Furgone" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Van"
           }
         }
       }
@@ -1439,6 +2059,16 @@
         }
       }
     },
+    "Gruppo di %lld carte" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Group of %lld cards"
+          }
+        }
+      }
+    },
     "Hai %lld elementi non ancora salvati nel cloud. Se esci ora li perdi." : {
       "localizations" : {
         "en" : {
@@ -1505,12 +2135,52 @@
         }
       }
     },
+    "Ieri non hai catturato. Prendi una Rara o superiore entro mezzanotte per salvare la serie." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You didn't catch anything yesterday. Catch a Rare or better before midnight to save your streak."
+          }
+        }
+      }
+    },
+    "Il catalogo non è disponibile. Riprova più tardi." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The catalog isn't available. Try again later."
+          }
+        }
+      }
+    },
+    "Immagine: %@ · %@ · Wikimedia Commons" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Image: %1$@ · %2$@ · Wikimedia Commons"
+          }
+        }
+      }
+    },
     "Impostazioni" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Settings"
+          }
+        }
+      }
+    },
+    "In %lld quartieri nuovi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In %lld new neighborhoods"
           }
         }
       }
@@ -1525,12 +2195,32 @@
         }
       }
     },
+    "In un quartiere nuovo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In a new neighborhood"
+          }
+        }
+      }
+    },
     "Inclina il telefono per vedere il foil" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tilt your phone to see the foil"
+          }
+        }
+      }
+    },
+    "Indice alfabetico" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alphabetical index"
           }
         }
       }
@@ -1725,23 +2415,22 @@
         }
       }
     },
+    "Le tue foto" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your photos"
+          }
+        }
+      }
+    },
     "Leggendaria" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Legendary"
-          }
-        }
-      }
-    },
-    "Leggendarie" : {
-      "comment" : "Plurale: conteggio delle carte leggendarie.",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Legendaries"
           }
         }
       }
@@ -1755,18 +2444,6 @@
           }
         }
       }
-    },
-    "Liquid Glass" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Liquid Glass"
-          }
-        }
-      },
-      "shouldTranslate" : false
     },
     "Livello" : {
       "localizations" : {
@@ -1849,13 +2526,12 @@
         }
       }
     },
-    "Marche" : {
-      "comment" : "Marche automobilistiche (statistiche della collezione).",
+    "Marche iniziate" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Makes"
+            "value" : "Makes started"
           }
         }
       }
@@ -1870,24 +2546,42 @@
         }
       }
     },
-    "Milano" : {
-      "comment" : "Segnaposto di esempio sulla mappa.",
+    "Mese" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Milan"
+            "value" : "Month"
           }
         }
       }
     },
-    "Modelli" : {
-      "extractionState" : "stale",
+    "Mese scorso" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Models"
+            "value" : "Last month"
+          }
+        }
+      }
+    },
+    "Modelli trovati" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Models found"
+          }
+        }
+      }
+    },
+    "Modello non trovato" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Model not found yet"
           }
         }
       }
@@ -1912,6 +2606,46 @@
         }
       }
     },
+    "modificata" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "modified"
+          }
+        }
+      }
+    },
+    "Mondo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "World"
+          }
+        }
+      }
+    },
+    "Monovolume" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MPV"
+          }
+        }
+      }
+    },
+    "Mostra" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show"
+          }
+        }
+      }
+    },
     "Mostra tutte" : {
       "localizations" : {
         "en" : {
@@ -1928,6 +2662,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Denied"
+          }
+        }
+      }
+    },
+    "Nessun modello trovato" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No models found"
           }
         }
       }
@@ -1972,26 +2716,6 @@
         }
       }
     },
-    "Nessuna carta %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No %@ cards"
-          }
-        }
-      }
-    },
-    "Nessuna carta ancora" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No cards yet"
-          }
-        }
-      }
-    },
     "Nessuna cattura" : {
       "localizations" : {
         "en" : {
@@ -2018,6 +2742,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No profile photo"
+          }
+        }
+      }
+    },
+    "Nessuna missione comune in corso" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No shared missions running"
           }
         }
       }
@@ -2089,6 +2823,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Don't allow"
+          }
+        }
+      }
+    },
+    "Non l'hai ancora trovata. Fotografala per sbloccare la carta." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You haven't found it yet. Photograph it to unlock the card."
           }
         }
       }
@@ -2263,27 +3007,6 @@
         }
       }
     },
-    "Obiettivi del giorno" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Daily goals"
-          }
-        }
-      }
-    },
-    "Obiettivi del giorno · %lld di %lld" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Daily goals · %1$lld of %2$lld"
-          }
-        }
-      }
-    },
     "Offusco targhe e volti · cerco il modello" : {
       "localizations" : {
         "en" : {
@@ -2374,6 +3097,16 @@
         }
       }
     },
+    "Paese" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Country"
+          }
+        }
+      }
+    },
     "Pagina %lld di %lld" : {
       "localizations" : {
         "en" : {
@@ -2386,17 +3119,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pagina %1$lld di %2$lld"
-          }
-        }
-      }
-    },
-    "Pannello" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Panel"
           }
         }
       }
@@ -2508,6 +3230,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Permissions"
+          }
+        }
+      }
+    },
+    "Pick-up" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pickup"
           }
         }
       }
@@ -2699,6 +3431,16 @@
         }
       }
     },
+    "Qui hai catturato" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You captured here"
+          }
+        }
+      }
+    },
     "Raccogliamo statistiche anonime d'uso: quali schermate usi e quante carte raccogli per rarità. Puoi cambiare idea quando vuoi in Profilo." : {
       "localizations" : {
         "en" : {
@@ -2725,6 +3467,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rarity"
+          }
+        }
+      }
+    },
+    "rarità %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ rarity"
           }
         }
       }
@@ -2845,7 +3597,23 @@
         }
       }
     },
-    "Riscattato" : {
+    "Riscatta %@, %lld punti esperienza e un badge" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claim %1$@, %2$lld experience points and a badge"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riscatta %1$@, %2$lld punti esperienza e un badge"
+          }
+        }
+      }
+    },
+    "Riscattata" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2855,13 +3623,12 @@
         }
       }
     },
-    "Roma" : {
-      "comment" : "Segnaposto di esempio sulla mappa.",
+    "Riscatto annullato" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rome"
+            "value" : "Claim cancelled"
           }
         }
       }
@@ -2892,17 +3659,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Save"
-          }
-        }
-      }
-    },
-    "Scansiona un colore insolito" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spot an unusual color"
           }
         }
       }
@@ -3074,6 +3830,52 @@
         }
       }
     },
+    "Serie di %lld giorni, in pericolo" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Streak of %lld day, at risk"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Streak of %lld days, at risk"
+                }
+              }
+            }
+          }
+        },
+        "it" : {
+          "variations" : {
+            "plural" : {
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Serie di %lld giorni, in pericolo"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Serie di %lld giorno, in pericolo"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Serie di %lld giorni, in pericolo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "Serve per inquadrare e riconoscere le auto: la foto resta sul telefono finché non è anonimizzata." : {
       "localizations" : {
         "en" : {
@@ -3114,6 +3916,26 @@
         }
       }
     },
+    "Settimana" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Week"
+          }
+        }
+      }
+    },
+    "Settimana scorsa" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last week"
+          }
+        }
+      }
+    },
     "Sfide del giorno, punti esperienza e classifiche del tuo quartiere." : {
       "localizations" : {
         "en" : {
@@ -3144,6 +3966,16 @@
         }
       }
     },
+    "Sportiva" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sports car"
+          }
+        }
+      }
+    },
     "Sposta e ridimensiona" : {
       "localizations" : {
         "en" : {
@@ -3160,6 +3992,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Spotter"
+          }
+        }
+      }
+    },
+    "Station wagon" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Station wagon"
           }
         }
       }
@@ -3195,6 +4037,16 @@
         }
       }
     },
+    "SUV" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SUV"
+          }
+        }
+      }
+    },
     "Territorio" : {
       "localizations" : {
         "en" : {
@@ -3215,12 +4067,12 @@
         }
       }
     },
-    "Tocca la fotocamera in basso a destra per catturare la tua prima auto." : {
+    "Togli il filtro %@" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tap the camera at the bottom right to capture your first car."
+            "value" : "Remove %@ filter"
           }
         }
       }
@@ -3255,33 +4107,12 @@
         }
       }
     },
-    "Trova 2 auto elettriche" : {
-      "extractionState" : "stale",
+    "trovata" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Find 2 electric cars"
-          }
-        }
-      }
-    },
-    "Trova un'auto con 80+ di potenza" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Find a car with 80+ power"
-          }
-        }
-      }
-    },
-    "Trova un'auto prima del 1990" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Find a car from before 1990"
+            "value" : "found"
           }
         }
       }
@@ -3292,6 +4123,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Found one match: %@."
+          }
+        }
+      }
+    },
+    "Trovate" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Found"
           }
         }
       }
@@ -3343,13 +4184,152 @@
         }
       }
     },
-    "Un'auto immatricolata prima del 1990" : {
-      "extractionState" : "stale",
+    "Un modello che non hai" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A car registered before 1990"
+            "value" : "A model you don't have"
+          }
+        }
+      }
+    },
+    "Un modello nuovo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A new model"
+          }
+        }
+      }
+    },
+    "Un quartiere" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One neighborhood"
+          }
+        }
+      }
+    },
+    "Un'auto con 80+ di potenza" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A car with 80+ power"
+          }
+        }
+      }
+    },
+    "Un'auto degli anni %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A car from the %@s"
+          }
+        }
+      }
+    },
+    "Un'auto di %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A %@"
+          }
+        }
+      }
+    },
+    "Un'auto prima del 1990" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A car from before 1990"
+          }
+        }
+      }
+    },
+    "Un'Epica o superiore" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An Epic or better"
+          }
+        }
+      }
+    },
+    "Un'icona anni '80 e '90" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An '80s or '90s icon"
+          }
+        }
+      }
+    },
+    "Una Leggendaria" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A Legendary"
+          }
+        }
+      }
+    },
+    "Una marca" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One make"
+          }
+        }
+      }
+    },
+    "Una piccola cattiva" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A hot hatch"
+          }
+        }
+      }
+    },
+    "Una Rara o superiore" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A Rare or better"
+          }
+        }
+      }
+    },
+    "Una sportiva italiana" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An Italian sports car"
+          }
+        }
+      }
+    },
+    "Una sportiva tedesca" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A German sports car"
           }
         }
       }
@@ -3390,6 +4370,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sign-out failed"
+          }
+        }
+      }
+    },
+    "Utilitaria" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "City car"
           }
         }
       }
@@ -3444,6 +4434,16 @@
         }
       }
     },
+    "Versioni" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versions"
+          }
+        }
+      }
+    },
     "Verso il livello %lld" : {
       "localizations" : {
         "en" : {
@@ -3484,1290 +4484,16 @@
         }
       }
     },
-    "Qui hai catturato" : {
+    "Caricamento" : {
+      "comment" : "VoiceOver: contenuto in caricamento (skeleton).",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You captured here"
+            "value" : "Loading"
           }
         }
       }
-    },
-    "Apri la carta" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open card"
-          }
-        }
-      }
-    },
-    "Apre la carta" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Opens the card"
-          }
-        }
-      }
-    },
-    "Apre l'elenco delle carte" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Opens the list of cards"
-          }
-        }
-      }
-    },
-    "Gruppo di %lld carte" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Group of %lld cards"
-          }
-        }
-      }
-    },
-    "rarità %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ rarity"
-          }
-        }
-      }
-    },
-    "%@ %@, rarità %@, %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ %@, %@ rarity, %@"
-          }
-        }
-      }
-    },
-    "Cattura un'auto" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Catch a car"
-          }
-        }
-      }
-    },
-    "Cattura %lld auto" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Catch %lld cars"
-          }
-        }
-      }
-    },
-    "Una Rara o superiore" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A Rare or better"
-          }
-        }
-      }
-    },
-    "%lld Rare o superiori" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld Rares or better"
-          }
-        }
-      }
-    },
-    "Un'Epica o superiore" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "An Epic or better"
-          }
-        }
-      }
-    },
-    "%lld Epiche o superiori" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld Epics or better"
-          }
-        }
-      }
-    },
-    "Un'auto prima del 1990" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A car from before 1990"
-          }
-        }
-      }
-    },
-    "%lld auto prima del 1990" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld cars from before 1990"
-          }
-        }
-      }
-    },
-    "In un quartiere nuovo" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "In a new neighborhood"
-          }
-        }
-      }
-    },
-    "In %lld quartieri nuovi" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "In %lld new neighborhoods"
-          }
-        }
-      }
-    },
-    "Una marca" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "One make"
-          }
-        }
-      }
-    },
-    "%lld marche diverse" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld different makes"
-          }
-        }
-      }
-    },
-    "Un modello che non hai" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A model you don't have"
-          }
-        }
-      }
-    },
-    "%lld modelli che non hai" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld models you don't have"
-          }
-        }
-      }
-    },
-    "Un'auto con 80+ di potenza" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A car with 80+ power"
-          }
-        }
-      }
-    },
-    "%lld auto con 80+ di potenza" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld cars with 80+ power"
-          }
-        }
-      }
-    },
-    "Un quartiere" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "One neighborhood"
-          }
-        }
-      }
-    },
-    "%lld quartieri diversi" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld different neighborhoods"
-          }
-        }
-      }
-    },
-    "Un modello nuovo" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A new model"
-          }
-        }
-      }
-    },
-    "%lld modelli nuovi" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld new models"
-          }
-        }
-      }
-    },
-    "Un'auto degli anni %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A car from the %@s"
-          }
-        }
-      }
-    },
-    "%lld auto degli anni %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld cars from the %2$@s"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld auto degli anni %2$@"
-          }
-        }
-      }
-    },
-    "Un'auto di %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A %@"
-          }
-        }
-      }
-    },
-    "%lld auto di %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld %2$@ cars"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld auto di %2$@"
-          }
-        }
-      }
-    },
-    "Un'icona anni '80 e '90" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "An '80s or '90s icon"
-          }
-        }
-      }
-    },
-    "%lld icone anni '80 e '90" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld '80s and '90s icons"
-          }
-        }
-      }
-    },
-    "Una piccola cattiva" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A hot hatch"
-          }
-        }
-      }
-    },
-    "%lld piccole cattive" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld hot hatches"
-          }
-        }
-      }
-    },
-    "Una sportiva italiana" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "An Italian sports car"
-          }
-        }
-      }
-    },
-    "%lld sportive italiane" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld Italian sports cars"
-          }
-        }
-      }
-    },
-    "Una sportiva tedesca" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A German sports car"
-          }
-        }
-      }
-    },
-    "%lld sportive tedesche" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld German sports cars"
-          }
-        }
-      }
-    },
-    "Una Leggendaria" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A Legendary"
-          }
-        }
-      }
-    },
-    "%lld Leggendarie" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld Legendaries"
-          }
-        }
-      }
-    },
-    "%@, %lld da riscattare" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@, %2$lld to claim"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@, %2$lld da riscattare"
-          }
-        }
-      }
-    },
-    "%@, %lld nuove" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@, %2$lld new"
-          }
-        },
-        "it" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%1$@, %2$lld nuova"
-                }
-              },
-              "many" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%1$@, %2$lld nuove"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%1$@, %2$lld nuove"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "Settimana" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Week"
-          }
-        }
-      }
-    },
-    "Mese" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Month"
-          }
-        }
-      }
-    },
-    "Comuni" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Shared"
-          }
-        }
-      }
-    },
-    "Riscattata" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Claimed"
-          }
-        }
-      }
-    },
-    "Mondo" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "World"
-          }
-        }
-      }
-    },
-    "Europa" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Europe"
-          }
-        }
-      }
-    },
-    "Badge ottenuto" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Badge earned"
-          }
-        }
-      }
-    },
-    "Badge" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Badge"
-          }
-        }
-      }
-    },
-    "fino al %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "until %@"
-          }
-        }
-      }
-    },
-    "Riscatta %@, %lld punti esperienza e un badge" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Claim %1$@, %2$lld experience points and a badge"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Riscatta %1$@, %2$lld punti esperienza e un badge"
-          }
-        }
-      }
-    },
-    "%lld di %lld completate" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld of %2$lld completed"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld di %2$lld completate"
-          }
-        }
-      }
-    },
-    "finisce tra %lld h" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ends in %lld h"
-          }
-        }
-      }
-    },
-    "finisce tra %lld g" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ends in %lld d"
-          }
-        }
-      }
-    },
-    "Nessuna missione comune in corso" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No shared missions running"
-          }
-        }
-      }
-    },
-    "Settimana scorsa" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Last week"
-          }
-        }
-      }
-    },
-    "Mese scorso" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Last month"
-          }
-        }
-      }
-    },
-    "Concluse" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ended"
-          }
-        }
-      }
-    },
-    "%@ · riscatta entro %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ · claim by %2$@"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ · riscatta entro %2$@"
-          }
-        }
-      }
-    },
-    "Ieri non hai catturato. Prendi una Rara o superiore entro mezzanotte per salvare la serie." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "You didn't catch anything yesterday. Catch a Rare or better before midnight to save your streak."
-          }
-        }
-      }
-    },
-    "Serie di %lld giorni, in pericolo" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Streak of %lld day, at risk"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Streak of %lld days, at risk"
-                }
-              }
-            }
-          }
-        },
-        "it" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Serie di %lld giorno, in pericolo"
-                }
-              },
-              "many" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Serie di %lld giorni, in pericolo"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Serie di %lld giorni, in pericolo"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "· in pericolo" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "· at risk"
-          }
-        }
-      }
-    },
-    "Riscatto annullato" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Claim cancelled"
-          }
-        }
-      }
-    },
-    "«%@»: il riscatto non è arrivato in tempo al server." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "“%@”: the claim didn't reach the server in time."
-          }
-        }
-      }
-    },
-    "«%@» non risulta completata sul server." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "“%@” isn't completed according to the server."
-          }
-        }
-      }
-    },
-    "%lld PE tolti." : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld XP removed."
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld XP removed."
-                }
-              }
-            }
-          }
-        },
-        "it" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld PE tolto."
-                }
-              },
-              "many" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld PE tolti."
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld PE tolti."
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "Fuori catalogo" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Not in catalog"
-          }
-        }
-      }
-    },
-    "Cancella la ricerca" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Clear search"
-          }
-        }
-      }
-    },
-    "Carrozzeria" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Body style"
-          }
-        }
-      }
-    },
-    "Epoca" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Era"
-          }
-        }
-      }
-    },
-    "Paese" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Country"
-          }
-        }
-      }
-    },
-    "Togli il filtro %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Remove %@ filter"
-          }
-        }
-      }
-    },
-    "Indice alfabetico" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alphabetical index"
-          }
-        }
-      }
-    },
-    "Anni '80" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1980s"
-          }
-        }
-      }
-    },
-    "Anni '90" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1990s"
-          }
-        }
-      }
-    },
-    "Anni %lld" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%llds"
-          }
-        }
-      }
-    },
-    "Classiche" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Classics"
-          }
-        }
-      }
-    },
-    "Cattura la tua prima auto per iniziare l'album" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Capture your first car to start the album"
-          }
-        }
-      }
-    },
-    "Complete" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Complete"
-          }
-        }
-      }
-    },
-    "Il catalogo non è disponibile. Riprova più tardi." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The catalog isn't available. Try again later."
-          }
-        }
-      }
-    },
-    "Marche iniziate" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Makes started"
-          }
-        }
-      }
-    },
-    "Modelli trovati" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Models found"
-          }
-        }
-      }
-    },
-    "Nessun modello trovato" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No models found"
-          }
-        }
-      }
-    },
-    "Sto preparando l'album…" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preparing the album…"
-          }
-        }
-      }
-    },
-    "%lld su %lld" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld of %2$lld"
-          }
-        }
-      }
-    },
-    "%lld versioni su %lld" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld of %2$lld versions"
-          }
-        }
-      }
-    },
-    "da trovare" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "to find"
-          }
-        }
-      }
-    },
-    "trovata" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "found"
-          }
-        }
-      }
-    },
-    "Foto del %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Photo from %@"
-          }
-        }
-      }
-    },
-    "Immagine: %@ · %@ · Wikimedia Commons" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Image: %1$@ · %2$@ · Wikimedia Commons"
-          }
-        }
-      }
-    },
-    "Le tue foto" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your photos"
-          }
-        }
-      }
-    },
-    "Modello non trovato" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Model not found yet"
-          }
-        }
-      }
-    },
-    "Non l'hai ancora trovata. Fotografala per sbloccare la carta." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "You haven't found it yet. Photograph it to unlock the card."
-          }
-        }
-      }
-    },
-    "Versioni" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Versions"
-          }
-        }
-      }
-    },
-    "altra versione" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "other version"
-          }
-        }
-      }
-    },
-    "dal %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "since %@"
-          }
-        }
-      }
-    },
-    "modificata" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "modified"
-          }
-        }
-      }
-    },
-    "· Altra versione" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "· Other version"
-          }
-        }
-      }
-    },
-    "Trovate" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Found"
-          }
-        }
-      }
-    },
-    "Da trovare" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "To find"
-          }
-        }
-      }
-    },
-    "Cerca marca o modello" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Search make or model"
-          }
-        }
-      }
-    },
-    "Mostra" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Show"
-          }
-        }
-      }
-    },
-    "Anni" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Years"
-          }
-        }
-      }
-    },
-    "Utilitaria" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "City car"
-          }
-        }
-      }
-    },
-    "Berlina" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sedan"
-          }
-        }
-      }
-    },
-    "Station wagon" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Station wagon"
-          }
-        }
-      }
-    },
-    "SUV" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SUV"
-          }
-        }
-      }
-    },
-    "Monovolume" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MPV"
-          }
-        }
-      }
-    },
-    "Coupé" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Coupé"
-          }
-        }
-      }
-    },
-    "Cabrio" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Convertible"
-          }
-        }
-      }
-    },
-    "Sportiva" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sports car"
-          }
-        }
-      }
-    },
-    "Pick-up" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pickup"
-          }
-        }
-      }
-    },
-    "Furgone" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Van"
-          }
-        }
-      }
-    },
-    "%lld/%lld" : {
-      "shouldTranslate" : false
     }
   },
   "version" : "1.0"

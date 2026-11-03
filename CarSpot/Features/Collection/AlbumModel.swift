@@ -34,7 +34,8 @@ enum AlbumEra {
         case ...1970: String(localized: "Classiche")
         case 1980: String(localized: "Anni '80")
         case 1990: String(localized: "Anni '90")
-        default: String(localized: "Anni \(era)")
+        // L'anno come testo: da numero diventerebbe "2.000" con il separatore delle migliaia.
+        default: String(localized: "Anni \(String(era))")
         }
     }
 }
@@ -49,7 +50,7 @@ final class AlbumModel {
     private(set) var searchText = ""
     private(set) var sections: [AlbumSection] = []
     private(set) var stats = AlbumStats()
-    /// `false` finché il catalogo non è pronto: la vista mostra "Sto preparando l'album…".
+    /// `false` finché il catalogo non è pronto: la vista mostra lo skeleton dell'album.
     private(set) var isReady = false
     private(set) var hasCards = false
     private(set) var countries: [String] = []
@@ -127,35 +128,35 @@ final class AlbumModel {
         filters.ownership = value
         markActive(.ownership, active: value != .all)
         track(value == .all ? "all" : (value == .found ? "found" : "missing"))
-        rebuild(animated: true)
+        rebuild()
     }
 
     func setRarity(_ value: Rarity?) {
         filters.rarity = value
         markActive(.rarity, active: value != nil)
         track(value.map { "rarity:\(String(describing: $0))" } ?? "all")
-        rebuild(animated: true)
+        rebuild()
     }
 
     func setBodyType(_ value: BodyType?) {
         filters.bodyType = value
         markActive(.bodyType, active: value != nil)
         track(value.map { "body:\($0.rawValue)" } ?? "all")
-        rebuild(animated: true)
+        rebuild()
     }
 
     func setCountry(_ value: String?) {
         filters.country = value
         markActive(.country, active: value != nil)
         track(value.map { "country:\($0)" } ?? "all")
-        rebuild(animated: true)
+        rebuild()
     }
 
     func setEra(_ value: Int?) {
         filters.era = value
         markActive(.era, active: value != nil)
         track(value.map { "era:\($0)" } ?? "all")
-        rebuild(animated: true)
+        rebuild()
     }
 
     func clear(_ kind: AlbumFilterKind) {
@@ -175,7 +176,7 @@ final class AlbumModel {
         filters = AlbumFilters()
         activeOrder = []
         track("all")
-        rebuild(animated: true)
+        rebuild()
     }
 
     /// Ultimo filtro acceso ancora attivo (per "Togli il filtro SUV").
@@ -210,8 +211,9 @@ final class AlbumModel {
         AppServices.analytics.track(.collectionFiltered(filter: filter))
     }
 
-    /// `animated` solo per i cambi discreti (segmentato, pillole), mai per la query.
-    private func rebuild(animated: Bool = false) {
+    /// Mai animata: animare inserimenti e rimozioni in una griglia lazy di centinaia di
+    /// carte lasciava carte fantasma fuori posto.
+    private func rebuild() {
         buildTask?.cancel()
         generation += 1
         let gen = generation
@@ -238,14 +240,10 @@ final class AlbumModel {
             if needMatches { self.matchesStale = false }
             self.matches = current
             let entries = AlbumIndexBar.entries(for: result.sections)
-            let animation: Animation? = animated && !UIAccessibility.isReduceMotionEnabled
-                ? .spring(duration: 0.3, bounce: 0) : nil
-            withAnimation(animation) {
-                self.sections = result.sections
-                self.stats = result.stats
-                self.indexEntries = entries
-                self.isReady = true
-            }
+            self.sections = result.sections
+            self.stats = result.stats
+            self.indexEntries = entries
+            self.isReady = true
             self.refreshCountries(index)
         }
     }

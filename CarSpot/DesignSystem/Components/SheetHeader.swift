@@ -36,12 +36,12 @@ struct SheetHeader: View {
             }
             Menu {
                 // Titolo + sottotitolo come in Flighty ("Andrea / Modifica profilo").
-                Button(action: openProfile) {
+                Button { openProfile() } label: {
                     Text(menuName)
                     Text("Modifica profilo")
                     Image(systemName: "person.crop.circle.fill")
                 }
-                Button(action: openSettings) {
+                Button { openSettings() } label: {
                     Label("Impostazioni", systemImage: "gearshape")
                 }
             } label: {
@@ -62,10 +62,20 @@ struct SheetHeader: View {
     }
 }
 
+/// Azione d'ambiente avvolta in un tipo (come `DismissAction`): una closure nuda in
+/// `@Entry` invaliderebbe le view che la leggono a ogni aggiornamento.
+struct AccountAction {
+    private let action: @MainActor () -> Void
+
+    init(_ action: @escaping @MainActor () -> Void = {}) { self.action = action }
+
+    @MainActor func callAsFunction() { action() }
+}
+
 /// Environment action to present the profile (triggered by the header avatar).
 extension EnvironmentValues {
-    @Entry var openProfile: () -> Void = {}
-    @Entry var openSettings: () -> Void = {}
+    @Entry var openProfile = AccountAction()
+    @Entry var openSettings = AccountAction()
 }
 
 /// Avatar circolare: la foto profilo se c'è (`avatar`), altrimenti l'iniziale del nome su

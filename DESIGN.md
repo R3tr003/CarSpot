@@ -171,11 +171,13 @@ Il riflesso speculare segue l'inclinazione ed è tinto del colore della rarità.
 
 ## Layout
 
-Scala di spaziatura `CSSpace`: 4 · 6 · 10 · 16 · 24 · 36 · 56. Il margine standard di schermata è `lg` (24), quello interno ai pannelli `lg`, e le righe compatte `md` (16). La collezione è una griglia a 2 colonne flessibili con gap `md`. Le schermate dei tab sono contenuto incorporabile dentro il pannello di sistema (`.sheet` con la `TabView`): niente sfondo né NavigationStack proprio (eccetto Collezione), con padding inferiore che lascia libera la tab bar. Ogni target tattile è ≥ 44 pt (`CSSize.minTap`).
+Scala di spaziatura `CSSpace`: 4 · 6 · 10 · 16 · 24 · 36 · 56. Il margine standard di schermata è `lg` (24), quello interno ai pannelli `lg`, e le righe compatte `md` (16). L'album della Collezione è una sola griglia lazy a 3 colonne con gap `sm` (le foto fuori catalogo a 2 colonne, gap `md`). Le schermate dei tab sono contenuto incorporabile dentro il pannello di sistema (`.sheet` con la `TabView`): niente sfondo né NavigationStack proprio (eccetto Collezione), con padding inferiore `CSSize.tabBarClearance` (130) che lascia libera la tab bar (alta `CSSize.tabBarHeight`, 100). Ogni target tattile è ≥ 44 pt (`CSSize.minTap`).
+
+**Testate agganciate senza fascia (2026-11-01).** Nel pannello niente bande di colore dietro una testata che resta in alto: il pannello di sistema non ha un colore ripetibile e la banda si vede. La testata agganciata è una copia senza fondo in overlay; il contenuto sotto sparisce e sfuma con `.topEdgeFade(hidden:fade:active:)`. Esempio: le marche della Collezione. Le liste lazy lunghe non animano inserimenti e rimozioni (filtri): cambiano di colpo, solo il controllo dà feedback.
 
 ## Elevation & Depth
 
-**Superfici a gradini (2026-10-25).** I blocchi di contenuto delle tab sono `Surface` opache: fondo pannello `panel #0E1014`, gruppi `group #15181E`, blocco eroe `hero #1A1D24`, elementi annidati `nested #232731`. Più chiaro = più in alto; un filo di luce sul bordo superiore (bianco 9% eroe, 6% gruppi); ombra (nero 35%, r 24, y 10) solo sull'eroe e sulle carte. Un solo eroe per schermata; il resto in gruppi con righe e `SurfaceDivider`, statistiche in `KPIStrip` (niente riquadro per numero). Il Liquid Glass nativo resta sui controlli (tab bar, pulsanti flottanti, X, pillole dell'header) e su foto/mappa (`GlassPanel` in onboarding): è il livello di navigazione, non il contenuto. Niente aloni colorati da nessuna parte.
+**Superfici a gradini (2026-10-25).** I blocchi di contenuto delle tab sono `Surface` opache: fondo pannello `panel #0E1014`, gruppi `group #15181E`, blocco eroe `hero #1A1D24`, elementi annidati `nested #232731`. Più chiaro = più in alto; un filo di luce sul bordo superiore (bianco 9% eroe, 6% gruppi); ombra (nero 35%, r 24, y 10) solo sull'eroe e sulle carte. Un solo eroe per schermata; il resto in gruppi con righe e `SurfaceDivider`, statistiche in `KPIStrip` (niente riquadro per numero; etichette in alto, numeri allineati in basso anche quando un'etichetta va su due righe). Il Liquid Glass nativo resta sui controlli (tab bar, pulsanti flottanti, X, pillole dell'header) e su foto/mappa (`GlassPanel` in onboarding): è il livello di navigazione, non il contenuto. Niente aloni colorati da nessuna parte.
 
 ### Shadow Vocabulary
 - **Carta** (nero neutro, nessun glow colorato): dettaglio e reveal.
@@ -198,11 +200,17 @@ Forme continue (`style: .continuous`) ovunque. Raggi: 14 per elementi interni (f
 ### Cards / Containers
 `Surface(.hero | .group, padding:)`: superfici opache a gradini, raggio 20 (vedi Elevation). `GlassPanel` (vetro nativo, raggio 28) solo sopra foto/mappa.
 
+### Status dot
+`StatusDot` / `.statusDot(color)`: puntino di 7 pt (`CSSize.statusDot`) affiancato in alto a destra di un'etichetta, mai sopra il testo. Rosso `danger` = da fare/riscattare, verde `success` = novità. Niente numero dentro: il conteggio lo legge VoiceOver.
+
+### Skeleton di caricamento (2026-11-01)
+`SkeletonBlock` / `SkeletonLine` / `KPIStripSkeleton` in `Skeleton.swift`: blocchi `nested` con la forma esatta del contenuto che arriva (stesse superfici, raggi e spaziature), mai uno spinner dove il contenuto ha una forma. Pulsazione lenta legata all'orologio (opacità 0,55 ↔ 1, ciclo 2,4 s, 30 fps): tutti gli skeleton respirano insieme; ferma con Riduci movimento. Gruppo = `.skeletonLoading()` (una pulsazione, un solo "Caricamento" per VoiceOver); blocco isolato dentro un contenuto vero = `.skeletonPulse()`. Dove: album della Collezione in costruzione, immagini del catalogo in download, primo ripristino dal cloud senza dati locali (`SyncService.isRestoring`: livello, missioni, KPI, cronologia, missioni comuni), foto delle carte in download. Se il download fallisce si torna al ripiego (icona o sagoma): mai una pulsazione infinita.
+
 ### Navigation
 `TabView` nativa di iOS 26 (Liquid Glass autentico, mai sostituita): Oggi, Collezione, Mappa + Cattura come `role: .search`. `SheetHeader`: titolo display + avatar (apre il Profilo) + Condividi solo se c'è un'azione.
 
 ### Spot Card (signature)
-`SpotCardView`: proporzione 0,7; base `elevated → surface` con velo di rarità al 16%; marca come eyebrow nel colore della rarità, modello su massimo 2 righe; foto come miniatura decodificata una volta (ImageIO, ~600 px); materiale per rarità (tabella Rarità), reattivo a dito/giroscopio, fermo con Reduce Motion; "×N" in alto a destra quando il modello ha più copie. VoiceOver la legge come un solo elemento: "Marca Modello, anno, rarità, colore".
+`SpotCardView`: proporzione 0,7; base `elevated → surface` con velo di rarità al 16%; marca come eyebrow nel colore della rarità, modello su massimo 2 righe; foto come miniatura decodificata una volta (ImageIO, ~600 px); materiale per rarità (tabella Rarità), reattivo a dito/giroscopio, fermo con Reduce Motion; "×N" in alto a destra quando il modello ha più copie. In griglia (`RarityFrame` `compact`) il bordo delle rarità non opache è 1,5 pt acceso in alto che si spegne verso il basso (70% → 15%): un bordo pieno ripetuto in fila sembra neon. VoiceOver la legge come un solo elemento: "Marca Modello, anno, rarità, colore".
 
 ### Reveal della carta (Cattura)
 Unico momento "rumoroso" dell'app (`CardRevealView`). La foto scattata (già anonimizzata) vola nella finestra della carta con molla senza rimbalzo; una sola vibrazione all'atterraggio, intensità per rarità; da Rara in su la carta si inclina da sola una volta per mostrare il materiale; testi con sfasamento 70 ms; nota nuova / doppione (pila di 2 carte dietro) / "Già vista qui" (stessa auto: 0 punti); "+N PE" statico e barra del livello che avanza una volta. Carta inclinabile col dito e col giroscopio. Tap = stato finale. Con Reduce Motion solo dissolvenze, vibrazione presente. Mai: retro che si gira, aloni, arcobaleno, numeri che rotolano.

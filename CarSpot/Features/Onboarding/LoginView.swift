@@ -12,6 +12,8 @@ struct LoginView: View {
     @State private var codeChannel: CodeChannel?
     /// Cambia a ogni tocco su un metodo di accesso: fa partire l'haptic.
     @State private var taps = 0
+    /// Lato del logo Google: segue la dimensione del testo del pulsante.
+    @ScaledMetric(relativeTo: .headline) private var logoSide: CGFloat = 20
 
     var body: some View {
         ZStack {
@@ -51,11 +53,7 @@ struct LoginView: View {
             Spacer()
 
             // Marchio.
-            Image(systemName: "car.side.fill")
-                .font(.system(size: 64, weight: .black))
-                .foregroundStyle(Rarity.rara.linearGradient)
-                .shadow(color: Rarity.rara.primary.opacity(0.6), radius: 24, y: 10)
-                .accessibilityHidden(true)
+            BrandMark(width: 104)
 
             VStack(spacing: CSSpace.sm) {
                 Text("Benvenuto").eyebrow(Rarity.rara.primary)
@@ -104,7 +102,7 @@ struct LoginView: View {
 
                 GlassEffectContainer(spacing: CSSpace.sm) {
                     VStack(spacing: CSSpace.sm) {
-                        glassButton("Continua con Google", icon: "g.circle.fill") {
+                        glassButton("Continua con Google", logo: .googleLogo) {
                             signIn(method: "google") { try await AppServices.auth.signInWithGoogle() }
                         }
                         glassButton("Continua con email", icon: "envelope.fill") { openCode(.email) }
@@ -119,11 +117,21 @@ struct LoginView: View {
         }
     }
 
-    /// Pulsante in vetro nativo, stessa famiglia per Google, email e telefono.
-    private func glassButton(_ title: LocalizedStringKey, icon: String, action: @escaping () -> Void) -> some View {
+    /// Pulsante in vetro nativo, stessa famiglia per Google, email e telefono. Google usa il
+    /// suo logo "G" ufficiale a colori (linee guida di Google), gli altri un SF Symbol.
+    private func glassButton(_ title: LocalizedStringKey, icon: String? = nil, logo: ImageResource? = nil,
+                             action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: CSSpace.xs) {
-                Image(systemName: icon).font(CSFont.title(17))
+                if let logo {
+                    Image(logo)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: logoSide, height: logoSide)
+                        .accessibilityHidden(true)
+                } else if let icon {
+                    Image(systemName: icon).font(CSFont.title(17))
+                }
                 Text(title).font(CSFont.title(17))
             }
             .foregroundStyle(CSColor.ink)

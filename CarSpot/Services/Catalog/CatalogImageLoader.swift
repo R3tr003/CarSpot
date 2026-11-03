@@ -110,8 +110,8 @@ private func decodeCatalogThumbnail(_ data: Data, maxPixel: Int) async -> Decode
 }
 
 /// Immagine standard di una versione. Con `silhouette` diventa un'ombra in tinta unita
-/// (l'alpha fa da maschera). Senza immagine, o mentre carica, mostra la sagoma della
-/// carrozzeria: mai uno spinner.
+/// (l'alpha fa da maschera). Mentre scarica mostra uno skeleton; senza immagine (nessun url
+/// o download fallito) la sagoma della carrozzeria: mai uno spinner.
 struct CatalogImageView: View {
     let image: CatalogImage?
     let bodyType: BodyType
@@ -121,6 +121,8 @@ struct CatalogImageView: View {
     var tint: Color = CSColor.nested
 
     @State private var loaded: UIImage?
+    /// Url il cui download è finito (anche senza immagine): da qui in poi niente skeleton.
+    @State private var finishedURL: URL?
 
     var body: some View {
         let url = image.flatMap { CatalogStore.shared.imageURL(for: $0) }
@@ -139,6 +141,10 @@ struct CatalogImageView: View {
                         .resizable()
                         .scaledToFit()
                 }
+            } else if let url, finishedURL != url {
+                SkeletonBlock(cornerRadius: CSRadius.sm)
+                    .padding(CSSpace.sm)
+                    .skeletonPulse()
             } else {
                 Image(systemName: bodyType.symbol)
                     .resizable()
@@ -152,7 +158,10 @@ struct CatalogImageView: View {
             guard let url else { loaded = nil; return }
             if let hit = CatalogImageLoader.cachedImage(for: url, maxPixel: maxPixel) { loaded = hit; return }
             loaded = nil
-            loaded = await CatalogImageLoader.shared.image(for: url, maxPixel: maxPixel)
+            let result = await CatalogImageLoader.shared.image(for: url, maxPixel: maxPixel)
+            guard !Task.isCancelled else { return }
+            loaded = result
+            finishedURL = url
         }
     }
 }

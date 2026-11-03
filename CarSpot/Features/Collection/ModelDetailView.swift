@@ -378,9 +378,11 @@ private func decodePhoto(_ data: Data, maxPixel: Int) async -> DecodedPhoto? {
     return DecodedPhoto(image: cg)
 }
 
-/// Foto quadrata della carta, decodificata in miniatura; senza foto un glifo di ripiego.
+/// Foto quadrata della carta, decodificata in miniatura; skeleton mentre arriva, glifo se non c'è.
 private struct PhotoThumbnail: View {
     let card: StoredCard
+    /// Foto in arrivo dal cloud (download in corso, non fallito).
+    var isPending = false
     @State private var decoded: DecodedPhoto?
 
     /// Si rifà la miniatura quando la foto arriva dal cloud (stessa carta, prima senza foto).
@@ -394,6 +396,9 @@ private struct PhotoThumbnail: View {
             .overlay {
                 if let decoded {
                     Image(decorative: decoded.image, scale: 1).resizable().scaledToFill()
+                } else if isPending || card.photo != nil {
+                    // Foto in arrivo (download o decodifica): skeleton al posto del glifo.
+                    SkeletonBlock(cornerRadius: CSRadius.sm).skeletonPulse()
                 } else {
                     Image(systemName: "car.side.fill").foregroundStyle(albumSilhouette)
                 }
@@ -412,11 +417,13 @@ private struct PhotoCell: View {
     let card: StoredCard
     @Environment(SyncService.self) private var sync: SyncService?
 
+    private var failedPhotos: Set<UUID> { sync?.failedPhotos ?? [] }
+
     var body: some View {
         NavigationLink {
-            CardDetailView(card: card.asSpotCard)
+            CardDetailView(card: card.asSpotCard(failedPhotos: failedPhotos))
         } label: {
-            PhotoThumbnail(card: card)
+            PhotoThumbnail(card: card, isPending: card.isPhotoPending && !failedPhotos.contains(card.id))
                 .aspectRatio(1, contentMode: .fit)
                 .clipShape(RoundedRectangle(cornerRadius: CSRadius.sm, style: .continuous))
                 // Foto ripristinata dal cloud: si scarica solo quando la cella appare.

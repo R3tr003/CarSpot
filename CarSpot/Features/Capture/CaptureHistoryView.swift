@@ -34,6 +34,7 @@ struct CaptureHistoryView: View {
     let isCameraPresented: Bool
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(SyncService.self) private var sync: SyncService?
     @Query(sort: \StoredCard.capturedAt, order: .reverse) private var stored: [StoredCard]
     @Namespace private var zoomNamespace
 
@@ -50,7 +51,7 @@ struct CaptureHistoryView: View {
                     SheetHeader(title: "Cattura")
                     PrimaryButton(title: "Scatta una foto", icon: "camera.fill", action: onShoot)
                     if stored.isEmpty {
-                        emptyState
+                        if sync?.isRestoring == true { historySkeleton } else { emptyState }
                     } else {
                         let history = History(stored)
                         summary(history)
@@ -124,7 +125,7 @@ struct CaptureHistoryView: View {
                     ForEach(Array(day.cards.enumerated()), id: \.element.id) { index, card in
                         if index > 0 { SurfaceDivider(inset: Metrics.dividerInset) }
                         NavigationLink {
-                            CardDetailView(card: card.asSpotCard)
+                            CardDetailView(card: card.asSpotCard(failedPhotos: sync?.failedPhotos ?? []))
                                 .navigationTransition(.zoom(sourceID: card.id, in: zoomNamespace))
                         } label: {
                             HistoryRow(card: card, ordinal: ordinals[card.id],
@@ -143,6 +144,32 @@ struct CaptureHistoryView: View {
         if calendar.isDateInToday(day) { return Text("Oggi") }
         if calendar.isDateInYesterday(day) { return Text("Ieri") }
         return Text(verbatim: day.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(.app)))
+    }
+
+    /// Righe segnaposto con la geometria di `HistoryRow`, mentre la cronologia torna dal cloud.
+    private var historySkeleton: some View {
+        Surface(.group, padding: nil) {
+            VStack(spacing: 0) {
+                ForEach(0..<5, id: \.self) { index in
+                    if index > 0 { SurfaceDivider(inset: Metrics.dividerInset) }
+                    HStack(spacing: Metrics.rowSpacing) {
+                        SkeletonBlock(cornerRadius: Metrics.thumbnailRadius)
+                            .frame(width: Metrics.thumbnailSize, height: Metrics.thumbnailSize)
+                        VStack(alignment: .leading, spacing: CSSpace.xs) {
+                            SkeletonLine(width: 56)
+                            SkeletonLine(width: 120, height: 12)
+                            SkeletonLine(width: 90)
+                        }
+                        Spacer(minLength: CSSpace.xs)
+                        SkeletonLine(width: 56)
+                    }
+                    .padding(.horizontal, Metrics.rowPaddingH)
+                    .padding(.vertical, CSSpace.sm)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+        }
+        .skeletonLoading()
     }
 
     private var emptyState: some View {
@@ -208,7 +235,8 @@ private struct HistoryRow: View {
 
     var body: some View {
         HStack(spacing: Metrics.rowSpacing) {
-            HistoryThumbnail(photo: card.photo, color: card.rarity.color)
+            HistoryThumbnail(photo: card.photo, color: card.rarity.color,
+                             isLoading: card.isPhotoPending && !(sync?.failedPhotos.contains(card.id) ?? false))
                 .matchedTransitionSource(id: card.id, in: namespace)
                 // Foto ripristinata dal cloud: si scarica solo quando la riga appare.
                 .task(id: card.id) { await sync?.loadPhotoIfNeeded(cardId: card.id) }
@@ -271,6 +299,8 @@ private struct HistoryRow: View {
 private struct HistoryThumbnail: View {
     let photo: Data?
     let color: Color
+    /// Foto nel cloud in arrivo: pulsa nello spazio della miniatura.
+    var isLoading = false
 
     @State private var thumbnail: HistoryDecodedImage?
 
@@ -285,6 +315,8 @@ private struct HistoryThumbnail: View {
                     Image(decorative: thumbnail.image, scale: 1)
                         .resizable()
                         .scaledToFill()
+                } else if isLoading {
+                    SkeletonBlock(cornerRadius: Metrics.thumbnailRadius).skeletonPulse()
                 } else {
                     Image(systemName: "car.fill")
                         .font(CSFont.title(17))

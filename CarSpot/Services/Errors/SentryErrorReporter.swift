@@ -101,9 +101,9 @@ final class SentryErrorReporter: ErrorReporting {
         guard SentrySDK.isEnabled else { return try await body() }
         let span = Self.startSpan(name, operation)
         do {
-            let result = try await Self.$currentSpan.withValue(SpanBox(span: span), operation: {
+            let result = try await Self.$currentSpan.withValue(SpanBox(span: span)) {
                 try await body()
-            }, isolation: isolation)
+            }
             span.finish(status: .ok)
             return result
         } catch {

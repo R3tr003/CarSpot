@@ -78,7 +78,7 @@ struct AlbumSuggestions: View {
 /// Segmentato nativo Tutte / Trovate / Da trovare.
 struct AlbumOwnershipPicker: View {
     let selection: Ownership
-    let onChange: (Ownership) -> Void
+    let onChange: @MainActor (Ownership) -> Void
 
     @Environment(\.dynamicTypeSize) private var typeSize
 

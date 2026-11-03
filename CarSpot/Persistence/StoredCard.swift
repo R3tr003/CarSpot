@@ -78,8 +78,20 @@ final class StoredCard {
             power: power, agility: agility, presence: presence,
             spottedArea: spottedArea,
             spottedDaysAgo: max(0, Calendar.current.dateComponents([.day], from: capturedAt, to: .now).day ?? 0),
-            imageData: photo
+            imageData: photo,
+            isPhotoPending: isPhotoPending
         )
+    }
+
+    /// La foto esiste nel cloud ma non è ancora scaricata (carta ripristinata).
+    var isPhotoPending: Bool { photo == nil && photoPath != nil }
+
+    /// Come `asSpotCard`, ma senza skeleton se il download della foto è già fallito
+    /// (`SyncService.failedPhotos`): meglio l'icona di una pulsazione infinita.
+    func asSpotCard(failedPhotos: Set<UUID>) -> SpotCard {
+        var card = asSpotCard
+        if failedPhotos.contains(id) { card.isPhotoPending = false }
+        return card
     }
 }
 

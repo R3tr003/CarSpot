@@ -355,7 +355,7 @@ struct CaptureView: View {
             }
 
             GhostButton(title: photoButtonTitle,
-                        icon: "photo.on.rectangle.angled") { showPicker = true }
+                        icon: "photo.on.rectangle") { showPicker = true }
                 .frame(maxWidth: Viewfinder.actionMaxWidth)
         }
     }

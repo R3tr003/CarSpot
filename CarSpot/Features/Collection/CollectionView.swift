@@ -6,16 +6,21 @@ import SwiftData
 /// Il calcolo dell'album sta in `AlbumModel`, mai nel `body`.
 struct CollectionView: View {
     @Environment(\.dynamicTypeSize) private var typeSize
+    @Environment(SyncService.self) private var sync: SyncService?
     // Le ripetizioni (stessa auto già catturata) restano in cronologia, non in collezione.
     @Query(filter: #Predicate<StoredCard> { $0.isRepeat == false },
            sort: \StoredCard.capturedAt, order: .reverse) private var stored: [StoredCard]
     @State private var model = AlbumModel()
+    @State private var tracker = AlbumScrollTracker()
     @State private var cardsByID: [UUID: StoredCard] = [:]
+    /// Altezza della testata agganciata: misura la zona che sparisce sotto di lei.
+    @State private var headerHeight: CGFloat = 32
+    /// Altezza visibile dell'album (cambia con il detent del pannello).
+    @State private var viewportHeight: CGFloat = 0
     @FocusState private var searchFocused: Bool
     @Namespace private var zoomNamespace
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: CSSpace.sm), count: 3)
-    private let orphanColumns = Array(repeating: GridItem(.flexible(), spacing: CSSpace.md), count: 2)
 
     /// Cambia quando cambiano le carte che contano per l'album.
     private var cardsSignature: Int {
@@ -33,10 +38,20 @@ struct CollectionView: View {
         !model.searchText.trimmingCharacters(in: .whitespaces).isEmpty
     }
 
-    private var showsIndexBar: Bool {
+    /// Primo ripristino dal cloud con la collezione ancora vuota: le carte stanno arrivando.
+    private var isRestoringFirst: Bool {
+        sync?.isRestoring == true && !model.hasCards
+    }
+
+    /// L'album ha l'indice A–Z: il suo spazio a destra resta fisso, anche quando è nascosto,
+    /// così la griglia non si ridispone mentre scorri.
+    private var hasIndex: Bool {
         model.isReady && !typeSize.isAccessibilitySize
             && model.sections.count >= AlbumIndexBar.minimumSections && model.indexEntries.count > 1
     }
+
+    /// Pannello basso (200 pt): la testata agganciata ruberebbe metà dello spazio.
+    private var stickyEnabled: Bool { viewportHeight >= AlbumLayout.minStickyViewport }
 
     var body: some View {
         NavigationStack {
@@ -48,18 +63,28 @@ struct CollectionView: View {
                     }
                     .padding(.horizontal, CSSpace.lg)
                     .padding(.top, CSSpace.lg)
-                    .padding(.bottom, 130)
+                    .padding(.bottom, CSSize.tabBarClearance)
                 }
                 .scrollIndicators(.hidden)
                 .scrollDismissesKeyboard(.interactively)
-                .overlay(alignment: .trailing) {
-                    if showsIndexBar {
-                        AlbumIndexBar(entries: model.indexEntries) { id in
-                            proxy.scrollTo(id, anchor: .top)
+                // Testata della marca senza fascia: le carte spariscono sotto e sfumano.
+                .onGeometryChange(for: CGFloat.self) { $0.size.height.rounded() } action: { viewportHeight = $0 }
+                .topEdgeFade(hidden: AlbumLayout.stickyTop + headerHeight,
+                             active: stickyEnabled && tracker.isActive)
+                .overlay(alignment: .top) {
+                    if stickyEnabled {
+                        AlbumStickyHeader(model: model, tracker: tracker,
+                                          trailing: hasIndex ? AlbumLayout.indexGutter : 0) { height in
+                            if abs(height - headerHeight) > 0.5 { headerHeight = height }
                         }
-                        // Tetto al Dynamic Type: la misura delle lettere lo vede.
-                        .dynamicTypeSize(...DynamicTypeSize.xLarge)
-                        .padding(.trailing, 2)
+                    }
+                }
+                .overlay(alignment: .trailing) {
+                    if hasIndex && stickyEnabled {
+                        AlbumIndexOverlay(entries: model.indexEntries, tracker: tracker,
+                                          top: AlbumLayout.stickyTop + headerHeight + CSSpace.xs) { id in
+                            jump(to: id, proxy: proxy)
+                        }
                     }
                 }
             }
@@ -76,6 +101,9 @@ struct CollectionView: View {
                           rarity: $0.rarity, capturedAt: $0.capturedAt)
             })
         }
+        .onChange(of: model.sections.map(\.id), initial: true) { _, ids in
+            tracker.sync(order: ids)
+        }
     }
 
     // MARK: - Testata e controlli
@@ -83,7 +111,9 @@ struct CollectionView: View {
     @ViewBuilder private var controls: some View {
         SheetHeader(title: "Collezione")
 
-        if model.isReady && !isSearching {
+        if !model.isReady || (isRestoringFirst && !isSearching) {
+            KPIStripSkeleton()
+        } else if !isSearching {
             KPIStrip([
                 .init("Modelli trovati", value: compact(model.stats.modelsFound)),
                 .init("Marche iniziate", value: compact(model.stats.makesStarted)),
@@ -119,14 +149,10 @@ struct CollectionView: View {
 
     @ViewBuilder private var content: some View {
         if !model.isReady {
-            // Al massimo un frame: lo snapshot sta nel bundle.
-            Surface(.group) {
-                Text("Sto preparando l'album…")
-                    .font(CSFont.body(15)).foregroundStyle(CSColor.inkSecondary)
-                    .frame(maxWidth: .infinity)
-            }
+            // Al massimo un frame (lo snapshot sta nel bundle): scheletro nella forma dell'album.
+            albumSkeleton
         } else {
-            if !model.hasCards { firstCardBanner }
+            if !model.hasCards && !isRestoringFirst { firstCardBanner }
             if model.sections.isEmpty {
                 noResults
             } else {
@@ -135,23 +161,44 @@ struct CollectionView: View {
         }
     }
 
-    private var album: some View {
-        LazyVStack(alignment: .leading, spacing: CSSpace.md, pinnedViews: [.sectionHeaders]) {
-            ForEach(model.sections) { section in
-                Section {
-                    sectionBody(section)
-                } header: {
-                    SectionHeader(section: section).id(section.id)
+    /// Testata di marca e 3×3 carte finte: non lazy, sono poche e fisse.
+    private var albumSkeleton: some View {
+        VStack(alignment: .leading, spacing: CSSpace.sm) {
+            HStack(spacing: CSSpace.sm) {
+                SkeletonLine(width: SkeletonMetrics.titleWidth, height: SkeletonMetrics.titleHeight)
+                SkeletonLine(width: SkeletonMetrics.barWidth, height: SkeletonMetrics.barHeight)
+            }
+            .padding(.vertical, CSSpace.xs)
+            ForEach(0..<SkeletonMetrics.rows, id: \.self) { _ in
+                HStack(spacing: CSSpace.sm) {
+                    ForEach(0..<SkeletonMetrics.columns, id: \.self) { _ in
+                        SkeletonBlock(cornerRadius: CSRadius.sm)
+                            .aspectRatio(SkeletonMetrics.cardRatio, contentMode: .fit)
+                    }
                 }
             }
         }
-        .padding(.trailing, showsIndexBar ? 14 : 0)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .skeletonLoading()
     }
 
-    private func sectionBody(_ section: AlbumSection) -> some View {
-        VStack(alignment: .leading, spacing: CSSpace.md) {
-            if !section.models.isEmpty {
-                LazyVGrid(columns: columns, spacing: CSSpace.sm) {
+    private enum SkeletonMetrics {
+        static let rows = 3
+        static let columns = 3
+        static let cardRatio: CGFloat = 0.7
+        static let titleWidth: CGFloat = 96
+        static let titleHeight: CGFloat = 14
+        static let barWidth: CGFloat = 44
+        static let barHeight: CGFloat = 4
+    }
+
+    /// Una sola griglia lazy per tutto l'album (niente griglie annidate in una lista lazy:
+    /// davano carte fantasma fuori posto). Le testate scorrono con la marca; quella
+    /// agganciata in alto è `AlbumStickyHeader`.
+    private var album: some View {
+        LazyVGrid(columns: columns, alignment: .leading, spacing: CSSpace.sm) {
+            ForEach(model.sections) { section in
+                Section {
                     ForEach(section.models) { entry in
                         NavigationLink {
                             ModelDetailView(modelId: entry.id, initialEntry: entry)
@@ -162,21 +209,61 @@ struct CollectionView: View {
                         }
                         .buttonStyle(CSPressStyle())
                     }
-                }
-            }
-            if !section.orphans.isEmpty {
-                if section.id != AlbumBuilder.uncatalogedID {
-                    Text("Fuori catalogo").eyebrow().accessibilityAddTraits(.isHeader)
-                }
-                LazyVGrid(columns: orphanColumns, spacing: CSSpace.md) {
-                    ForEach(section.orphans, id: \.id) { orphan in
-                        if let card = cardsByID[orphan.id] {
-                            OrphanCell(card: card, namespace: zoomNamespace)
-                        }
-                    }
+                } header: {
+                    sectionHeader(section)
+                } footer: {
+                    if !section.orphans.isEmpty { orphans(section) }
                 }
             }
         }
+        .padding(.trailing, hasIndex ? AlbumLayout.indexGutter : 0)
+    }
+
+    /// Salto dall'indice: la testata atterra dove sta quella agganciata, così la prima riga
+    /// di carte non finisce sotto la sfumatura. Le posizioni vecchie non valgono più.
+    private func jump(to id: String, proxy: ScrollViewProxy) {
+        tracker.reset()
+        let free = max(1, viewportHeight - headerHeight)
+        proxy.scrollTo(id, anchor: UnitPoint(x: 0.5, y: AlbumLayout.stickyTop / free))
+    }
+
+    private func sectionHeader(_ section: AlbumSection) -> some View {
+        SectionHeader(section: section)
+            .id(section.id)
+            // Punti interi: i decimali di layout facevano oscillare l'azione tra due valori.
+            .onGeometryChange(for: CGFloat.self) { $0.frame(in: .scrollView).minY.rounded() } action: { minY in
+                tracker.report(section.id, minY: minY)
+            }
+            .onDisappear { tracker.remove(section.id) }
+            .padding(.top, section.id == model.sections.first?.id ? 0 : CSSpace.sm)
+    }
+
+    /// Foto dell'utente fuori catalogo, a due colonne (poche: niente griglia lazy).
+    private func orphans(_ section: AlbumSection) -> some View {
+        let rows = stride(from: 0, to: section.orphans.count, by: 2).map {
+            Array(section.orphans[$0..<min($0 + 2, section.orphans.count)])
+        }
+        return VStack(alignment: .leading, spacing: CSSpace.md) {
+            if section.id != AlbumBuilder.uncatalogedID {
+                Text("Fuori catalogo").eyebrow().accessibilityAddTraits(.isHeader)
+            }
+            ForEach(rows, id: \.first?.id) { row in
+                HStack(alignment: .top, spacing: CSSpace.md) {
+                    ForEach(row, id: \.id) { orphan in
+                        Group {
+                            if let card = cardsByID[orphan.id] {
+                                OrphanCell(card: card, namespace: zoomNamespace)
+                            } else {
+                                Color.clear
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    if row.count == 1 { Color.clear.frame(maxWidth: .infinity) }
+                }
+            }
+        }
+        .padding(.top, section.models.isEmpty ? 0 : CSSpace.xs)
     }
 
     // MARK: - Stati vuoti
@@ -228,7 +315,8 @@ struct CollectionView: View {
 
 // MARK: - Intestazione di marca
 
-/// Nome, barretta di progresso e "5/9"; resta agganciata in alto mentre scorri la marca.
+/// Nome, barretta di progresso e "5/9", senza fondo: in linea scorre con la marca,
+/// una copia resta agganciata in alto (`AlbumStickyHeader`).
 /// Con Dynamic Type da accessibilità nome e conteggio vanno in colonna, senza barretta.
 private struct SectionHeader: View {
     let section: AlbumSection
@@ -282,12 +370,129 @@ private struct SectionHeader: View {
         }
         .padding(.vertical, CSSpace.xs)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(CSColor.panel)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(section.title)
         .accessibilityValue(section.total > 0
                             ? String(localized: "\(section.found) su \(section.total)") : "")
         .accessibilityAddTraits(.isHeader)
+    }
+}
+
+// MARK: - Testata agganciata e indice
+
+/// Misure dell'album condivise da griglia, testata agganciata e indice.
+private enum AlbumLayout {
+    /// Distanza della testata agganciata dal bordo alto (sotto la maniglia del pannello).
+    static let stickyTop: CGFloat = CSSpace.md
+    /// Spazio a destra della griglia riservato all'indice A–Z.
+    static let indexGutter: CGFloat = 14
+    /// Sotto quest'altezza visibile niente testata agganciata né indice.
+    static let minStickyViewport: CGFloat = 220
+}
+
+/// Quale marca sta sotto la testata agganciata. Le testate in linea riportano la loro
+/// posizione; `CollectionView` legge solo `isActive`, così scorrere non la ricalcola.
+@MainActor
+@Observable
+private final class AlbumScrollTracker {
+    /// Marca della testata agganciata; `nil` finché i controlli in alto sono visibili.
+    private(set) var current: String?
+    private(set) var isActive = false
+
+    @ObservationIgnored private var positions: [String: CGFloat] = [:]
+    @ObservationIgnored private var order: [String] = []
+
+    func sync(order: [String]) {
+        self.order = order
+        let valid = Set(order)
+        positions = positions.filter { valid.contains($0.key) }
+        if let current, !valid.contains(current) { set(nil) }
+        recompute()
+    }
+
+    /// Dopo un salto lungo: le testate ancora vive ma lontane hanno posizioni vecchie.
+    /// La marca corrente resta finché le testate visibili non si riportano.
+    func reset() {
+        positions = [:]
+    }
+
+    func report(_ id: String, minY: CGFloat) {
+        positions[id] = minY
+        recompute()
+    }
+
+    func remove(_ id: String) {
+        positions[id] = nil
+        recompute()
+    }
+
+    private func recompute() {
+        let threshold = AlbumLayout.stickyTop + 0.5
+        if let passed = positions.filter({ $0.value <= threshold }).max(by: { $0.value < $1.value }) {
+            // L'ultima testata salita fino alla posizione agganciata.
+            set(passed.key)
+        } else if let below = positions.min(by: { $0.value < $1.value }),
+                  let index = order.firstIndex(of: below.key) {
+            // Tutte le testate visibili sono più in basso: vale la marca prima della prima.
+            set(index > 0 ? order[index - 1] : nil)
+        }
+        // Nessuna testata visibile (in mezzo a una marca lunga): resta quella di prima.
+    }
+
+    private func set(_ id: String?) {
+        if current != id { current = id }
+        if isActive != (id != nil) { isActive = id != nil }
+    }
+}
+
+/// Copia agganciata della testata di marca: stessa vista, nessun fondo (le carte sotto
+/// spariscono con `topEdgeFade`). VoiceOver legge le testate in linea.
+private struct AlbumStickyHeader: View {
+    let model: AlbumModel
+    let tracker: AlbumScrollTracker
+    let trailing: CGFloat
+    let onHeight: (CGFloat) -> Void
+
+    var body: some View {
+        if let id = tracker.current, let section = model.sections.first(where: { $0.id == id }) {
+            SectionHeader(section: section)
+                .padding(.leading, CSSpace.lg)
+                .padding(.trailing, CSSpace.lg + trailing)
+                .onGeometryChange(for: CGFloat.self) { $0.size.height.rounded(.up) } action: { onHeight($0) }
+                .padding(.top, AlbumLayout.stickyTop)
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+        }
+    }
+}
+
+/// Indice A–Z solo nell'album: compare quando i controlli in alto sono scrollati via,
+/// tra la testata agganciata e la tab bar. Se lì non ci sta, resta nascosto.
+private struct AlbumIndexOverlay: View {
+    let entries: [AlbumIndexBar.Entry]
+    let tracker: AlbumScrollTracker
+    let top: CGFloat
+    let onSelect: (String) -> Void
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        ZStack {
+            if tracker.isActive {
+                ViewThatFits(in: .vertical) {
+                    AlbumIndexBar(entries: entries, onSelect: onSelect)
+                        // Tetto al Dynamic Type: la misura delle lettere lo vede.
+                        .dynamicTypeSize(...DynamicTypeSize.xLarge)
+                    Color.clear.frame(width: 0, height: 0)
+                }
+                .transition(.opacity)
+            }
+        }
+        .frame(maxHeight: .infinity)
+        .padding(.top, top)
+        .padding(.bottom, CSSize.tabBarHeight)
+        .padding(.trailing, 2)
+        .animation(reduceMotion ? nil : .easeOut(duration: 0.2), value: tracker.isActive)
     }
 }
 
@@ -300,7 +505,7 @@ private struct OrphanCell: View {
     @Environment(SyncService.self) private var sync: SyncService?
 
     var body: some View {
-        let spot = card.asSpotCard
+        let spot = card.asSpotCard(failedPhotos: sync?.failedPhotos ?? [])
         NavigationLink {
             CardDetailView(card: spot)
                 .navigationTransition(.zoom(sourceID: spot.id, in: namespace))

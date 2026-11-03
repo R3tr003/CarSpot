@@ -49,7 +49,8 @@ struct SpotCardView: View {
                 Spacer(minLength: 0)
 
                 // Parallasse: disattivato con Reduce Motion.
-                CardPhoto(imageData: card.imageData, symbol: card.symbol, color: color)
+                CardPhoto(imageData: card.imageData, symbol: card.symbol, color: color,
+                          isPending: card.isPhotoPending)
                     .offset(x: tiltRoll * 8, y: tiltPitch * 6)
 
                 Spacer(minLength: 0)
@@ -200,30 +201,32 @@ struct RarityFrame: View {
     }
 
     /// Bordo: 1 pt tenue (opaca), 2 pt metallico con luce legata a `roll` (Rara, Leggendaria),
-    /// 2 pt pieno sotto il foil (Epica).
+    /// 2 pt pieno sotto il foil (Epica). In `compact` (griglie) niente bordo pieno, che in
+    /// fila sembra neon: 1,5 pt acceso in alto che si spegne verso il basso.
     @ViewBuilder private var borderLayer: some View {
-        switch finish {
-        case .matte:
+        if finish == .matte {
             shape.strokeBorder(color.opacity(0.35), lineWidth: 1)
-        case .foilEdge:
+        } else if compact {
+            shape.strokeBorder(
+                LinearGradient(colors: [color.opacity(0.7), color.opacity(0.15)],
+                               startPoint: .top, endPoint: .bottom),
+                lineWidth: 1.5
+            )
+        } else if finish == .foilEdge {
             shape.strokeBorder(color, lineWidth: 2)
-        case .metalEdge, .fullFoil:
-            if compact {
-                shape.strokeBorder(color, lineWidth: 2)
-            } else {
-                let highlight = min(0.9, max(0.1, 0.5 + roll * 0.4))
-                shape.strokeBorder(
-                    LinearGradient(
-                        stops: [
-                            .init(color: color.mix(with: .black, by: 0.18), location: 0),
-                            .init(color: color.mix(with: .white, by: 0.5), location: highlight),
-                            .init(color: color.mix(with: .black, by: 0.18), location: 1)
-                        ],
-                        startPoint: .topLeading, endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 2
-                )
-            }
+        } else {
+            let highlight = min(0.9, max(0.1, 0.5 + roll * 0.4))
+            shape.strokeBorder(
+                LinearGradient(
+                    stops: [
+                        .init(color: color.mix(with: .black, by: 0.18), location: 0),
+                        .init(color: color.mix(with: .white, by: 0.5), location: highlight),
+                        .init(color: color.mix(with: .black, by: 0.18), location: 1)
+                    ],
+                    startPoint: .topLeading, endPoint: .bottomTrailing
+                ),
+                lineWidth: 2
+            )
         }
     }
 }
@@ -252,6 +255,8 @@ private struct CardPhoto: View {
     let imageData: Data?
     let symbol: String
     let color: Color
+    /// Foto nel cloud non ancora scaricata.
+    var isPending = false
 
     @State private var thumbnail: DecodedThumbnail?
 
@@ -263,8 +268,11 @@ private struct CardPhoto: View {
                     Image(decorative: thumbnail.image, scale: 1)
                         .resizable()
                         .scaledToFill()
+                } else if isPending || imageData != nil {
+                    // Foto in arrivo (download o decodifica): skeleton al posto dell'icona.
+                    SkeletonBlock(cornerRadius: CSRadius.sm).skeletonPulse()
                 } else {
-                    // Fallback mentre decodifica o senza foto.
+                    // Simbolo solo se non c'è e non arriverà nessuna foto.
                     Image(systemName: symbol)
                         .font(.system(size: 56, weight: .regular))
                         .minimumScaleFactor(0.5)

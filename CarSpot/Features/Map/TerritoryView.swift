@@ -39,7 +39,7 @@ struct TerritoryView: View {
                 }
             }
             .padding(CSSpace.lg)
-            .padding(.bottom, 130)
+            .padding(.bottom, CSSize.tabBarClearance)
         }
         .scrollIndicators(.hidden)
     }

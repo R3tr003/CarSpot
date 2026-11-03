@@ -21,6 +21,8 @@ struct SpotCard: Identifiable, Hashable {
 
     /// Anonymized capture, when the card came from a real spot.
     var imageData: Data? = nil
+    /// Foto nel cloud non ancora scaricata: la carta mostra lo skeleton, non l'icona.
+    var isPhotoPending = false
 
     var title: String { "\(make) \(model)" }
 }

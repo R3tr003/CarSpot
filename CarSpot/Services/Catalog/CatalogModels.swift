@@ -30,8 +30,8 @@ enum BodyType: String, CaseIterable, Codable, Sendable, Hashable {
         case .suv: "suv.side.fill"
         case .cabrio: "convertible.side.fill"
         case .pickup: "truck.pickup.side.fill"
-        case .furgone, .monovolume: "bus.fill"
-        case .utilitaria, .berlina, .stationWagon, .coupe, .sportiva: "car.side.fill"
+        case .furgone: "box.truck.fill"
+        case .utilitaria, .berlina, .stationWagon, .coupe, .sportiva, .monovolume: "car.side.fill"
         }
     }
 }

@@ -35,6 +35,11 @@ xcodebuild -project CarSpot.xcodeproj -scheme CarSpot -configuration Debug \
 - **Xcode fermo su "Preparing Editor Functionality"** o `simctl` che non risponde:
   CoreSimulator appeso → `killall -9 com.apple.CoreSimulator.CoreSimulatorService`, poi
   `xcrun simctl shutdown all`. Non cancella nulla; mai `erase`.
+- **Icona app (`AppIcon.icon`):** i livelli si rigenerano con `design/icon/build_icon_layers.py`;
+  anteprime con `"/Applications/Xcode.app/Contents/Applications/Icon Composer.app/Contents/Executables/ictool"
+  <file.icon> --export-image --rendition Default|Dark|TintedDark|ClearLight …`. Chiaro/scuro
+  si fa con `fill-specializations` dello sfondo: le specializzazioni per livello
+  (immagine o fill) non vengono applicate dal renderer.
 - **Naming:** niente tipi propri chiamati `Tab` (collide con `SwiftUI.Tab`).
 - **Launch arguments di debug:** `-skipAuth YES` (salta onboarding+login, ospite),
   `-showLogin YES`, `-resetAuth YES`, `-startTab today|collection|capture|map|profile`,
@@ -69,8 +74,10 @@ xcodebuild -project CarSpot.xcodeproj -scheme CarSpot -configuration Debug \
   si cambiano sempre in coppia.
 - **Test:** Swift Testing (`@Test`, `#expect`, `try #require`) in `CarSpotTests/`; XCTest
   solo per UI test. **Logging:** `Logger` di `os`. **Commenti:** in italiano, brevi.
-- **Stringhe:** chiavi italiane nel catalogo `Localizable.xcstrings` con traduzione `en`;
-  le aggiunge la sessione principale a fine lavoro.
+- **Stringhe:** chiavi italiane nel catalogo `Localizable.xcstrings` (`sourceLanguage`
+  = `it`, mentre `developmentRegion` resta `en` come fallback per le altre lingue) con
+  traduzione `en`; le aggiunge la sessione principale a fine lavoro. Le chiavi `stale`
+  (non più nel codice) si tolgono.
 - Struttura di auth/onboarding, servizi esterni (Clerk, Supabase, Mixpanel, Sentry) e
   guscio a tab: [docs/agents/app-structure.md](docs/agents/app-structure.md). Leggilo
   prima di toccare `RootGate`, `RootShellView`, `AppServices` o l'onboarding.

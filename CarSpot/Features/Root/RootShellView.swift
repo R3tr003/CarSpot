@@ -107,8 +107,8 @@ struct RootShellView: View {
             // Dal pannello piccolo la carta non si leggerebbe: si apre a metà.
             if old.isEmpty, !new.isEmpty, detent == Self.smallDetent { detent = Self.mediumDetent }
         }
-        .environment(\.openProfile) { accountSheet = .profile }
-        .environment(\.openSettings) { accountSheet = .settings }
+        .environment(\.openProfile, AccountAction { accountSheet = .profile })
+        .environment(\.openSettings, AccountAction { accountSheet = .settings })
         .onChange(of: selection, initial: true) { _, screen in
             Self.trackTab(screen)
         }

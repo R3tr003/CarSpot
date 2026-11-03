@@ -36,6 +36,13 @@ final class SyncService {
     /// Riscatti annullati da mostrare all'utente (`clearClaimRejections` dopo la lettura).
     private(set) var claimRejections: [ClaimRejection] = []
 
+    /// Primo pull di questa sessione in corso: senza dati locali la UI mostra gli skeleton
+    /// invece di "livello 1" o "nessuna cattura" (che sarebbero falsi fino alla fine).
+    private(set) var isRestoring = false
+    /// Foto il cui download è fallito in questa sessione: niente skeleton infinito, si
+    /// torna all'icona.
+    private(set) var failedPhotos: Set<UUID> = []
+
     @ObservationIgnored private let container: ModelContainer
     @ObservationIgnored private let store: (any CloudStore)?
 
@@ -91,6 +98,7 @@ final class SyncService {
         try? context.save()
         userId = nil
         lastPullAt = nil
+        failedPhotos = []
         mutationEpoch += 1
         Self.log.notice("Logout: dati locali rimossi")
     }
@@ -101,7 +109,12 @@ final class SyncService {
     func syncNow(force: Bool = false) async {
         guard let store, let userId, !isSyncing else { return }
         isSyncing = true
-        defer { isSyncing = false }
+        let firstPull = lastPullAt == nil
+        if firstPull { isRestoring = true }
+        defer {
+            isSyncing = false
+            if firstPull { isRestoring = false }
+        }
 
         await pushPending()
         guard self.userId == userId else { return }
@@ -202,6 +215,7 @@ final class SyncService {
             card.photo = data
             try? context.save()
         } catch {
+            failedPhotos.insert(cardId)
             Self.log.error("Download foto fallito: \(error.localizedDescription, privacy: .public)")
             AppServices.errors.record(error, area: .sync, step: "download_photo")
         }

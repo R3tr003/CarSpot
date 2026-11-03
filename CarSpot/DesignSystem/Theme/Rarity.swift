@@ -71,7 +71,7 @@ enum Rarity: String, CaseIterable, Identifiable, Codable {
 
     var symbol: String {
         switch self {
-        case .comune: return "circle.grid.2x2"
+        case .comune: return "circle"
         case .rara: return "diamond"
         case .epica: return "hexagon"
         case .leggendaria: return "crown"
