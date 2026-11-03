@@ -30,3 +30,11 @@
   Nota: la 0012 è attiva sul server ma non registrata in `supabase_migrations.schema_migrations`.
 - ⏭️ Prossima: misurare SigLIP2 sulle foto vere dell'utente e portarlo on-device (Core ML)
   al posto del mock, abbinato al catalogo; premio per marca completa (server).
+- ✅ 2026-11-03: **riconoscimento on-device** al posto del mock (`OnDeviceRecognitionService`):
+  encoder SigLIP2 base Core ML 8 bit (93 MB, gitignorato) + vettori di testo dei 3.771 modelli
+  del catalogo, top-3 per famiglia con peso di popolarità. Misurato su foto Commons peggiorate e
+  Stanford Cars (le foto dell'utente non ci sono): ~72 % modello giusto al primo colpo, ~86 % nei
+  primi 3. Dettagli in `tools/recognition-trial/REPORT.md`. Da provare su iPhone.
+- ⏭️ Prossima: pulizia del catalogo (modelli mancanti come Mini e i10, voci generiche con alta
+  popolarità, doppioni Classe E/E-Class); controllo server solo per carte epiche/leggendarie;
+  premio per marca completa (server).

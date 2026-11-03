@@ -1,0 +1,97 @@
+{
+  "model": "google/siglip2-base-patch16-256",
+  "device": "mps",
+  "n_images": 1400,
+  "n_skipped_out_of_catalog": 0,
+  "make_top1": 0.9978571428571429,
+  "make_top3": 0.9978571428571429,
+  "model_top1": 0.9807142857142858,
+  "model_top3": 0.995,
+  "model_top1_from_gen_prompts": 0.9464285714285714,
+  "model_top3_from_gen_prompts": 0.9914285714285714,
+  "ms_per_image_mean": 47.6165255792044,
+  "ms_per_image_median": 46.269750004285015,
+  "catalog": {
+    "generation_classes": 304,
+    "model_classes": 235
+  },
+  "conf_top1_mean_correct": 0.9473707168556353,
+  "conf_top1_mean_wrong": 0.65024968429848,
+  "top_confusions": [
+    {
+      "truth": "BMW Serie 5",
+      "pred": "BMW M3",
+      "n": 5
+    },
+    {
+      "truth": "Mercedes-Benz SL",
+      "pred": "Mercedes-Benz AMG GT",
+      "n": 3
+    },
+    {
+      "truth": "Audi A4",
+      "pred": "Audi A3",
+      "n": 3
+    },
+    {
+      "truth": "Jeep Compass",
+      "pred": "Jeep Grand Cherokee",
+      "n": 2
+    },
+    {
+      "truth": "Ferrari 458 Italia",
+      "pred": "Lamborghini Gallardo",
+      "n": 1
+    },
+    {
+      "truth": "Ford Mustang",
+      "pred": "Jeep Avenger",
+      "n": 1
+    },
+    {
+      "truth": "Audi TT",
+      "pred": "Audi A5",
+      "n": 1
+    },
+    {
+      "truth": "Jeep Grand Cherokee",
+      "pred": "Jeep Compass",
+      "n": 1
+    },
+    {
+      "truth": "Jeep Compass",
+      "pred": "Jeep Avenger",
+      "n": 1
+    },
+    {
+      "truth": "Lamborghini Aventador",
+      "pred": "Lamborghini Revuelto",
+      "n": 1
+    },
+    {
+      "truth": "Audi A6",
+      "pred": "Audi A5",
+      "n": 1
+    },
+    {
+      "truth": "Audi A6",
+      "pred": "Audi A3",
+      "n": 1
+    },
+    {
+      "truth": "Volvo 240",
+      "pred": "Volvo V40",
+      "n": 1
+    },
+    {
+      "truth": "Audi A5",
+      "pred": "Audi A3",
+      "n": 1
+    },
+    {
+      "truth": "Audi TT",
+      "pred": "Audi A3",
+      "n": 1
+    }
+  ]
+}

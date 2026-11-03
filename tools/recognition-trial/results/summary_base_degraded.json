@@ -1,0 +1,97 @@
+{
+  "model": "google/siglip2-base-patch16-256",
+  "device": "mps",
+  "n_images": 76,
+  "n_skipped_out_of_catalog": 0,
+  "make_top1": 0.881578947368421,
+  "make_top3": 0.9605263157894737,
+  "model_top1": 0.75,
+  "model_top3": 0.9210526315789473,
+  "model_top1_from_gen_prompts": 0.8157894736842105,
+  "model_top3_from_gen_prompts": 0.9736842105263158,
+  "ms_per_image_mean": 47.22691895968685,
+  "ms_per_image_median": 47.1391044993652,
+  "catalog": {
+    "generation_classes": 304,
+    "model_classes": 235
+  },
+  "conf_top1_mean_correct": 0.8444855184408656,
+  "conf_top1_mean_wrong": 0.4909714160389022,
+  "top_confusions": [
+    {
+      "truth": "Fiat Panda",
+      "pred": "Fiat Grande Panda",
+      "n": 2
+    },
+    {
+      "truth": "Volkswagen T-Roc",
+      "pred": "Volkswagen T-Cross",
+      "n": 2
+    },
+    {
+      "truth": "Fiat Grande Punto",
+      "pred": "Fiat Punto",
+      "n": 1
+    },
+    {
+      "truth": "Alfa Romeo Giulietta",
+      "pred": "Alfa Romeo Junior",
+      "n": 1
+    },
+    {
+      "truth": "Alfa Romeo Giulietta",
+      "pred": "Alfa Romeo MiTo",
+      "n": 1
+    },
+    {
+      "truth": "Volkswagen Golf",
+      "pred": "Nissan Leaf",
+      "n": 1
+    },
+    {
+      "truth": "Volkswagen Golf",
+      "pred": "Toyota C-HR",
+      "n": 1
+    },
+    {
+      "truth": "Volkswagen Polo",
+      "pred": "Seat Ibiza",
+      "n": 1
+    },
+    {
+      "truth": "Dacia Duster",
+      "pred": "Jeep Avenger",
+      "n": 1
+    },
+    {
+      "truth": "Dacia Duster",
+      "pred": "Dacia Jogger",
+      "n": 1
+    },
+    {
+      "truth": "Peugeot 208",
+      "pred": "Peugeot 2008",
+      "n": 1
+    },
+    {
+      "truth": "Citroën C3",
+      "pred": "Opel Mokka",
+      "n": 1
+    },
+    {
+      "truth": "Ford Fiesta",
+      "pred": "Renault Clio",
+      "n": 1
+    },
+    {
+      "truth": "Opel Corsa",
+      "pred": "Kia Ceed",
+      "n": 1
+    },
+    {
+      "truth": "Hyundai i10",
+      "pred": "Suzuki Swift",
+      "n": 1
+    }
+  ]
+}

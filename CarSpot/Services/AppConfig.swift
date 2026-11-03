@@ -5,7 +5,7 @@ import Foundation
 /// data/storage once real keys are present in `Secrets.swift`.
 enum AppConfig {
 
-    enum RecognitionMode { case mock, remote }
+    enum RecognitionMode { case mock, onDevice, remote }
 
     /// True once `Secrets.swift` contains real Supabase values (not placeholders).
     static var isSupabaseConfigured: Bool {
@@ -39,13 +39,14 @@ enum AppConfig {
     /// verrebbero scartati.
     static let mixpanelServerURL = "https://api-eu.mixpanel.com"
 
-    /// Real vehicle recognition needs a paid provider wired into the `recognize`
-    /// Edge Function. Until that's live, keep mock so capture keeps working even
-    /// when Supabase is otherwise configured. Flip to `true` when ready.
+    /// Il riconoscimento gira sul telefono (`OnDeviceRecognitionService`). La Edge Function
+    /// `recognize` resta per un eventuale controllo lato server; `true` la usa per tutte le foto.
     static let useRemoteRecognition = false
 
+    /// Remoto se forzato, altrimenti on-device; il mock solo se manca l'encoder nel bundle.
     static var recognitionMode: RecognitionMode {
-        (useRemoteRecognition && isSupabaseConfigured) ? .remote : .mock
+        if useRemoteRecognition && isSupabaseConfigured { return .remote }
+        return OnDeviceRecognitionService.isAvailable ? .onDevice : .mock
     }
 
     /// Supabase base URL, normalised from whatever was pasted (strips any path
@@ -71,8 +72,9 @@ enum AppConfig {
     /// Builds the active recognition service from configuration.
     static func makeRecognitionService() -> any RecognitionService {
         switch recognitionMode {
-        case .mock:   return MockRecognitionService()
-        case .remote: return RemoteRecognitionService()
+        case .mock:     return MockRecognitionService()
+        case .onDevice: return OnDeviceRecognitionService()
+        case .remote:   return RemoteRecognitionService()
         }
     }
 }

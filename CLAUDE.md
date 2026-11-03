@@ -41,6 +41,10 @@ xcodebuild -project CarSpot.xcodeproj -scheme CarSpot -configuration Debug \
   si fa con `fill-specializations` dello sfondo: le specializzazioni per livello
   (immagine o fill) non vengono applicate dal renderer.
 - **Naming:** niente tipi propri chiamati `Tab` (collide con `SwiftUI.Tab`).
+- **Riconoscimento on-device:** `CarSpot/Services/Recognition/Resources/CarEncoder.mlpackage`
+  (93 MB) è gitignorato. Si rigenera con `tools/recognition-trial`: `convert_coreml.py`, poi
+  `catalog_embeddings.py build` + `export-app` (anche quando cambia il catalogo). Se manca,
+  `AppConfig` usa il mock senza errori.
 - **Launch arguments di debug:** `-skipAuth YES` (salta onboarding+login, ospite),
   `-showLogin YES`, `-resetAuth YES`, `-startTab today|collection|capture|map|profile`,
   `-autoCapture YES` (+ `-autoSave YES`) per la pipeline con immagine sintetica.

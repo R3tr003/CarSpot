@@ -1,0 +1,77 @@
+file,truth,top1,conf1,top2,top3,top1_gen,ms
+fiat_panda_0-1.jpg,Fiat Panda,Fiat Grande Panda,0.642,Fiat Panda,Fiat Uno,Fiat Panda III (319),48
+fiat_panda_0-2.jpg,Fiat Panda,Fiat Grande Panda,0.834,Fiat Panda,Fiat Multipla,Fiat Panda II (169),48
+fiat_500_1-1.jpg,Fiat 500,Fiat 500,0.629,Fiat Cinquecento,Abarth 595,Fiat 500 II (312),54
+fiat_500_1-2.jpg,Fiat 500,Fiat 500,0.236,Fiat 600,Volkswagen Maggiolino (Beetle),Fiat 500 Nuova 500,48
+fiat_tipo_2-1.jpg,Fiat Tipo,Fiat Tipo,0.898,Fiat Bravo,Fiat Punto Evo,Fiat Tipo II (356),46
+fiat_tipo_2-2.jpg,Fiat Tipo,Fiat Tipo,0.911,Fiat Bravo,Volkswagen Polo,Fiat Tipo II (356),45
+fiat_grande-punto_3-1.jpg,Fiat Grande Punto,Fiat Punto,0.620,Fiat Grande Punto,Fiat Punto Evo,Fiat Punto II (188),46
+fiat_grande-punto_3-2.jpg,Fiat Grande Punto,Fiat Grande Punto,0.409,Fiat Punto,Fiat Bravo,Fiat Grande Punto I (199),48
+alfa-romeo_giulietta_4-1.jpg,Alfa Romeo Giulietta,Alfa Romeo Junior,0.418,Alfa Romeo Giulietta,Alfa Romeo Alfasud,Lancia Delta I HF Integrale,48
+alfa-romeo_giulietta_4-2.jpg,Alfa Romeo Giulietta,Alfa Romeo MiTo,0.545,Alfa Romeo Giulietta,Alfa Romeo 147,Alfa Romeo Giulietta III (940),48
+alfa-romeo_giulia_5-1.jpg,Alfa Romeo Giulia,Alfa Romeo Giulia,0.487,Alfa Romeo Stelvio,Alfa Romeo Giulietta,Alfa Romeo Stelvio I (949),48
+alfa-romeo_giulia_5-2.jpg,Alfa Romeo Giulia,Alfa Romeo Giulia,0.677,Alfa Romeo Stelvio,Alfa Romeo Giulietta,Alfa Romeo Giulia IV (952),47
+alfa-romeo_stelvio_6-1.jpg,Alfa Romeo Stelvio,Alfa Romeo Stelvio,0.961,Alfa Romeo Giulia,Alfa Romeo Tonale,Alfa Romeo Stelvio I (949),45
+alfa-romeo_stelvio_6-2.jpg,Alfa Romeo Stelvio,Alfa Romeo Stelvio,0.815,Maserati Grecale,Alfa Romeo Tonale,Alfa Romeo Stelvio I (949),46
+lancia_ypsilon_7-1.jpg,Lancia Ypsilon,Lancia Ypsilon,0.968,Lancia Delta,Fiat Bravo,Lancia Ypsilon II (843),48
+lancia_ypsilon_7-2.jpg,Lancia Ypsilon,Lancia Ypsilon,0.990,Lancia Y10,Seat Ibiza,Lancia Ypsilon II (843),50
+jeep_renegade_8-1.jpg,Jeep Renegade,Jeep Renegade,0.976,Jeep Avenger,Jeep Compass,Jeep Renegade I (BU),47
+jeep_renegade_8-2.jpg,Jeep Renegade,Jeep Renegade,0.943,Jeep Avenger,Fiat Grande Panda,Jeep Renegade I (BU),49
+volkswagen_golf_9-1.jpg,Volkswagen Golf,Nissan Leaf,0.058,Tesla Model 3,Tesla Model S,Tesla Model S I,50
+volkswagen_golf_9-2.jpg,Volkswagen Golf,Toyota C-HR,0.032,Jaguar F-Type,Mercedes-Benz Classe C,Volkswagen Golf V (Mk5),50
+volkswagen_polo_10-1.jpg,Volkswagen Polo,Seat Ibiza,0.618,Skoda Fabia,Fiat Punto,Seat Ibiza IV (6J),48
+volkswagen_polo_10-2.jpg,Volkswagen Polo,Volkswagen Polo,0.953,Volkswagen T-Roc,Volkswagen Golf,Volkswagen Polo VI (AW),46
+volkswagen_t-roc_11-1.jpg,Volkswagen T-Roc,Volkswagen T-Cross,0.820,Volkswagen T-Roc,Volkswagen Tiguan,Volkswagen T-Cross I,46
+volkswagen_t-roc_11-2.jpg,Volkswagen T-Roc,Volkswagen T-Cross,0.671,Volkswagen T-Roc,Volkswagen ID.3,Volkswagen T-Cross I,47
+renault_clio_12-1.jpg,Renault Clio,Renault Clio,0.895,Renault Megane,Renault Captur,Renault Clio IV,47
+renault_clio_12-2.jpg,Renault Clio,Renault Clio,0.570,Renault Captur,Renault Zoe,Renault Clio V,49
+dacia_duster_13-1.jpg,Dacia Duster,Jeep Avenger,0.577,Dacia Jogger,Dacia Spring,Jeep Avenger I,50
+dacia_duster_13-2.jpg,Dacia Duster,Dacia Jogger,0.712,Dacia Duster,Jeep Avenger,Dacia Duster III,48
+dacia_sandero_14-1.jpg,Dacia Sandero,Dacia Sandero,0.989,Renault Clio,Dacia Spring,Dacia Sandero II,47
+dacia_sandero_14-2.jpg,Dacia Sandero,Dacia Sandero,0.935,Dacia Jogger,Dacia Spring,Dacia Sandero III,44
+peugeot_208_15-1.jpg,Peugeot 208,Peugeot 2008,0.117,Hyundai i20,Toyota C-HR,Peugeot 2008 I,47
+peugeot_208_15-2.jpg,Peugeot 208,Peugeot 208,0.569,Peugeot 308,Citroën C4,Peugeot 208 II,48
+citro-n_c3_16-1.jpg,Citroën C3,Citroën C3,0.859,Citroën C4 Cactus,Citroën C4,Citroën C3 III,46
+citro-n_c3_16-2.jpg,Citroën C3,Opel Mokka,0.496,Opel Grandland,Peugeot 2008,Opel Mokka B,47
+ford_fiesta_17-1.jpg,Ford Fiesta,Renault Clio,0.350,Ford Fiesta,Fiat Punto,Renault Clio III,44
+ford_fiesta_17-2.jpg,Ford Fiesta,Ford Fiesta,0.719,Ford Focus,Ford Puma,Ford Fiesta VI,45
+ford_puma_18-1.jpg,Ford Puma,Ford Puma,0.992,Ford Fiesta,Ford Kuga,Ford Puma II,47
+ford_puma_18-2.jpg,Ford Puma,Ford Puma,0.906,Ford Kuga,Ford EcoSport,Ford Puma II,46
+opel_corsa_20-1.jpg,Opel Corsa,Kia Ceed,0.343,Opel Corsa,MG MG4,Opel Astra L,47
+opel_corsa_20-2.jpg,Opel Corsa,Opel Corsa,0.921,Opel Adam,Opel Astra,Opel Corsa E,44
+bmw_serie-3_21-1.jpg,BMW Serie 3,BMW Serie 3,0.699,BMW Serie 5,Mercedes-Benz Classe C,BMW Serie 3 G20,50
+bmw_serie-3_21-2.jpg,BMW Serie 3,BMW Serie 3,0.630,BMW Serie 1,BMW Serie 5,BMW Serie 3 G20,46
+bmw_x1_22-1.jpg,BMW X1,BMW X1,0.903,BMW X5,BMW X3,BMW X1 F48,45
+bmw_x1_22-2.jpg,BMW X1,BMW X1,0.932,BMW X3,BMW Serie 1,BMW X1 U11,46
+mercedes-benz_classe-a_23-1.jpg,Mercedes-Benz Classe A,Mercedes-Benz Classe A,0.919,Mercedes-Benz GLA,Mercedes-Benz Classe C,Mercedes-Benz Classe A W177,46
+mercedes-benz_classe-a_23-2.jpg,Mercedes-Benz Classe A,Mercedes-Benz Classe A,0.796,Mercedes-Benz GLA,Mercedes-Benz CLA,Mercedes-Benz Classe A W177,48
+audi_a3_24-1.jpg,Audi A3,Audi A3,0.836,Audi A1,Audi A4,Audi A3 8Y,44
+audi_a3_24-2.jpg,Audi A3,Audi A3,0.728,Audi A1,Audi Q3,Audi A3 8Y,46
+tesla_model-3_25-1.jpg,Tesla Model 3,Tesla Model 3,0.832,Tesla Model S,Tesla Model Y,Tesla Model 3 I,47
+tesla_model-3_25-2.jpg,Tesla Model 3,Tesla Model 3,0.716,Tesla Model S,Tesla Model Y,Tesla Model 3 I,47
+ferrari_488-gtb_26-1.jpg,Ferrari 488 GTB,Ferrari 488 GTB,0.957,Ferrari 458 Italia,Ferrari 308 GTB,Ferrari 488 GTB I,46
+ferrari_488-gtb_26-2.jpg,Ferrari 488 GTB,Ferrari 488 GTB,0.964,Ferrari 458 Italia,Ferrari California,Ferrari 488 GTB I,45
+lamborghini_hurac-n_27-1.jpg,Lamborghini Huracán,Lamborghini Huracán,0.872,Lamborghini Gallardo,Lamborghini Aventador,Lamborghini Huracán I,46
+lamborghini_hurac-n_27-2.jpg,Lamborghini Huracán,Lamborghini Huracán,0.877,Lamborghini Gallardo,Lamborghini Aventador,Lamborghini Huracán I,47
+porsche_911_28-1.jpg,Porsche 911,Porsche 911,0.975,Porsche 718 Cayman,Porsche Taycan,Porsche 911 992,51
+porsche_911_28-2.jpg,Porsche 911,Porsche 911,0.979,Porsche 718 Cayman,Porsche Cayenne,Porsche 911 992,51
+mini_cooper_29-1.jpg,Mini Cooper,Mini Cooper,0.944,Mini Classic Mini,Abarth 595,Mini Cooper F56,49
+mini_cooper_29-2.jpg,Mini Cooper,Mini Cooper,0.897,Mini Classic Mini,Abarth 595,Mini Cooper F56,49
+smart_fortwo_30-1.jpg,Smart Fortwo,Smart Fortwo,0.996,Mercedes-Benz Classe A,Toyota C-HR,Smart Fortwo C451,46
+smart_fortwo_30-2.jpg,Smart Fortwo,Smart Fortwo,0.979,Mercedes-Benz Classe A,Mercedes-Benz Classe G,Smart Fortwo C453,46
+nissan_qashqai_31-1.jpg,Nissan Qashqai,Nissan Qashqai,0.998,Nissan Juke,Nissan Leaf,Nissan Qashqai J12,45
+nissan_qashqai_31-2.jpg,Nissan Qashqai,Nissan Qashqai,0.995,Nissan Juke,Opel Mokka,Nissan Qashqai J12,46
+kia_picanto_32-1.jpg,Kia Picanto,Kia Picanto,0.999,Toyota Aygo X,Toyota Aygo,Kia Picanto II,46
+kia_picanto_32-2.jpg,Kia Picanto,Kia Picanto,0.944,Toyota Aygo X,Toyota Aygo,Kia Picanto II,46
+hyundai_i10_33-1.jpg,Hyundai i10,Suzuki Swift,0.657,Hyundai i20,Hyundai i10,Suzuki Swift AZ,45
+hyundai_i10_33-2.jpg,Hyundai i10,Hyundai i10,0.441,Ford Puma,Ford Ka,Hyundai i10 III,47
+skoda_octavia_34-1.jpg,Skoda Octavia,Skoda Octavia,0.802,Skoda Scala,Skoda Superb,Skoda Octavia IV (NX),48
+skoda_octavia_34-2.jpg,Skoda Octavia,Skoda Scala,0.414,Skoda Octavia,Skoda Kamiq,Skoda Scala I,48
+suzuki_jimny_36-1.jpg,Suzuki Jimny,Suzuki Jimny,0.992,Suzuki Vitara,Suzuki Ignis,Suzuki Jimny IV (JB74),46
+suzuki_jimny_36-2.jpg,Suzuki Jimny,Suzuki Jimny,0.992,Suzuki Ignis,Suzuki Vitara,Suzuki Jimny III (JB43),49
+land-rover_defender_37-1.jpg,Land Rover Defender,Land Rover Defender,0.999,Jeep Wrangler,Jaguar F-Type,Land Rover Defender Classic (90/110),52
+land-rover_defender_37-2.jpg,Land Rover Defender,Land Rover Defender,0.994,Land Rover Range Rover Evoque,Jaguar F-Pace,Land Rover Defender L663,47
+fiat_500_38-1.jpg,Fiat 500,Fiat 500,0.345,Fiat Cinquecento,Fiat 600,Fiat 500 II (312),48
+fiat_500_38-2.jpg,Fiat 500,Fiat 600,0.403,Fiat 500,Fiat Cinquecento,Fiat 500 Nuova 500,45
+piaggio_ape_39-1.jpg,Piaggio Ape,Piaggio Ape,0.999,Renault 4,Citroën 2CV,Piaggio Ape Ape TM / Ape 50,46
+piaggio_ape_39-2.jpg,Piaggio Ape,Piaggio Ape,0.995,Fiat Ducato,Fiat Cinquecento,Piaggio Ape Ape TM / Ape 50,49

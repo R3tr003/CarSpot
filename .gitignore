@@ -52,3 +52,12 @@ tools/recognition-trial/.venv/
 tools/recognition-trial/.cache/
 tools/recognition-trial/photos/
 tools/recognition-trial/samples/
+tools/recognition-trial/stanford/
+tools/recognition-trial/degraded/
+
+# Encoder Core ML del riconoscimento (93 MB): si rigenera con tools/recognition-trial (convert_coreml.py + catalog_embeddings.py export-app)
+CarSpot/Services/Recognition/Resources/CarEncoder.mlpackage/
+# Embedding del catalogo e foto di prova derivate
+tools/recognition-trial/export/catalog/
+tools/recognition-trial/export/base/CarEncoder.mlpackage/
+tools/recognition-trial/__pycache__/
